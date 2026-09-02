@@ -93,13 +93,13 @@ class ShopScreenTest {
     }
 
     @Test
-    fun buyingItem_incrementsCartAndClosesDialog() {
+    fun cartPurchase_deductsCoinsAndClearsCart() {
         composeRule
             .onNodeWithContentDescription("Open Item 1 details")
             .performClick()
 
         composeRule
-            .onNodeWithText("Buy")
+            .onNodeWithText("Add to cart")
             .performClick()
 
         composeRule
@@ -107,12 +107,32 @@ class ShopScreenTest {
             .assertIsDisplayed()
 
         composeRule
-            .onNodeWithText("Anime Coin: 90")
+            .onNodeWithText("Anime Coin: 100")
             .assertIsDisplayed()
 
         composeRule
             .onNodeWithText("Description for item 1")
             .assertDoesNotExist()
+
+        composeRule
+            .onNodeWithText("Cart (1)")
+            .performClick()
+
+        composeRule
+            .onNodeWithText("Total: 10 Anime Coin")
+            .assertIsDisplayed()
+
+        composeRule
+            .onNodeWithText("Buy")
+            .performClick()
+
+        composeRule
+            .onNodeWithText("Anime Coin: 90")
+            .assertIsDisplayed()
+
+        composeRule
+            .onNodeWithText("Cart (0)")
+            .assertIsDisplayed()
     }
 
     @Test
@@ -135,14 +155,14 @@ class ShopScreenTest {
     }
 
     @Test
-    fun repeatedPurchases_areGroupedAndRemovedOneAtATime() {
+    fun repeatedItems_areGroupedAndRemovedOneAtATime() {
         repeat(2) {
             composeRule
                 .onNodeWithContentDescription("Open Item 1 details")
                 .performClick()
 
             composeRule
-                .onNodeWithText("Buy")
+                .onNodeWithText("Add to cart")
                 .performClick()
         }
 
@@ -155,7 +175,7 @@ class ShopScreenTest {
             .assertIsDisplayed()
 
         composeRule
-            .onNodeWithText("Anime Coin: 80")
+            .onNodeWithText("Anime Coin: 100")
             .assertIsDisplayed()
 
         composeRule
@@ -171,7 +191,7 @@ class ShopScreenTest {
             .assertIsDisplayed()
 
         composeRule
-            .onNodeWithText("Anime Coin: 90")
+            .onNodeWithText("Anime Coin: 100")
             .assertIsDisplayed()
 
         composeRule
@@ -192,18 +212,18 @@ class ShopScreenTest {
     }
 
     @Test
-    fun unaffordablePurchase_doesNotSpendCoinsOrAddToCart() {
+    fun unaffordableCartPurchase_doesNotSpendCoinsOrClearCart() {
         composeRule
             .onNodeWithContentDescription("Open Item 8 details")
             .performScrollTo()
             .performClick()
 
         composeRule
-            .onNodeWithText("Buy")
+            .onNodeWithText("Add to cart")
             .performClick()
 
         composeRule
-            .onNodeWithText("Anime Coin: 20")
+            .onNodeWithText("Anime Coin: 100")
             .assertIsDisplayed()
 
         composeRule
@@ -212,15 +232,27 @@ class ShopScreenTest {
             .performClick()
 
         composeRule
+            .onNodeWithText("Add to cart")
+            .performClick()
+
+        composeRule
+            .onNodeWithText("Cart (2)")
+            .performClick()
+
+        composeRule
+            .onNodeWithText("Total: 110 Anime Coin")
+            .assertIsDisplayed()
+
+        composeRule
             .onNodeWithText("Buy")
             .performClick()
 
         composeRule
-            .onNodeWithText("Anime Coin: 20")
+            .onNodeWithText("Anime Coin: 100")
             .assertIsDisplayed()
 
         composeRule
-            .onNodeWithText("Cart (1)")
+            .onNodeWithText("Cart (2)")
             .assertIsDisplayed()
     }
 }
