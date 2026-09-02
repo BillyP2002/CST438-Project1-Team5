@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">CST438-Project1-Team5</string>
+    <string name="shop_title">Shop</string>
+    <string name="cart_count">Cart (%1$d)</string>
+    <string name="buy">Buy</string>
+    <string name="cancel">Cancel</string>
+    <string name="open_item_details">Open %1$s details</string>
+    <string name="added_to_cart">%1$s added to cart</string>
 </resources>
