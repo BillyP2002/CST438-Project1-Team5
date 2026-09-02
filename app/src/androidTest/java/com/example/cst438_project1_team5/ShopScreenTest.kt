@@ -101,4 +101,68 @@ class ShopScreenTest {
             .onNodeWithText("Description for item 1")
             .assertDoesNotExist()
     }
+
+    @Test
+    fun clickingEmptyCart_opensAndClosesDialog() {
+        composeRule
+            .onNodeWithText("Cart (0)")
+            .performClick()
+
+        composeRule
+            .onNodeWithText("Your cart is empty.")
+            .assertIsDisplayed()
+
+        composeRule
+            .onNodeWithText("Close")
+            .performClick()
+
+        composeRule
+            .onNodeWithText("Your cart is empty.")
+            .assertDoesNotExist()
+    }
+
+    @Test
+    fun repeatedPurchases_areGroupedAndRemovedOneAtATime() {
+        repeat(2) {
+            composeRule
+                .onNodeWithContentDescription("Open Item 1 details")
+                .performClick()
+
+            composeRule
+                .onNodeWithText("Buy")
+                .performClick()
+        }
+
+        composeRule
+            .onNodeWithText("Cart (2)")
+            .performClick()
+
+        composeRule
+            .onNodeWithText("Quantity: 2")
+            .assertIsDisplayed()
+
+        composeRule
+            .onNodeWithText("Remove")
+            .performClick()
+
+        composeRule
+            .onNodeWithText("Quantity: 1")
+            .assertIsDisplayed()
+
+        composeRule
+            .onNodeWithText("Cart (1)")
+            .assertIsDisplayed()
+
+        composeRule
+            .onNodeWithText("Remove")
+            .performClick()
+
+        composeRule
+            .onNodeWithText("Your cart is empty.")
+            .assertIsDisplayed()
+
+        composeRule
+            .onNodeWithText("Cart (0)")
+            .assertIsDisplayed()
+    }
 }
