@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name">CST438-Project1-Team5</string>
     <string name="shop_title">Shop</string>
+    <string name="anime_coin_balance">Anime Coin: %1$d</string>
+    <string name="anime_coin_price">Price: %1$d Anime Coin</string>
+    <string name="not_enough_anime_coin">Not enough Anime Coin for %1$s.</string>
     <string name="cart_count">Cart (%1$d)</string>
     <string name="cart_title">Cart</string>
     <string name="cart_item_quantity">Quantity: %1$d</string>

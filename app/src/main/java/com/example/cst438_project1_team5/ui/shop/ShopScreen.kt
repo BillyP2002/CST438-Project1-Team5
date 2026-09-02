@@ -5,9 +5,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -26,6 +28,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -44,6 +47,8 @@ import com.example.cst438_project1_team5.R
 import com.example.cst438_project1_team5.ui.theme.CST438Project1Team5Theme
 import kotlinx.coroutines.launch
 
+private const val STARTING_ANIME_COIN_BALANCE = 100
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ShopScreen(
@@ -51,6 +56,7 @@ fun ShopScreen(
 ) {
     var selectedItem by remember { mutableStateOf<ShopItem?>(null) }
     var showCartDialog by remember { mutableStateOf(false) }
+    var animeCoinBalance by remember { mutableIntStateOf(STARTING_ANIME_COIN_BALANCE) }
     val cartQuantities = remember { mutableStateMapOf<Int, Int>() }
     val cartItemCount = cartQuantities.values.sum()
 
@@ -65,6 +71,12 @@ fun ShopScreen(
                     Text(text = stringResource(R.string.shop_title))
                 },
                 actions = {
+                    Text(
+                        text = stringResource(
+                            R.string.anime_coin_balance,
+                            animeCoinBalance
+                        )
+                    )
                     TextButton(onClick = { showCartDialog = true }) {
                         Text(
                             text = stringResource(
@@ -108,17 +120,27 @@ fun ShopScreen(
             R.string.added_to_cart,
             item.title
         )
+        val insufficientFundsMessage = stringResource(
+            R.string.not_enough_anime_coin,
+            item.title
+        )
         ShopItemDialog(
             item = item,
             onDismiss = {
                 selectedItem = null
             },
             onBuy = {
-                cartQuantities[item.id] = (cartQuantities[item.id] ?: 0) + 1
+                val message = if (animeCoinBalance >= item.animeCoinPrice) {
+                    animeCoinBalance -= item.animeCoinPrice
+                    cartQuantities[item.id] = (cartQuantities[item.id] ?: 0) + 1
+                    confirmationMessage
+                } else {
+                    insufficientFundsMessage
+                }
                 selectedItem = null
 
                 coroutineScope.launch {
-                    snackbarHostState.showSnackbar(confirmationMessage)
+                    snackbarHostState.showSnackbar(message)
                 }
             }
         )
@@ -131,6 +153,11 @@ fun ShopScreen(
             onDismiss = { showCartDialog = false },
             onRemove = { itemId ->
                 val newQuantity = (cartQuantities[itemId] ?: 0) - 1
+                val removedItem = items.firstOrNull { item -> item.id == itemId }
+
+                if (removedItem != null) {
+                    animeCoinBalance += removedItem.animeCoinPrice
+                }
 
                 if (newQuantity > 0) {
                     cartQuantities[itemId] = newQuantity
@@ -242,7 +269,16 @@ fun ShopItemDialog(
             Text(text = item.title)
         },
         text = {
-            Text(text = item.description)
+            Column {
+                Text(text = item.description)
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = stringResource(
+                        R.string.anime_coin_price,
+                        item.animeCoinPrice
+                    )
+                )
+            }
         },
         confirmButton = {
             Button(onClick = onBuy) {
