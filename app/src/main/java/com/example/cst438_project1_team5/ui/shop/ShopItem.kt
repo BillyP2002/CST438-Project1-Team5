@@ -7,7 +7,7 @@ data class ShopItem(
     val id: Int,
     val title: String,
     val description: String,
-    @DrawableRes val imageResId: Int
+    @param:DrawableRes val imageResId: Int
 )
 
 val placeholderShopItems: List<ShopItem> = List(8) { index ->
