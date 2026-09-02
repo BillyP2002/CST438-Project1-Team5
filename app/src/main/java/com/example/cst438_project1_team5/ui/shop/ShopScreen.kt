@@ -2,9 +2,12 @@ package com.example.cst438_project1_team5.ui.shop
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -23,12 +26,12 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -47,7 +50,9 @@ fun ShopScreen(
     items: List<ShopItem> = placeholderShopItems
 ) {
     var selectedItem by remember { mutableStateOf<ShopItem?>(null) }
-    var cartItemCount by rememberSaveable { mutableIntStateOf(0) }
+    var showCartDialog by remember { mutableStateOf(false) }
+    val cartQuantities = remember { mutableStateMapOf<Int, Int>() }
+    val cartItemCount = cartQuantities.values.sum()
 
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
@@ -60,13 +65,14 @@ fun ShopScreen(
                     Text(text = stringResource(R.string.shop_title))
                 },
                 actions = {
-                    Text(
-                        text = stringResource(
-                            R.string.cart_count,
-                            cartItemCount
-                        ),
-                        modifier = Modifier.padding(end = 16.dp)
-                    )
+                    TextButton(onClick = { showCartDialog = true }) {
+                        Text(
+                            text = stringResource(
+                                R.string.cart_count,
+                                cartItemCount
+                            )
+                        )
+                    }
                 }
             )
         },
@@ -108,7 +114,7 @@ fun ShopScreen(
                 selectedItem = null
             },
             onBuy = {
-                cartItemCount++
+                cartQuantities[item.id] = (cartQuantities[item.id] ?: 0) + 1
                 selectedItem = null
 
                 coroutineScope.launch {
@@ -117,6 +123,79 @@ fun ShopScreen(
             }
         )
     }
+
+    if (showCartDialog) {
+        CartDialog(
+            items = items,
+            quantities = cartQuantities,
+            onDismiss = { showCartDialog = false },
+            onRemove = { itemId ->
+                val newQuantity = (cartQuantities[itemId] ?: 0) - 1
+
+                if (newQuantity > 0) {
+                    cartQuantities[itemId] = newQuantity
+                } else {
+                    cartQuantities.remove(itemId)
+                }
+            }
+        )
+    }
+}
+
+@Composable
+private fun CartDialog(
+    items: List<ShopItem>,
+    quantities: Map<Int, Int>,
+    onDismiss: () -> Unit,
+    onRemove: (Int) -> Unit
+) {
+    val cartItems = items
+        .distinctBy { item -> item.id }
+        .mapNotNull { item ->
+            quantities[item.id]
+                ?.takeIf { quantity -> quantity > 0 }
+                ?.let { quantity -> item to quantity }
+        }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(text = stringResource(R.string.cart_title))
+        },
+        text = {
+            if (cartItems.isEmpty()) {
+                Text(text = stringResource(R.string.empty_cart))
+            } else {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    cartItems.forEach { (item, quantity) ->
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(text = item.title)
+                                Text(
+                                    text = stringResource(
+                                        R.string.cart_item_quantity,
+                                        quantity
+                                    )
+                                )
+                            }
+                            TextButton(onClick = { onRemove(item.id) }) {
+                                Text(text = stringResource(R.string.remove))
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text(text = stringResource(R.string.close))
+            }
+        }
+    )
 }
 
 @Composable
