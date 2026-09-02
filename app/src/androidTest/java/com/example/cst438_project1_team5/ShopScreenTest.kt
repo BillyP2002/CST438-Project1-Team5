@@ -5,6 +5,7 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.cst438_project1_team5.ui.shop.ShopScreen
 import com.example.cst438_project1_team5.ui.theme.CST438Project1Team5Theme
@@ -34,6 +35,10 @@ class ShopScreenTest {
     fun shopScreen_displaysItemsInTwoColumns() {
         composeRule
             .onNodeWithText("Shop")
+            .assertIsDisplayed()
+
+        composeRule
+            .onNodeWithText("Anime Coin: 100")
             .assertIsDisplayed()
 
         val firstItemBounds = composeRule
@@ -71,6 +76,10 @@ class ShopScreenTest {
             .assertIsDisplayed()
 
         composeRule
+            .onNodeWithText("Price: 10 Anime Coin")
+            .assertIsDisplayed()
+
+        composeRule
             .onNodeWithText("Cancel")
             .performClick()
 
@@ -95,6 +104,10 @@ class ShopScreenTest {
 
         composeRule
             .onNodeWithText("Cart (1)")
+            .assertIsDisplayed()
+
+        composeRule
+            .onNodeWithText("Anime Coin: 90")
             .assertIsDisplayed()
 
         composeRule
@@ -142,6 +155,10 @@ class ShopScreenTest {
             .assertIsDisplayed()
 
         composeRule
+            .onNodeWithText("Anime Coin: 80")
+            .assertIsDisplayed()
+
+        composeRule
             .onNodeWithText("Remove")
             .performClick()
 
@@ -154,6 +171,10 @@ class ShopScreenTest {
             .assertIsDisplayed()
 
         composeRule
+            .onNodeWithText("Anime Coin: 90")
+            .assertIsDisplayed()
+
+        composeRule
             .onNodeWithText("Remove")
             .performClick()
 
@@ -163,6 +184,43 @@ class ShopScreenTest {
 
         composeRule
             .onNodeWithText("Cart (0)")
+            .assertIsDisplayed()
+
+        composeRule
+            .onNodeWithText("Anime Coin: 100")
+            .assertIsDisplayed()
+    }
+
+    @Test
+    fun unaffordablePurchase_doesNotSpendCoinsOrAddToCart() {
+        composeRule
+            .onNodeWithContentDescription("Open Item 8 details")
+            .performScrollTo()
+            .performClick()
+
+        composeRule
+            .onNodeWithText("Buy")
+            .performClick()
+
+        composeRule
+            .onNodeWithText("Anime Coin: 20")
+            .assertIsDisplayed()
+
+        composeRule
+            .onNodeWithContentDescription("Open Item 3 details")
+            .performScrollTo()
+            .performClick()
+
+        composeRule
+            .onNodeWithText("Buy")
+            .performClick()
+
+        composeRule
+            .onNodeWithText("Anime Coin: 20")
+            .assertIsDisplayed()
+
+        composeRule
+            .onNodeWithText("Cart (1)")
             .assertIsDisplayed()
     }
 }
