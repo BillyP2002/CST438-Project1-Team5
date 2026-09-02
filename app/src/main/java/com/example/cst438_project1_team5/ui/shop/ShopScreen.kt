@@ -59,6 +59,10 @@ fun ShopScreen(
     var animeCoinBalance by remember { mutableIntStateOf(STARTING_ANIME_COIN_BALANCE) }
     val cartQuantities = remember { mutableStateMapOf<Int, Int>() }
     val cartItemCount = cartQuantities.values.sum()
+    val cartTotal = cartQuantities.entries.sumOf { (itemId, quantity) ->
+        val itemPrice = items.firstOrNull { item -> item.id == itemId }?.animeCoinPrice ?: 0
+        itemPrice * quantity
+    }
 
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
@@ -120,44 +124,53 @@ fun ShopScreen(
             R.string.added_to_cart,
             item.title
         )
-        val insufficientFundsMessage = stringResource(
-            R.string.not_enough_anime_coin,
-            item.title
-        )
         ShopItemDialog(
             item = item,
             onDismiss = {
                 selectedItem = null
             },
-            onBuy = {
-                val message = if (animeCoinBalance >= item.animeCoinPrice) {
-                    animeCoinBalance -= item.animeCoinPrice
-                    cartQuantities[item.id] = (cartQuantities[item.id] ?: 0) + 1
-                    confirmationMessage
-                } else {
-                    insufficientFundsMessage
-                }
+            onAddToCart = {
+                cartQuantities[item.id] = (cartQuantities[item.id] ?: 0) + 1
                 selectedItem = null
 
                 coroutineScope.launch {
-                    snackbarHostState.showSnackbar(message)
+                    snackbarHostState.showSnackbar(confirmationMessage)
                 }
             }
         )
     }
 
     if (showCartDialog) {
+        val purchaseMessage = stringResource(
+            R.string.purchase_complete,
+            cartTotal
+        )
+        val insufficientFundsMessage = stringResource(
+            R.string.not_enough_anime_coin
+        )
+
         CartDialog(
             items = items,
             quantities = cartQuantities,
+            total = cartTotal,
             onDismiss = { showCartDialog = false },
+            onBuy = {
+                val message = if (animeCoinBalance >= cartTotal) {
+                    animeCoinBalance -= cartTotal
+                    cartQuantities.clear()
+                    purchaseMessage
+                } else {
+                    insufficientFundsMessage
+                }
+
+                showCartDialog = false
+
+                coroutineScope.launch {
+                    snackbarHostState.showSnackbar(message)
+                }
+            },
             onRemove = { itemId ->
                 val newQuantity = (cartQuantities[itemId] ?: 0) - 1
-                val removedItem = items.firstOrNull { item -> item.id == itemId }
-
-                if (removedItem != null) {
-                    animeCoinBalance += removedItem.animeCoinPrice
-                }
 
                 if (newQuantity > 0) {
                     cartQuantities[itemId] = newQuantity
@@ -173,7 +186,9 @@ fun ShopScreen(
 private fun CartDialog(
     items: List<ShopItem>,
     quantities: Map<Int, Int>,
+    total: Int,
     onDismiss: () -> Unit,
+    onBuy: () -> Unit,
     onRemove: (Int) -> Unit
 ) {
     val cartItems = items
@@ -214,10 +229,25 @@ private fun CartDialog(
                             }
                         }
                     }
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = stringResource(
+                            R.string.cart_total,
+                            total
+                        )
+                    )
                 }
             }
         },
         confirmButton = {
+            Button(
+                onClick = onBuy,
+                enabled = cartItems.isNotEmpty()
+            ) {
+                Text(text = stringResource(R.string.buy))
+            }
+        },
+        dismissButton = {
             TextButton(onClick = onDismiss) {
                 Text(text = stringResource(R.string.close))
             }
@@ -261,7 +291,7 @@ fun ShopItemCard(
 fun ShopItemDialog(
     item: ShopItem,
     onDismiss: () -> Unit,
-    onBuy: () -> Unit
+    onAddToCart: () -> Unit
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -281,8 +311,8 @@ fun ShopItemDialog(
             }
         },
         confirmButton = {
-            Button(onClick = onBuy) {
-                Text(text = stringResource(R.string.buy))
+            Button(onClick = onAddToCart) {
+                Text(text = stringResource(R.string.add_to_cart))
             }
         },
         dismissButton = {
