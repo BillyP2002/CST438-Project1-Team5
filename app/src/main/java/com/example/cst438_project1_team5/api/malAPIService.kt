@@ -1,0 +1,5 @@
+interface ApiService{
+    @GET("user"){
+
+    }
+}
