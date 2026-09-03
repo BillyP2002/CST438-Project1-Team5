@@ -1,5 +1,24 @@
 <resources>
     <string name="app_name">Anime Song Guess</string>
+    <string name="shop_title">Shop</string>
+    <string name="anime_coin_balance">Anime Coin: %1$d</string>
+    <string name="anime_coin_price">Price: %1$d Anime Coin</string>
+    <string name="not_enough_anime_coin">Not enough Anime Coin to buy this cart.</string>
+    <string name="purchase_complete">Purchase complete: %1$d Anime Coin spent.</string>
+    <string name="cart_count">Cart (%1$d)</string>
+    <string name="cart_title">Cart</string>
+    <string name="cart_item_quantity">Quantity: %1$d</string>
+    <string name="cart_total">Total: %1$d Anime Coin</string>
+    <string name="remove">Remove</string>
+    <string name="close">Close</string>
+    <string name="empty_cart">Your cart is empty.</string>
+    <string name="add_to_cart">Add to cart</string>
+    <string name="buy">Buy</string>
+    <string name="cancel">Cancel</string>
+    <string name="open_item_details">Open %1$s details</string>
+    <string name="added_to_cart">%1$s added to cart</string>
+</resources>
+    <string name="app_name">Anime Song Guess</string>
     <string name="sign_in_title">Welcome back</string>
     <string name="sign_in_subtitle">Ready to guess the next anime tune?</string>
     <string name="sign_in_prompt">Sign in to continue your streak</string>
