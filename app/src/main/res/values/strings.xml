@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">CST438-Project1-Team5</string>
+    <string name="app_name">Anime Song Guess</string>
     <string name="shop_title">Shop</string>
     <string name="anime_coin_balance">Anime Coin: %1$d</string>
     <string name="anime_coin_price">Price: %1$d Anime Coin</string>
@@ -17,4 +17,16 @@
     <string name="cancel">Cancel</string>
     <string name="open_item_details">Open %1$s details</string>
     <string name="added_to_cart">%1$s added to cart</string>
+</resources>
+    <string name="app_name">Anime Song Guess</string>
+    <string name="sign_in_title">Welcome back</string>
+    <string name="sign_in_subtitle">Ready to guess the next anime tune?</string>
+    <string name="sign_in_prompt">Sign in to continue your streak</string>
+    <string name="email_label">Email</string>
+    <string name="password_label">Password</string>
+    <string name="remember_me">Remember me</string>
+    <string name="forgot_password">Forgot?</string>
+    <string name="sign_in_button">Sign in</string>
+    <string name="no_account_prompt">Don’t have an account?</string>
+    <string name="sign_up_text">Create one</string>
 </resources>
