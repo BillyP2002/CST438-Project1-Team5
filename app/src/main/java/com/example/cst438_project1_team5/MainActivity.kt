@@ -70,6 +70,7 @@ fun SignInScreen(modifier: Modifier = Modifier) {
     var email by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
     var rememberMe by remember { mutableStateOf(false) }
+    var soundTest by
 
     Box(
         modifier = modifier
