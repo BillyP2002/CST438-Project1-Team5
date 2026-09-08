@@ -9,8 +9,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.ExoPlayer
+import android.net.Uri
 import kotlinx.serialization.Serializable
-class soundTest {
+import androidx.core.net.toUri
+
+class SoundTest {
 
     @Serializable
     data class AnimeIndexResponse(val anime: List<ApiAnime> = emptyList())
@@ -60,11 +63,11 @@ class soundTest {
         val player = remember {
             ExoPlayer.Builder(context).build()
         }
-        LaunchedEffect(round.videoUrl) {
-            player.setMediaItem(MediaBrowser.MediaItem.fromUri(round.videoUrl))
-            player.prepare()
-            player.play()
-        }
+        val item = MediaItem.Builder()
+            .setUri(round.videoUrl.toUri())
+            .build()
+
+        player.setMediaItem(item)
 
         DisposableEffect(Unit) {
             onDispose {

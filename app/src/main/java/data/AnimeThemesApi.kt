@@ -1,6 +1,6 @@
 package data
 
-import com.example.cst438_project1_team5.ui.soundTest.soundTest
+import com.example.cst438_project1_team5.ui.soundTest.SoundTest
 import retrofit2.http.GET
 import retrofit2.http.Query
 
@@ -12,5 +12,5 @@ interface AnimeThemesApi {
         @Query("include") include: String =
             "animethemes.song," +
                     "animethemes.animethemeentries.videos"
-    ): soundTest.AnimeIndexResponse
+    ): SoundTest.AnimeIndexResponse
 }

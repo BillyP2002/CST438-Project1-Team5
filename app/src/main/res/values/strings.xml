@@ -28,5 +28,7 @@
     <string name="sign_in_button">Sign in</string>
     <string name="no_account_prompt">Don’t have an account?</string>
     <string name="sign_up_text">Create one</string>
-    <string name="sound_test">Sound Test</string></resources>
+    <string name="sound_test">Sound Test</string>
+    <string name="searchSong">Enter an anime theme</string>
+</resources>
 
