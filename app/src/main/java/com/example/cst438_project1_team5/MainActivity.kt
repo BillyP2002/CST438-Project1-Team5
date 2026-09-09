@@ -1,6 +1,7 @@
 package com.example.cst438_project1_team5
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -44,11 +45,23 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.lifecycleScope
+import com.example.cst438_project1_team5.api.anime_themes.GetAudio
 import com.example.cst438_project1_team5.ui.theme.CST438Project1Team5Theme
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // theme song api random song loading
+        lifecycleScope.launch {
+            GetAudio.randomAudio()?.let { audio ->
+                Log.d("Audio", audio.link)
+            }
+        }
+
+
         enableEdgeToEdge()
         setContent {
             CST438Project1Team5Theme {
