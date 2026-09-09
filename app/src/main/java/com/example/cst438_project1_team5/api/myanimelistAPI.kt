@@ -1,3 +1,5 @@
+package com.example.cst438_project1_team5.api
+
 //Retrofit Instance
 object RetrofitClient {
     private const val BASE_URL = "https://api.myanimelist.net/v2"

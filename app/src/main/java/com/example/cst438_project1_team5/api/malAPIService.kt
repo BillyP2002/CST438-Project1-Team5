@@ -1,3 +1,5 @@
+package com.example.cst438_project1_team5.api
+
 interface ApiService{
     //Fetch MAL user's list by their username
     @GET("users/{user_name}/animelist")

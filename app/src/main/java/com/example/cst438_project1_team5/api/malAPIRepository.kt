@@ -1,3 +1,5 @@
+package com.example.cst438_project1_team5.api
+
 class malAPIRepository{
     suspend fun getList(name: String): Result<User>{
         return try{
