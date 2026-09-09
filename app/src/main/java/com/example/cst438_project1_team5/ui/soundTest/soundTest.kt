@@ -1,4 +1,5 @@
 package com.example.cst438_project1_team5.ui.soundTest
+import data.AnimeThemesApi
 import android.media.browse.MediaBrowser
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
@@ -12,6 +13,7 @@ import androidx.media3.exoplayer.ExoPlayer
 import android.net.Uri
 import kotlinx.serialization.Serializable
 import androidx.core.net.toUri
+import androidx.media3.common.MediaItem.fromUri
 
 class SoundTest {
 
@@ -73,6 +75,12 @@ class SoundTest {
             onDispose {
                 player.release()
             }
+        }
+
+        Button(onClick = {
+            player.play()
+        }) {
+            Text("Test")
         }
 
         Button(onClick = {

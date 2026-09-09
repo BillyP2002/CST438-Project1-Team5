@@ -46,9 +46,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat.startActivity
-import com.example.cst438_project1_team5.ui.soundTest.SoundTest
 import com.example.cst438_project1_team5.ui.theme.CST438Project1Team5Theme
-import kotlin.jvm.java
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -273,7 +271,8 @@ fun SignInScreen(modifier: Modifier = Modifier) {
                         onClick = {
 
                                   },
-                        modifier = Modifier.align(Alignment.CenterHorizontally)
+
+                            modifier = Modifier.align(Alignment.CenterHorizontally)
                     ) {
                         Text(
                             text = stringResource(R.string.sound_test),

@@ -30,5 +30,6 @@
     <string name="sign_up_text">Create one</string>
     <string name="sound_test">Sound Test</string>
     <string name="searchSong">Enter an anime theme</string>
+    <string name="profile_header">Profile</string>
 </resources>
 
