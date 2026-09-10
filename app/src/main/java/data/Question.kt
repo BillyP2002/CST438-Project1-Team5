@@ -4,14 +4,6 @@ class Question(val show: String){
     var guesses = 0
     var duration = 1
 
-    fun getDuration() : Int{
-        return duration
-    }
-
-    fun getGuesses() : Int{
-        return guesses
-    }
-
     /**
      * Returns whether the user's guess was successful, and a getter can be used to
      * receive the current guess count.
@@ -19,7 +11,7 @@ class Question(val show: String){
      * A skip input should be available
      */
     fun guess(answer: String) : Boolean{
-        while(guesses < 5){
+        if(guesses < 5){
             when (guesses) {
                 1 -> {
                     duration = 3;

@@ -14,12 +14,12 @@ class TakeQuizTest {
     fun questionTest(){
         var question = Question("dummy");
         assertEquals(false, question.guess("Bobibaba"))
-        assertEquals(1, question.getGuesses())
-        assertEquals(3, question.getGuesses())
+        assertEquals(1, question.guesses)
         question.guess("Connect")
+        assertEquals(3, question.duration)
         question.guess("Don't judge my dummy answer names.")
         question.guess("E")
-        assertEquals(16, question.getDuration())
         assertEquals(true, question.guess("Dummy"))
+        assertEquals(16, question.duration)
     }
 }
