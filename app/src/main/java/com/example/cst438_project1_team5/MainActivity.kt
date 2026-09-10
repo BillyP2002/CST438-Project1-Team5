@@ -1,7 +1,10 @@
 package com.example.cst438_project1_team5
 
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -49,7 +52,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat.startActivity
+import com.example.cst438_project1_team5.database.MusicDatabaseHelper
 import com.example.cst438_project1_team5.ui.theme.CST438Project1Team5Theme
 
 enum class AuthMode {
@@ -58,8 +63,11 @@ enum class AuthMode {
 }
 
 class MainActivity : ComponentActivity() {
+    private lateinit var databaseHelper: MusicDatabaseHelper
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        databaseHelper = MusicDatabaseHelper(applicationContext)
         enableEdgeToEdge()
         setContent {
             CST438Project1Team5Theme {
@@ -68,7 +76,8 @@ class MainActivity : ComponentActivity() {
                     containerColor = Color.Transparent
                 ) { innerPadding ->
                     AuthScreen(
-                        modifier = Modifier.padding(innerPadding)
+                        modifier = Modifier.padding(innerPadding),
+                        databaseHelper = databaseHelper
                     )
                 }
             }
@@ -77,30 +86,43 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun AuthScreen(modifier: Modifier = Modifier) {
+fun AuthScreen(
+    modifier: Modifier = Modifier,
+    databaseHelper: MusicDatabaseHelper
+) {
     var currentMode by rememberSaveable { mutableStateOf(AuthMode.SignIn) }
 
     when (currentMode) {
         AuthMode.SignIn -> SignInScreen(
             modifier = modifier,
+            databaseHelper = databaseHelper,
             onCreateAccountClick = { currentMode = AuthMode.SignUp }
         )
 
         AuthMode.SignUp -> SignUpScreen(
             modifier = modifier,
+            databaseHelper = databaseHelper,
             onAlreadyHaveAccountClick = { currentMode = AuthMode.SignIn }
         )
     }
 }
 
+private fun getRememberedUserPrefs(context: Context): SharedPreferences {
+    return context.getSharedPreferences("music_auth_prefs", Context.MODE_PRIVATE)
+}
+
 @Composable
 fun SignInScreen(
     modifier: Modifier = Modifier,
+    databaseHelper: MusicDatabaseHelper,
     onCreateAccountClick: () -> Unit = {}
 ) {
-    var email by rememberSaveable { mutableStateOf("") }
+    val context = LocalContext.current
+    var email by rememberSaveable { mutableStateOf(getRememberedUserPrefs(context).getString("remembered_email", "") ?: "") }
     var password by rememberSaveable { mutableStateOf("") }
     var rememberMe by remember { mutableStateOf(false) }
+    var authError by rememberSaveable { mutableStateOf("") }
+    var isSigningIn by remember { mutableStateOf(false) }
 
     ScreenBackground {
         Column(
@@ -245,24 +267,62 @@ fun SignInScreen(
 
                     Spacer(modifier = Modifier.height(16.dp))
 
+                    if (authError.isNotBlank()) {
+                        Text(
+                            text = authError,
+                            color = Color(0xFFFCA5A5),
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                    }
+
                     Button(
-                        onClick = { },
+                        onClick = {
+                            if (email.isBlank() || password.isBlank()) {
+                                authError = "Please enter both email and password."
+                                return@Button
+                            }
+
+                            isSigningIn = true
+                            authError = ""
+
+                            try {
+                                val account = databaseHelper.authenticateUser(email, password)
+                                if (account != null) {
+                                    if (rememberMe) {
+                                        getRememberedUserPrefs(context).edit()
+                                            .putString("remembered_email", email)
+                                            .apply()
+                                    } else {
+                                        getRememberedUserPrefs(context).edit()
+                                            .remove("remembered_email")
+                                            .apply()
+                                    }
+                                    Toast.makeText(context, "Signed in successfully!", Toast.LENGTH_SHORT).show()
+                                } else {
+                                    authError = "Invalid credentials or account is locked."
+                                }
+                            } catch (e: Exception) {
+                                authError = e.message ?: "Unable to sign in."
+                            } finally {
+                                isSigningIn = false
+                            }
+                        },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(52.dp),
                         shape = RoundedCornerShape(16.dp),
+                        enabled = !isSigningIn,
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Color(0xFF7C3AED)
                         )
                     ) {
                         Text(
-                            text = stringResource(R.string.sign_in_button),
+                            text = if (isSigningIn) "Signing in..." else stringResource(R.string.sign_in_button),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
                             color = Color.White
                         )
-
-
                     }
 
                     Spacer(modifier = Modifier.height(20.dp))
@@ -305,12 +365,16 @@ fun SignInScreen(
 @Composable
 fun SignUpScreen(
     modifier: Modifier = Modifier,
+    databaseHelper: MusicDatabaseHelper,
     onAlreadyHaveAccountClick: () -> Unit = {}
 ) {
+    val context = LocalContext.current
     var fullName by rememberSaveable { mutableStateOf("") }
     var email by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
     var confirmPassword by rememberSaveable { mutableStateOf("") }
+    var authError by rememberSaveable { mutableStateOf("") }
+    var isSigningUp by remember { mutableStateOf(false) }
 
     ScreenBackground {
         Column(
@@ -482,18 +546,60 @@ fun SignUpScreen(
 
                     Spacer(modifier = Modifier.height(22.dp))
 
+                    if (authError.isNotBlank()) {
+                        Text(
+                            text = authError,
+                            color = Color(0xFFFCA5A5),
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                    }
+
                     Button(
-                        onClick = { },
+                        onClick = {
+                            if (fullName.isBlank() || email.isBlank() || password.isBlank() || confirmPassword.isBlank()) {
+                                authError = "Please fill in all fields."
+                                return@Button
+                            }
+                            if (password != confirmPassword) {
+                                authError = "Passwords do not match."
+                                return@Button
+                            }
+                            if (password.length < 12) {
+                                authError = "Password must be at least 12 characters long."
+                                return@Button
+                            }
+
+                            isSigningUp = true
+                            authError = ""
+
+                            try {
+                                databaseHelper.registerUser(fullName, email, password)
+                                Toast.makeText(context, "Account created successfully!", Toast.LENGTH_SHORT).show()
+                                fullName = ""
+                                email = ""
+                                password = ""
+                                confirmPassword = ""
+                                onAlreadyHaveAccountClick()
+                            } catch (e: IllegalArgumentException) {
+                                authError = e.message ?: "Unable to create account."
+                            } catch (e: Exception) {
+                                authError = e.message ?: "Unable to create account."
+                            } finally {
+                                isSigningUp = false
+                            }
+                        },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(52.dp),
+                        enabled = !isSigningUp,
                         shape = RoundedCornerShape(16.dp),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Color(0xFF7C3AED)
                         )
                     ) {
                         Text(
-                            text = stringResource(R.string.sign_up_button),
+                            text = if (isSigningUp) "Creating account..." else stringResource(R.string.sign_up_button),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
                             color = Color.White
@@ -546,15 +652,23 @@ private fun ScreenBackground(content: @Composable () -> Unit) {
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun SignInScreenPreview() {
+    val context = LocalContext.current
     CST438Project1Team5Theme {
-        SignInScreen()
+        SignInScreen(
+            databaseHelper = MusicDatabaseHelper(context),
+            onCreateAccountClick = {}
+        )
     }
 }
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun SignUpScreenPreview() {
+    val context = LocalContext.current
     CST438Project1Team5Theme {
-        SignUpScreen()
+        SignUpScreen(
+            databaseHelper = MusicDatabaseHelper(context),
+            onAlreadyHaveAccountClick = {}
+        )
     }
 }
