@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.widget.Toast
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -59,6 +60,11 @@ import androidx.core.content.edit
 private const val AUTH_PREFS_NAME = "music_auth_prefs"
 private const val PREF_LOGGED_IN_USER_ID = "logged_in_user_id"
 private const val PREF_LOGGED_IN_USERNAME = "logged_in_username"
+import androidx.lifecycle.lifecycleScope
+import com.example.cst438_project1_team5.api.anime_themes.GetAudio
+import androidx.core.content.ContextCompat.startActivity
+import com.example.cst438_project1_team5.ui.theme.CST438Project1Team5Theme
+import kotlinx.coroutines.launch
 
 enum class AuthMode {
     SignIn,
@@ -71,6 +77,15 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         databaseHelper = MusicDatabaseHelper(applicationContext)
+
+        // theme song api random song loading
+        lifecycleScope.launch {
+            GetAudio.randomAudio()?.let { audio ->
+                Log.d("Audio", audio.link)
+            }
+        }
+
+
         enableEdgeToEdge()
         setContent {
             CST438Project1Team5Theme {
