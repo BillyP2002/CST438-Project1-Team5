@@ -57,6 +57,10 @@ import androidx.core.content.ContextCompat.startActivity
 import com.example.cst438_project1_team5.database.MusicDatabaseHelper
 import com.example.cst438_project1_team5.ui.theme.CST438Project1Team5Theme
 
+private const val AUTH_PREFS_NAME = "music_auth_prefs"
+private const val PREF_LOGGED_IN_USER_ID = "logged_in_user_id"
+private const val PREF_LOGGED_IN_USERNAME = "logged_in_username"
+
 enum class AuthMode {
     SignIn,
     SignUp
@@ -108,7 +112,12 @@ fun AuthScreen(
 }
 
 private fun getRememberedUserPrefs(context: Context): SharedPreferences {
-    return context.getSharedPreferences("music_auth_prefs", Context.MODE_PRIVATE)
+    return context.getSharedPreferences(AUTH_PREFS_NAME, Context.MODE_PRIVATE)
+}
+
+private fun getLoggedInUserId(context: Context): Long? {
+    val userId = getRememberedUserPrefs(context).getLong(PREF_LOGGED_IN_USER_ID, -1L)
+    return userId.takeIf { it != -1L }
 }
 
 @Composable
@@ -289,6 +298,11 @@ fun SignInScreen(
                             try {
                                 val account = databaseHelper.authenticateUser(email, password)
                                 if (account != null) {
+                                    getRememberedUserPrefs(context).edit()
+                                        .putLong(PREF_LOGGED_IN_USER_ID, account.id)
+                                        .putString(PREF_LOGGED_IN_USERNAME, account.username)
+                                        .apply()
+
                                     if (rememberMe) {
                                         getRememberedUserPrefs(context).edit()
                                             .putString("remembered_email", email)
