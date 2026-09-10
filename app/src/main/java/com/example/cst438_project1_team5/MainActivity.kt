@@ -1,7 +1,6 @@
 package com.example.cst438_project1_team5
 
 import android.content.Context
-import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.widget.Toast
@@ -47,15 +46,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.platform.LocalContext
-import androidx.core.content.ContextCompat.startActivity
 import com.example.cst438_project1_team5.database.MusicDatabaseHelper
 import com.example.cst438_project1_team5.ui.theme.CST438Project1Team5Theme
+import androidx.core.content.edit
 
 private const val AUTH_PREFS_NAME = "music_auth_prefs"
 private const val PREF_LOGGED_IN_USER_ID = "logged_in_user_id"
@@ -132,7 +131,6 @@ fun SignInScreen(
     var rememberMe by remember { mutableStateOf(false) }
     var authError by rememberSaveable { mutableStateOf("") }
     var isSigningIn by remember { mutableStateOf(false) }
-
 
     ScreenBackground {
         Column(
@@ -299,19 +297,19 @@ fun SignInScreen(
                             try {
                                 val account = databaseHelper.authenticateUser(email, password)
                                 if (account != null) {
-                                    getRememberedUserPrefs(context).edit()
-                                        .putLong(PREF_LOGGED_IN_USER_ID, account.id)
-                                        .putString(PREF_LOGGED_IN_USERNAME, account.username)
-                                        .apply()
+                                    getRememberedUserPrefs(context).edit {
+                                        putLong(PREF_LOGGED_IN_USER_ID, account.id)
+                                            .putString(PREF_LOGGED_IN_USERNAME, account.username)
+                                    }
 
                                     if (rememberMe) {
-                                        getRememberedUserPrefs(context).edit()
-                                            .putString("remembered_email", email)
-                                            .apply()
+                                        getRememberedUserPrefs(context).edit {
+                                            putString("remembered_email", email)
+                                        }
                                     } else {
-                                        getRememberedUserPrefs(context).edit()
-                                            .remove("remembered_email")
-                                            .apply()
+                                        getRememberedUserPrefs(context).edit {
+                                            remove("remembered_email")
+                                        }
                                     }
                                     Toast.makeText(context, "Signed in successfully!", Toast.LENGTH_SHORT).show()
                                 } else {
