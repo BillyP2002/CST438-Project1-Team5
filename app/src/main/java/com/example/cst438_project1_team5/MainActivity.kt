@@ -1,5 +1,6 @@
 package com.example.cst438_project1_team5
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -48,6 +49,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat.startActivity
 import com.example.cst438_project1_team5.ui.theme.CST438Project1Team5Theme
 
 enum class AuthMode {
@@ -259,6 +261,8 @@ fun SignInScreen(
                             fontWeight = FontWeight.Bold,
                             color = Color.White
                         )
+
+
                     }
 
                     Spacer(modifier = Modifier.height(20.dp))
@@ -275,6 +279,19 @@ fun SignInScreen(
                     ) {
                         Text(
                             text = stringResource(R.string.sign_up_text),
+                            color = Color(0xFF7DD3FC),
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                    TextButton(
+                        onClick = {
+
+                                  },
+
+                            modifier = Modifier.align(Alignment.CenterHorizontally)
+                    ) {
+                        Text(
+                            text = stringResource(R.string.sound_test),
                             color = Color(0xFF7DD3FC),
                             fontWeight = FontWeight.Bold
                         )
