@@ -28,5 +28,17 @@
     <string name="sign_in_button">Sign in</string>
     <string name="no_account_prompt">Don’t have an account?</string>
     <string name="sign_up_text">Create one</string>
-    <string name="sound_test">Sound Test</string></resources>
+    <string name="sound_test">Sound Test</string>
+    <string name="searchSong">Enter an anime theme</string>
+    <string name="profile_header">Profile</string>
+
+    <string name="sign_up_title">Create account</string>
+    <string name="sign_up_subtitle">Start your anime music challenge.</string>
+    <string name="sign_up_prompt">Join now and track your score</string>
+    <string name="full_name_label">Full name</string>
+    <string name="confirm_password_label">Confirm password</string>
+    <string name="sign_up_button">Sign up</string>
+    <string name="already_have_account_prompt">Already have an account?</string>
+    <string name="sign_in_text">Sign in</string>
+</resources>
 
