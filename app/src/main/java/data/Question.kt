@@ -1,20 +1,24 @@
 package data
 
-class TakeQuiz {
+class Question(val show: String){
     var guesses = 0
     var duration = 1
-    var answer : String = ""
 
     fun getDuration() : Int{
         return duration
     }
 
+    fun getGuesses() : Int{
+        return guesses
+    }
+
     /**
-     * Returns the number of guesses the user took to get the show, or -1 if they failed.
+     * Returns whether the user's guess was successful, and a getter can be used to
+     * receive the current guess count.
      * The UI will likely have to specifically account for receiving a failure value.
      * A skip input should be available
      */
-    fun Guess(show: String) : Int{
+    fun guess(answer: String) : Boolean{
         while(guesses < 5){
             when (guesses) {
                 1 -> {
@@ -30,12 +34,11 @@ class TakeQuiz {
                     duration = 16;
                 }
             }
-            answer = readln()
             guesses++
             if (answer.uppercase().equals(show.uppercase())){
-                return guesses
+                return true
             }
         }
-        return -1;
+        return false;
     }
 }
