@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">Anime Song Guess</string>
     <string name="shop_title">Shop</string>
     <string name="anime_coin_balance">Anime Coin: %1$d</string>
@@ -26,11 +26,10 @@
     <string name="remember_me">Remember me</string>
     <string name="forgot_password">Forgot?</string>
     <string name="sign_in_button">Sign in</string>
-    <string name="no_account_prompt">Don’t have an account?</string>
+    <string name="no_account_prompt">Don\'t have an account?</string>
     <string name="sign_up_text">Create one</string>
     <string name="sound_test">Sound Test</string>
     <string name="searchSong">Enter an anime theme</string>
-    <string name="profile_header">Profile</string>
 
     <string name="sign_up_title">Create account</string>
     <string name="sign_up_subtitle">Start your anime music challenge.</string>

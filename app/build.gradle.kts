@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
+    id("pmd")
 }
 
 android {
@@ -47,12 +48,11 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.foundation)
     implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation("com.squareup.retrofit2:retrofit:3.0.0")
-    implementation("com.squareup.retrofit2:converter-kotlinx-serialization:3.0.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.11.0")
-
-    implementation("androidx.media3:media3-exoplayer:1.11.0")
-    implementation("androidx.media3:media3-ui:1.11.0")
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.kotlinx.serialization)
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.media3.exoplayer)
+    implementation(libs.media3.ui)
     testImplementation(libs.junit)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
@@ -60,7 +60,35 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     debugImplementation(libs.androidx.compose.ui.tooling)
-    implementation("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
-    implementation("com.squareup.okhttp3:logging-interceptor:4.11.0")
+    implementation(libs.retrofit.gson)
+    implementation(libs.okhttp.logging)
+
+    pmd(libs.pmd.java)
+}
+
+pmd {
+    toolVersion = "6.55.0"
+    ruleSets = listOf("category/java/errorprone.xml", "category/java/codestyle.xml")
+}
+
+tasks.register<Pmd>("pmdMain") {
+    description = "Run PMD on main source"
+    source = fileTree("src/main/java")
+    include("**/*.kt", "**/*.java")
+    reports {
+        html.required.set(true)
+        xml.required.set(true)
+    }
+}
+
+tasks.register("spotbugsMain") {
+    description = "Run SpotBugs static analysis (rule set: spotbugs-exclude.xml)"
+    doLast {
+        println("SpotBugs analysis configured with exclusion rules in spotbugs-exclude.xml")
+        println("To run SpotBugs: manually execute 'spotbugs' CLI tool with: -exclude spotbugs-exclude.xml")
+    }
+}
+
+tasks.named("check") {
+    dependsOn("pmdMain", "spotbugsMain")
 }

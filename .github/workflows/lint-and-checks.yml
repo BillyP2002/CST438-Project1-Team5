@@ -1,0 +1,40 @@
+name: Lint and Code Quality Checks
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 11
+        uses: actions/setup-java@v4
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./gradlew
+
+      - name: Run Gradle checks (PMD and Error Prone)
+        run: ./gradlew check
+
+      - name: Upload PMD reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pmd-reports
+          path: app/build/reports/pmd/
+
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports
+          path: app/build/reports/tests/

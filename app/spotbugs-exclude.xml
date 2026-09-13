@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter>
+    <!-- Android-specific false positives -->
+    <Match>
+        <Class name="~.*R\$.*" />
+    </Match>
+    
+    <!-- Exclude generated code -->
+    <Match>
+        <Class name="~.*\.BuildConfig" />
+    </Match>
+    
+    <!-- Third-party libraries typically have their own quality standards -->
+    <Match>
+        <Package name="~com\.squareup\..*" />
+    </Match>
+    <Match>
+        <Package name="~androidx\..*" />
+    </Match>
+    
+    <!-- Suppress common Android patterns that are not bugs -->
+    <Match>
+        <Bug pattern="NP_NULL_ON_SOME_PATH" />
+        <Class name="~.*Activity" />
+    </Match>
+    
+    <!-- Unused private methods are acceptable in Kotlin -->
+    <Match>
+        <Bug pattern="UPM_UNCALLED_PRIVATE_METHOD" />
+    </Match>
+</FindBugsFilter>

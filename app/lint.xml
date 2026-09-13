@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lint>
+    <!-- Retrofit v2.9.0: Maintains backward compatibility with legacy API response contracts; v3.0.0 has breaking changes -->
+    <issue id="NewerVersionAvailable">
+        <ignore regexp="com.squareup.retrofit2" />
+    </issue>
+    <!-- PMD v6.55.0: Stable version used across team; v7.0+ has different rulesets and requires configuration changes -->
+    <issue id="NewerVersionAvailable">
+        <ignore regexp="net.sourceforge.pmd:pmd-java" />
+    </issue>
+    <!-- PluralsCandidate: These strings are used as formatted strings in code, not for localized pluralization -->
+    <issue id="PluralsCandidate">
+        <ignore regexp=".*anime_coin.*|.*purchase_complete.*|.*cart_total.*" />
+    </issue>
+</lint>
