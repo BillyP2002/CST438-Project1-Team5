@@ -1,6 +1,5 @@
 package com.example.cst438_project1_team5.database
 
-
 import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
