@@ -28,7 +28,7 @@ class AuthScreenTest {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
 
         // init helper
-        databaseHelper = MusicDatabaseHelper(context);
+        databaseHelper = MusicDatabaseHelper(context)
 
         // set compose content
         composeRule.setContent {
