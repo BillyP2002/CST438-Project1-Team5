@@ -3,8 +3,8 @@ package com.example.cst438_project1_team5
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.widget.Toast
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -53,18 +53,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.content.edit
+import androidx.lifecycle.lifecycleScope
+import com.example.cst438_project1_team5.api.anime_themes.GetAudio
 import com.example.cst438_project1_team5.database.MusicDatabaseHelper
 import com.example.cst438_project1_team5.ui.theme.CST438Project1Team5Theme
-import androidx.core.content.edit
+import kotlinx.coroutines.launch
 
 private const val AUTH_PREFS_NAME = "music_auth_prefs"
 private const val PREF_LOGGED_IN_USER_ID = "logged_in_user_id"
 private const val PREF_LOGGED_IN_USERNAME = "logged_in_username"
-import androidx.lifecycle.lifecycleScope
-import com.example.cst438_project1_team5.api.anime_themes.GetAudio
-import androidx.core.content.ContextCompat.startActivity
-import com.example.cst438_project1_team5.ui.theme.CST438Project1Team5Theme
-import kotlinx.coroutines.launch
 
 enum class AuthMode {
     SignIn,
@@ -85,7 +83,6 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-
         enableEdgeToEdge()
         setContent {
             CST438Project1Team5Theme {
@@ -104,10 +101,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun AuthScreen(
-    modifier: Modifier = Modifier,
-    databaseHelper: MusicDatabaseHelper
-) {
+fun AuthScreen(modifier: Modifier = Modifier, databaseHelper: MusicDatabaseHelper) {
     var currentMode by rememberSaveable { mutableStateOf(AuthMode.SignIn) }
 
     when (currentMode) {
@@ -125,9 +119,8 @@ fun AuthScreen(
     }
 }
 
-private fun getRememberedUserPrefs(context: Context): SharedPreferences {
-    return context.getSharedPreferences(AUTH_PREFS_NAME, Context.MODE_PRIVATE)
-}
+private fun getRememberedUserPrefs(context: Context): SharedPreferences =
+    context.getSharedPreferences(AUTH_PREFS_NAME, Context.MODE_PRIVATE)
 
 private fun getLoggedInUserId(context: Context): Long? {
     val userId = getRememberedUserPrefs(context).getLong(PREF_LOGGED_IN_USER_ID, -1L)
@@ -141,7 +134,11 @@ fun SignInScreen(
     onCreateAccountClick: () -> Unit = {}
 ) {
     val context = LocalContext.current
-    var email by rememberSaveable { mutableStateOf(getRememberedUserPrefs(context).getString("remembered_email", "") ?: "") }
+    var email by rememberSaveable {
+        mutableStateOf(
+            getRememberedUserPrefs(context).getString("remembered_email", "") ?: ""
+        )
+    }
     var password by rememberSaveable { mutableStateOf("") }
     var rememberMe by remember { mutableStateOf(false) }
     var authError by rememberSaveable { mutableStateOf("") }
@@ -326,7 +323,11 @@ fun SignInScreen(
                                             remove("remembered_email")
                                         }
                                     }
-                                    Toast.makeText(context, "Signed in successfully!", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(
+                                        context,
+                                        "Signed in successfully!",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
                                 } else {
                                     authError = "Invalid credentials or account is locked."
                                 }
@@ -346,7 +347,13 @@ fun SignInScreen(
                         )
                     ) {
                         Text(
-                            text = if (isSigningIn) "Signing in..." else stringResource(R.string.sign_in_button),
+                            text = if (isSigningIn) {
+                                "Signing in..."
+                            } else {
+                                stringResource(
+                                R.string.sign_in_button
+                            )
+                            },
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
                             color = Color.White
@@ -373,10 +380,9 @@ fun SignInScreen(
                     }
                     TextButton(
                         onClick = {
+                        },
 
-                                  },
-
-                            modifier = Modifier.align(Alignment.CenterHorizontally)
+                        modifier = Modifier.align(Alignment.CenterHorizontally)
                     ) {
                         Text(
                             text = stringResource(R.string.sound_test),
@@ -585,7 +591,9 @@ fun SignUpScreen(
 
                     Button(
                         onClick = {
-                            if (fullName.isBlank() || email.isBlank() || password.isBlank() || confirmPassword.isBlank()) {
+                            if (fullName.isBlank() || email.isBlank() || password.isBlank() ||
+                                confirmPassword.isBlank()
+                            ) {
                                 authError = "Please fill in all fields."
                                 return@Button
                             }
@@ -603,7 +611,11 @@ fun SignUpScreen(
 
                             try {
                                 databaseHelper.registerUser(fullName, email, password)
-                                Toast.makeText(context, "Account created successfully!", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    context,
+                                    "Account created successfully!",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                                 fullName = ""
                                 email = ""
                                 password = ""
@@ -627,7 +639,13 @@ fun SignUpScreen(
                         )
                     ) {
                         Text(
-                            text = if (isSigningUp) "Creating account..." else stringResource(R.string.sign_up_button),
+                            text = if (isSigningUp) {
+                                "Creating account..."
+                            } else {
+                                stringResource(
+                                R.string.sign_up_button
+                            )
+                            },
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
                             color = Color.White
