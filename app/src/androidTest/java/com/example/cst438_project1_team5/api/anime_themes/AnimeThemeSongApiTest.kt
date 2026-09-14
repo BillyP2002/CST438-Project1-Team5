@@ -25,6 +25,14 @@ class AnimeThemeSongApiTest {
     fun setUp() {
         mockWebServer = MockWebServer()
         mockWebServer.start()
+
+        // create okhttp client that allows cleartext for localhost
+        val httpClient = okhttp3.OkHttpClient.Builder()
+            .addNetworkInterceptor { chain ->
+                chain.proceed(chain.request())
+            }
+            .build()
+
         api = Retrofit.Builder()
             .baseUrl(mockWebServer.url("/"))
             .addConverterFactory(GsonConverterFactory.create())
