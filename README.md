@@ -27,10 +27,10 @@ The repository also contains components that are **not wired into `MainActivity`
 2. Let Gradle sync, installing the requested SDK components if Android Studio prompts for them. If Gradle cannot locate your SDK, configure its SDK path in the local Android Studio/Gradle configuration (for example, `local.properties`); do not commit that machine-specific file.
 3. Choose an API 30+ emulator or connected device, then select **Run** in Android Studio.
 
-From a shell, use the included Gradle wrapper through `sh` (the checked-in `gradlew` file is not marked executable):
+From a shell, use the included Gradle wrapper:
 
 ```sh
-sh gradlew :app:assembleDebug
+./gradlew :app:assembleDebug
 ```
 
 Install the generated debug build from Android Studio, or use Android Debug Bridge with a connected device/emulator:
@@ -43,23 +43,30 @@ adb install -r app/build/outputs/apk/debug/app-debug.apk
 
 ### Static analysis and formatting
 
-Detekt runs as part of `:app:check` and is therefore enforced by GitHub
+Detekt runs as part of `./gradlew check` and is therefore enforced by GitHub
 Actions on pull requests and pushes to `main`. The configuration lives in
 [`app/config/detekt/detekt.yml`](app/config/detekt/detekt.yml). It enables
 Detekt's KtLint wrapper with the `android_studio` code style, which follows the
 Google Android Kotlin conventions (four-space indentation, 100-character lines,
 standard import ordering, and related whitespace/wrapping rules).
 
-Run the checks locally:
+Run the complete local verification suite (Detekt, Android lint, compilation,
+and JVM unit tests):
 
 ```sh
-sh gradlew :app:detekt
+./gradlew check
+```
+
+Run Detekt alone:
+
+```sh
+./gradlew :app:detekt
 ```
 
 To apply KtLint's safe automatic formatting locally, add `--auto-correct`:
 
 ```sh
-sh gradlew :app:detekt --auto-correct
+./gradlew :app:detekt --auto-correct
 ```
 
 Existing legacy findings are recorded in
@@ -70,13 +77,13 @@ from that baseline as the existing code is fixed.
 Run local JVM unit tests:
 
 ```sh
-sh gradlew :app:testDebugUnitTest
+./gradlew :app:testDebugUnitTest
 ```
 
 Run the instrumented tests on a connected API 30+ device or running emulator:
 
 ```sh
-sh gradlew :app:connectedDebugAndroidTest
+./gradlew :app:connectedDebugAndroidTest
 ```
 
 The instrumented suite includes Compose tests for the unwired shop prototype and MockWebServer-based tests for the AnimeThemes Retrofit API.
