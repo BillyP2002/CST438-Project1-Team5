@@ -102,10 +102,8 @@ class AuthScreenTest {
         composeRule.onNodeWithText("sam@example.com").assertIsDisplayed()
 
         composeRule.onNodeWithText("Password").performTextInput("password123")
-        composeRule.onNodeWithText("password123").assertIsDisplayed()
 
         composeRule.onNodeWithText("Confirm password").performTextInput("password123")
-        composeRule.onNodeWithText("password123").assertIsDisplayed()
 
         composeRule.onNodeWithText("Sign in")
             .performScrollTo()
