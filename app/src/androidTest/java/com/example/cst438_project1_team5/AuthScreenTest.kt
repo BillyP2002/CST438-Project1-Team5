@@ -34,7 +34,6 @@ class AuthScreenTest {
         composeRule.setContent {
             CST438Project1Team5Theme {
                 AuthScreen(databaseHelper = databaseHelper)
-                SignUpScreen(databaseHelper = databaseHelper)
             }
         }
     }
@@ -78,7 +77,7 @@ class AuthScreenTest {
     @Test
     fun signUpScreen_displaysAllFieldsAndNavigatesBackToLogin() {
         // navigate to sign up
-        composeRule.onNodeWithText("Create on").performClick()
+        composeRule.onNodeWithText("Create one").performClick()
 
         composeRule.onNodeWithText("Create account").assertIsDisplayed()
         composeRule.onNodeWithText("Start your anime music challenge.").assertIsDisplayed()
