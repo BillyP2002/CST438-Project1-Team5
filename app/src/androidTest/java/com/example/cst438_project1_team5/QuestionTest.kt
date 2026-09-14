@@ -7,12 +7,11 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-
 class TakeQuizTest {
 
     @Test
-    fun questionTest(){
-        var question = Question("dummy");
+    fun questionTest() {
+        var question = Question("dummy")
         assertEquals(false, question.guess("Bobibaba"))
         assertEquals(1, question.guesses)
         question.guess("Connect")

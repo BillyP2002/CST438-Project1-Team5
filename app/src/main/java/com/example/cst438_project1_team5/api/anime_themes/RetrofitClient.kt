@@ -1,6 +1,5 @@
 package com.example.cst438_project1_team5.api.anime_themes
 
-import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 

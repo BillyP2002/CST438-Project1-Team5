@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
@@ -22,8 +21,7 @@ import androidx.compose.ui.unit.dp
 import com.example.cst438_project1_team5.R
 
 @Composable
-fun SoundTestEntry(modifier: Modifier = Modifier)
-{
+fun SoundTestEntry(modifier: Modifier = Modifier) {
     var soundTest by rememberSaveable { mutableStateOf("") }
 
     Spacer(modifier = Modifier.height(24.dp))
@@ -54,6 +52,4 @@ fun SoundTestEntry(modifier: Modifier = Modifier)
             unfocusedLabelColor = Color(0xFFCBD5E1)
         )
     )
-
 }
-
