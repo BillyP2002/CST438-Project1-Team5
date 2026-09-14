@@ -6,6 +6,8 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
+import com.example.cst438_project1_team5.database.MusicDatabaseHelper
 import com.example.cst438_project1_team5.ui.theme.CST438Project1Team5Theme
 import org.junit.Before
 import org.junit.Rule
@@ -18,11 +20,20 @@ class AuthScreenTest {
     @get:Rule
     val composeRule = createComposeRule()
 
+    private lateinit var databaseHelper: MusicDatabaseHelper
+
     @Before
     fun setUp() {
+        // get app context
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+
+        // init helper
+        databaseHelper = MusicDatabaseHelper(context);
+
+        // set compose content
         composeRule.setContent {
             CST438Project1Team5Theme {
-                AuthScreen()
+                AuthScreen(databaseHelper = databaseHelper)
             }
         }
     }
@@ -67,7 +78,7 @@ class AuthScreenTest {
     fun signUpScreen_displaysAllFieldsAndNavigatesBackToLogin() {
         composeRule.setContent {
             CST438Project1Team5Theme {
-                SignUpScreen()
+                SignUpScreen(databaseHelper = databaseHelper)
             }
         }
 
