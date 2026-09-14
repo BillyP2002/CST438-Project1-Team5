@@ -1,0 +1,133 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>ArgumentListWrapping:AnimeThemeSongApiTest.kt:AnimeThemeSongApiTest$("https://a.animethemes.moe/Bakemonogatari-OP1.ogg", response.body()?.song?.link)</ID>
+    <ID>BlankLineBetweenWhenConditions:Theme.kt:when { dynamicColor &amp;&amp; Build.VERSION.SDK_INT &gt;= Build.VERSION_CODES.S -&gt; { val context = LocalContext.current if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context) } darkTheme -&gt; DarkColorScheme else -&gt; LightColorScheme }</ID>
+    <ID>BlockCommentInitialStarAlignment:Theme.kt:/* Other default colors to override background = Color(0xFFFFFBFE), surface = Color(0xFFFFFBFE), onPrimary = Color.White, onSecondary = Color.White, onTertiary = Color.White, onBackground = Color(0xFF1C1B1F), onSurface = Color(0xFF1C1B1F), */</ID>
+    <ID>BlockCommentInitialStarAlignment:Type.kt:/* Other default text styles to override titleLarge = TextStyle( fontFamily = FontFamily.Default, fontWeight = FontWeight.Normal, fontSize = 22.sp, lineHeight = 28.sp, letterSpacing = 0.sp ), labelSmall = TextStyle( fontFamily = FontFamily.Default, fontWeight = FontWeight.Medium, fontSize = 11.sp, lineHeight = 16.sp, letterSpacing = 0.5.sp ) */</ID>
+    <ID>ClassNaming:malUser.kt:malUser</ID>
+    <ID>ClassNaming:malUser.kt:show</ID>
+    <ID>ClassNaming:soundTest.kt:soundTest</ID>
+    <ID>ClassSignature:malUser.kt:MalAnimeListResponse</ID>
+    <ID>ClassSignature:malUser.kt:MalAnimeNode</ID>
+    <ID>ClassSignature:malUser.kt:MalListStatus</ID>
+    <ID>ClassSignature:malUser.kt:malUser</ID>
+    <ID>ClassSignature:malUser.kt:show</ID>
+    <ID>ClassSignature:soundTest.kt:soundTest$ApiVideo</ID>
+    <ID>EmptyKotlinFile:malAPItest.kt:.malAPItest.kt</ID>
+    <ID>Filename:malAPIRepository.kt:com.example.cst438_project1_team5.api.malAPIRepository.kt</ID>
+    <ID>Filename:malAPIService.kt:com.example.cst438_project1_team5.api.malAPIService.kt</ID>
+    <ID>Filename:malAPItest.kt:.malAPItest.kt</ID>
+    <ID>Filename:malUser.kt:com.example.cst438_project1_team5.api.malUser.kt</ID>
+    <ID>Filename:myanimelistAPI.kt:com.example.cst438_project1_team5.api.myanimelistAPI.kt</ID>
+    <ID>FinalNewline:AnimeThemeSongApi.kt:com.example.cst438_project1_team5.api.anime_themes.AnimeThemeSongApi.kt</ID>
+    <ID>FinalNewline:AnimeThemesApi.kt:data.AnimeThemesApi.kt</ID>
+    <ID>FinalNewline:Color.kt:com.example.cst438_project1_team5.ui.theme.Color.kt</ID>
+    <ID>FinalNewline:ExampleInstrumentedTest.kt:com.example.cst438_project1_team5.ExampleInstrumentedTest.kt</ID>
+    <ID>FinalNewline:ExampleUnitTest.kt:com.example.cst438_project1_team5.ExampleUnitTest.kt</ID>
+    <ID>FinalNewline:GetAudio.kt:com.example.cst438_project1_team5.api.anime_themes.GetAudio.kt</ID>
+    <ID>FinalNewline:Theme.kt:com.example.cst438_project1_team5.ui.theme.Theme.kt</ID>
+    <ID>FinalNewline:Type.kt:com.example.cst438_project1_team5.ui.theme.Type.kt</ID>
+    <ID>FunctionExpressionBody:malAPIRepository.kt:MalApiRepository${ return try { val response = RetrofitClient.api.getUser(name) val user = malUser( name = name, showsWatched = response.data.map { entry -&gt; show( title = entry.node.title, completedStatus = entry.listStatus.status, userRating = entry.listStatus.score.toString() ) } ) Result.success(user) } catch (e: Exception) { Result.failure(e) } }</ID>
+    <ID>FunctionSignature:AnimeThemeSongApiTest.kt:AnimeThemeSongApiTest$private fun jsonResponse: MockResponse</ID>
+    <ID>FunctionSignature:ShopScreen.kt:@Composable fun ShopItemCard</ID>
+    <ID>FunctionSignature:ShopScreen.kt:@Composable fun ShopItemDialog</ID>
+    <ID>FunctionSignature:ShopScreen.kt:@OptIn(ExperimentalMaterial3Api::class) @Composable fun ShopScreen</ID>
+    <ID>ImportOrdering:ExampleInstrumentedTest.kt:import androidx.test.platform.app.InstrumentationRegistry import androidx.test.ext.junit.runners.AndroidJUnit4 import org.junit.Test import org.junit.runner.RunWith import org.junit.Assert.*</ID>
+    <ID>ImportOrdering:ExampleUnitTest.kt:import org.junit.Test import org.junit.Assert.*</ID>
+    <ID>Indentation:AnimeThemesApi.kt:AnimeThemesApi$ </ID>
+    <ID>LongMethod:MainActivity.kt:@Composable fun SignInScreen</ID>
+    <ID>LongMethod:ShopScreen.kt:@Composable private fun CartDialog</ID>
+    <ID>LongMethod:ShopScreen.kt:@OptIn(ExperimentalMaterial3Api::class) @Composable fun ShopScreen</ID>
+    <ID>MagicNumber:MainActivity.kt:0xFF020617</ID>
+    <ID>MagicNumber:MainActivity.kt:0xFF0F172A</ID>
+    <ID>MagicNumber:MainActivity.kt:0xFF111827</ID>
+    <ID>MagicNumber:MainActivity.kt:0xFF475569</ID>
+    <ID>MagicNumber:MainActivity.kt:0xFF7C3AED</ID>
+    <ID>MagicNumber:MainActivity.kt:0xFF7DD3FC</ID>
+    <ID>MagicNumber:MainActivity.kt:0xFF94A3B8</ID>
+    <ID>MagicNumber:MainActivity.kt:0xFFC7D2FE</ID>
+    <ID>MagicNumber:MainActivity.kt:0xFFCBD5E1</ID>
+    <ID>MagicNumber:MainActivity.kt:0xFFDDE7FF</ID>
+    <ID>MagicNumber:MainActivity.kt:0xFFE2E8F0</ID>
+    <ID>MatchingDeclarationName:malAPIRepository.kt:MalApiRepository</ID>
+    <ID>MatchingDeclarationName:malAPIService.kt:ApiService</ID>
+    <ID>MatchingDeclarationName:myanimelistAPI.kt:RetrofitClient</ID>
+    <ID>MaximumLineLength:AnimeThemeSongApiTest.kt:AnimeThemeSongApiTest$)</ID>
+    <ID>NoBlankLineBeforeRbrace:soundTest.kt:soundTest$ </ID>
+    <ID>NoConsecutiveBlankLines:AnimeThemeSongApi.kt:AnimeThemeSongApi$ </ID>
+    <ID>NoConsecutiveBlankLines:MainActivity.kt:MainActivity$ </ID>
+    <ID>NoEmptyFile:malAPItest.kt:.malAPItest.kt</ID>
+    <ID>NoMultipleSpaces:soundTest.kt:soundTest.ApiTheme$ </ID>
+    <ID>NoUnusedImports:AnimeThemeSongApi.kt:com.example.cst438_project1_team5.api.anime_themes.AnimeThemeSongApi.kt</ID>
+    <ID>NoUnusedImports:RetrofitClient.kt:com.example.cst438_project1_team5.api.anime_themes.RetrofitClient.kt</ID>
+    <ID>NoUnusedImports:Theme.kt:com.example.cst438_project1_team5.ui.theme.Theme.kt</ID>
+    <ID>NoWildcardImports:ExampleInstrumentedTest.kt:import org.junit.Assert.*</ID>
+    <ID>NoWildcardImports:ExampleUnitTest.kt:import org.junit.Assert.*</ID>
+    <ID>ObjectPropertyNaming:AnimeThemeSongApiTest.kt:AnimeThemeSongApiTest.Companion$private const val audioCollectionJson = """ { "audio": [$audioJson] } """</ID>
+    <ID>ObjectPropertyNaming:AnimeThemeSongApiTest.kt:AnimeThemeSongApiTest.Companion$private const val audioJson = """ { "id": 1, "basename": "Bakemonogatari-OP1.ogg", "filename": "Bakemonogatari-OP1", "path": "audio/Bakemonogatari-OP1.ogg", "size": 12345, "mimetype": "audio/ogg", "created_at": "2026-01-01T00:00:00.000000Z", "updated_at": "2026-01-02T00:00:00.000000Z", "deleted_at": null, "link": "https://a.animethemes.moe/Bakemonogatari-OP1.ogg", "views_count": 42 } """</ID>
+    <ID>ObjectPropertyNaming:AnimeThemeSongApiTest.kt:AnimeThemeSongApiTest.Companion$private const val singleAudioJson = """ { "audio": $audioJson } """</ID>
+    <ID>PackageName:AnimeThemeSong.kt:package com.example.cst438_project1_team5.api.anime_themes</ID>
+    <ID>PackageName:AnimeThemeSongApi.kt:package com.example.cst438_project1_team5.api.anime_themes</ID>
+    <ID>PackageName:AnimeThemeSongApiTest.kt:package com.example.cst438_project1_team5.api.anime_themes</ID>
+    <ID>PackageName:Color.kt:package com.example.cst438_project1_team5.ui.theme</ID>
+    <ID>PackageName:ExampleInstrumentedTest.kt:package com.example.cst438_project1_team5</ID>
+    <ID>PackageName:ExampleUnitTest.kt:package com.example.cst438_project1_team5</ID>
+    <ID>PackageName:GetAudio.kt:package com.example.cst438_project1_team5.api.anime_themes</ID>
+    <ID>PackageName:MainActivity.kt:package com.example.cst438_project1_team5</ID>
+    <ID>PackageName:RequestInterceptor.kt:package com.example.cst438_project1_team5.api.anime_themes</ID>
+    <ID>PackageName:RetrofitClient.kt:package com.example.cst438_project1_team5.api.anime_themes</ID>
+    <ID>PackageName:ShopItem.kt:package com.example.cst438_project1_team5.ui.shop</ID>
+    <ID>PackageName:ShopScreen.kt:package com.example.cst438_project1_team5.ui.shop</ID>
+    <ID>PackageName:ShopScreenTest.kt:package com.example.cst438_project1_team5</ID>
+    <ID>PackageName:Theme.kt:package com.example.cst438_project1_team5.ui.theme</ID>
+    <ID>PackageName:Type.kt:package com.example.cst438_project1_team5.ui.theme</ID>
+    <ID>PackageName:UserService.kt:package com.example.cst438_project1_team5.api.anime_themes</ID>
+    <ID>PackageName:malAPIRepository.kt:package com.example.cst438_project1_team5.api</ID>
+    <ID>PackageName:malAPIService.kt:package com.example.cst438_project1_team5.api</ID>
+    <ID>PackageName:malUser.kt:package com.example.cst438_project1_team5.api</ID>
+    <ID>PackageName:myanimelistAPI.kt:package com.example.cst438_project1_team5.api</ID>
+    <ID>PackageName:soundTest.kt:package com.example.cst438_project1_team5.ui.soundTest</ID>
+    <ID>PackageNaming:AnimeThemeSong.kt:package com.example.cst438_project1_team5.api.anime_themes</ID>
+    <ID>PackageNaming:AnimeThemeSongApi.kt:package com.example.cst438_project1_team5.api.anime_themes</ID>
+    <ID>PackageNaming:AnimeThemeSongApiTest.kt:package com.example.cst438_project1_team5.api.anime_themes</ID>
+    <ID>PackageNaming:Color.kt:package com.example.cst438_project1_team5.ui.theme</ID>
+    <ID>PackageNaming:ExampleInstrumentedTest.kt:package com.example.cst438_project1_team5</ID>
+    <ID>PackageNaming:ExampleUnitTest.kt:package com.example.cst438_project1_team5</ID>
+    <ID>PackageNaming:GetAudio.kt:package com.example.cst438_project1_team5.api.anime_themes</ID>
+    <ID>PackageNaming:MainActivity.kt:package com.example.cst438_project1_team5</ID>
+    <ID>PackageNaming:RequestInterceptor.kt:package com.example.cst438_project1_team5.api.anime_themes</ID>
+    <ID>PackageNaming:RetrofitClient.kt:package com.example.cst438_project1_team5.api.anime_themes</ID>
+    <ID>PackageNaming:ShopItem.kt:package com.example.cst438_project1_team5.ui.shop</ID>
+    <ID>PackageNaming:ShopScreen.kt:package com.example.cst438_project1_team5.ui.shop</ID>
+    <ID>PackageNaming:ShopScreenTest.kt:package com.example.cst438_project1_team5</ID>
+    <ID>PackageNaming:Theme.kt:package com.example.cst438_project1_team5.ui.theme</ID>
+    <ID>PackageNaming:Type.kt:package com.example.cst438_project1_team5.ui.theme</ID>
+    <ID>PackageNaming:UserService.kt:package com.example.cst438_project1_team5.api.anime_themes</ID>
+    <ID>PackageNaming:malAPIRepository.kt:package com.example.cst438_project1_team5.api</ID>
+    <ID>PackageNaming:malAPIService.kt:package com.example.cst438_project1_team5.api</ID>
+    <ID>PackageNaming:malUser.kt:package com.example.cst438_project1_team5.api</ID>
+    <ID>PackageNaming:myanimelistAPI.kt:package com.example.cst438_project1_team5.api</ID>
+    <ID>PackageNaming:soundTest.kt:package com.example.cst438_project1_team5.ui.soundTest</ID>
+    <ID>ParameterListSpacing:soundTest.kt:soundTest.ApiTheme$( val type: String, // "OP" or "ED" val sequence: Int, val song: ApiSong? = null, val animethemeentries: List&lt;ApiEntry&gt; = emptyList() )</ID>
+    <ID>PropertyName:AnimeThemeSongApiTest.kt:AnimeThemeSongApiTest.Companion$private const val audioCollectionJson = """ { "audio": [$audioJson] } """</ID>
+    <ID>PropertyName:AnimeThemeSongApiTest.kt:AnimeThemeSongApiTest.Companion$private const val audioJson = """ { "id": 1, "basename": "Bakemonogatari-OP1.ogg", "filename": "Bakemonogatari-OP1", "path": "audio/Bakemonogatari-OP1.ogg", "size": 12345, "mimetype": "audio/ogg", "created_at": "2026-01-01T00:00:00.000000Z", "updated_at": "2026-01-02T00:00:00.000000Z", "deleted_at": null, "link": "https://a.animethemes.moe/Bakemonogatari-OP1.ogg", "views_count": 42 } """</ID>
+    <ID>PropertyName:AnimeThemeSongApiTest.kt:AnimeThemeSongApiTest.Companion$private const val singleAudioJson = """ { "audio": $audioJson } """</ID>
+    <ID>SpacingBetweenDeclarationsWithComments:myanimelistAPI.kt:RetrofitClient$// Create OkHttp client with interceptor</ID>
+    <ID>SpacingBetweenDeclarationsWithComments:myanimelistAPI.kt:RetrofitClient$// Create Retrofit instance</ID>
+    <ID>SpacingBetweenDeclarationsWithComments:myanimelistAPI.kt:RetrofitClient$// Create logging interceptor for debugging</ID>
+    <ID>TooGenericExceptionCaught:malAPIRepository.kt:MalApiRepository$e: Exception</ID>
+    <ID>TopLevelPropertyNaming:Color.kt:val Pink40 = Color(0xFF7D5260)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt:val Pink80 = Color(0xFFEFB8C8)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt:val Purple40 = Color(0xFF6650a4)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt:val Purple80 = Color(0xFFD0BCFF)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt:val PurpleGrey40 = Color(0xFF625b71)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt:val PurpleGrey80 = Color(0xFFCCC2DC)</ID>
+    <ID>TopLevelPropertyNaming:Theme.kt:private val DarkColorScheme = darkColorScheme( primary = Purple80, secondary = PurpleGrey80, tertiary = Pink80 )</ID>
+    <ID>TopLevelPropertyNaming:Theme.kt:private val LightColorScheme = lightColorScheme( primary = Purple40, secondary = PurpleGrey40, tertiary = Pink40 /* Other default colors to override background = Color(0xFFFFFBFE), surface = Color(0xFFFFFBFE), onPrimary = Color.White, onSecondary = Color.White, onTertiary = Color.White, onBackground = Color(0xFF1C1B1F), onSurface = Color(0xFF1C1B1F), */ )</ID>
+    <ID>TopLevelPropertyNaming:Type.kt:// Set of Material typography styles to start with val Typography = Typography( bodyLarge = TextStyle( fontFamily = FontFamily.Default, fontWeight = FontWeight.Normal, fontSize = 16.sp, lineHeight = 24.sp, letterSpacing = 0.5.sp ) /* Other default text styles to override titleLarge = TextStyle( fontFamily = FontFamily.Default, fontWeight = FontWeight.Normal, fontSize = 22.sp, lineHeight = 28.sp, letterSpacing = 0.sp ), labelSmall = TextStyle( fontFamily = FontFamily.Default, fontWeight = FontWeight.Medium, fontSize = 11.sp, lineHeight = 16.sp, letterSpacing = 0.5.sp ) */ )</ID>
+    <ID>TrailingCommaOnDeclarationSite:AnimeThemeSong.kt:AnimeThemeSong$( val id: Int, val basename: String, val filename: String, val path: String, val size: Int, // in bytes val mimetype: String, // media type @SerializedName("created_at") val createdAt: String, @SerializedName("updated_at") val updatedAt: String, @SerializedName("deleted_at") val deletedAt: String?, val link: String, // link to stream audio @SerializedName("views_count") val viewsCount: Int, // number of views the resource got (for recs) )</ID>
+    <ID>TrailingCommaOnDeclarationSite:malAPIService.kt:ApiService$( @Path("user_name") username: String, @Query("limit") limit: Int = 700, @Query("offset") offset: Int = 0, )</ID>
+  </CurrentIssues>
+</SmellBaseline>
