@@ -15,13 +15,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -43,40 +44,25 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import kotlinx.coroutines.launch
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
 import com.example.cst438_project1_team5.database.MusicDatabaseHelper
 import com.example.cst438_project1_team5.database.SongListEntry
+import kotlinx.coroutines.launch
 
 private const val PLAYER_NAME = "player"
 
-private data class AvatarOption(
-    val id: String,
-    val emoji: String
-)
+private data class AvatarOption(val id: String, val emoji: String)
 
-private data class FrameOption(
-    val id: String,
-    val label: String,
-    val color: Color
-)
+private data class FrameOption(val id: String, val label: String, val color: Color)
 
-private data class StickerOption(
-    val id: String,
-    val emoji: String
-)
+private data class StickerOption(val id: String, val emoji: String)
 
-private data class BackgroundOption(
-    val id: String,
-    val label: String,
-    val colors: List<Color>
-)
+private data class BackgroundOption(val id: String, val label: String, val colors: List<Color>)
 
 private val avatars = listOf(
     AvatarOption("cat", "🐱"),
@@ -131,7 +117,13 @@ fun ProfileScreen(
     var selectedBackgroundId by rememberSaveable { mutableStateOf("night") }
     var songTitle by rememberSaveable { mutableStateOf("") }
     var songArtist by rememberSaveable { mutableStateOf("") }
-    var songList by remember(userId) { mutableStateOf<List<SongListEntry>>(if (userId != null) databaseHelper.getUserSongList(userId) else emptyList()) }
+    var songList by remember(
+        userId
+    ) {
+        mutableStateOf<List<SongListEntry>>(
+            if (userId != null) databaseHelper.getUserSongList(userId) else emptyList()
+        )
+    }
 
     val avatar = avatars.first { it.id == selectedAvatarId }
     val frame = frames.first { it.id == selectedFrameId }
@@ -243,7 +235,9 @@ fun ProfileScreen(
 
                     Button(
                         onClick = {
-                            if (userId != null && songTitle.isNotBlank() && songArtist.isNotBlank()) {
+                            if (userId != null && songTitle.isNotBlank() &&
+                                songArtist.isNotBlank()
+                            ) {
                                 databaseHelper.addSongToUserList(
                                     userId = userId,
                                     songId = "manual_${System.currentTimeMillis()}",
@@ -283,7 +277,11 @@ fun ProfileScreen(
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
                                     Column {
-                                        Text(song.title, fontWeight = FontWeight.Bold, color = Color.White)
+                                        Text(
+                                            song.title,
+                                            fontWeight = FontWeight.Bold,
+                                            color = Color.White
+                                        )
                                         Text(song.artist, color = Color(0xFFCBD5E1))
                                     }
                                     if (song.isFavorite) {

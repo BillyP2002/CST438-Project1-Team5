@@ -78,7 +78,10 @@ class AnimeThemeSongApiTest {
         val request = mockWebServer.takeRequest()
         assertEquals("GET", request.method)
         assertEquals("/audio/Bakemonogatari-OP1.ogg", request.requestUrl?.encodedPath)
-        assertEquals("https://a.animethemes.moe/Bakemonogatari-OP1.ogg", response.body()?.song?.link)
+        assertEquals(
+            "https://a.animethemes.moe/Bakemonogatari-OP1.ogg",
+            response.body()?.song?.link
+        )
     }
 
     @Test
@@ -102,11 +105,10 @@ class AnimeThemeSongApiTest {
         assertNotNull(RetrofitClient.animeSongApi)
     }
 
-    private fun jsonResponse(body: String): MockResponse =
-        MockResponse()
-            .setResponseCode(200)
-            .addHeader("Content-Type", "application/json")
-            .setBody(body)
+    private fun jsonResponse(body: String): MockResponse = MockResponse()
+        .setResponseCode(200)
+        .addHeader("Content-Type", "application/json")
+        .setBody(body)
 
     private companion object {
         private const val audioJson = """

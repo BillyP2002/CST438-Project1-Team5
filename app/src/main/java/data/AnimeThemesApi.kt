@@ -11,6 +11,6 @@ interface AnimeThemesApi {
         @Query("page[size]") pageSize: Int = 1,
         @Query("include") include: String =
             "animethemes.song," +
-                    "animethemes.animethemeentries.videos"
+                "animethemes.animethemeentries.videos"
     ): AnimeIndexResponse
 }
