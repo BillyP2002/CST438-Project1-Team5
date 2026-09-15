@@ -14,6 +14,7 @@ data class ShopItem(
 val placeholderShopItems: List<ShopItem> = List(8) { index ->
     val itemNumber = index + 1
 
+
     ShopItem(
         id = itemNumber,
         title = "Item $itemNumber",
@@ -21,5 +22,6 @@ val placeholderShopItems: List<ShopItem> = List(8) { index ->
         animeCoinPrice = itemNumber * 10,
         imageResId = R.drawable.shop_item_placeholder
     )
+
 
 }

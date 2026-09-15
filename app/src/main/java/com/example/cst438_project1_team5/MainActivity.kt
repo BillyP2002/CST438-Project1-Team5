@@ -230,7 +230,7 @@ fun SignInScreen(modifier: Modifier = Modifier) {
                     Spacer(modifier = Modifier.height(16.dp))
 
                     Button(
-                        onClick = { },
+                        onClick = { /*startActivity(Intent(this, MainPage::mainpage)*/},
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(52.dp),

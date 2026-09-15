@@ -31,5 +31,10 @@
     <string name="sound_test">Sound Test</string>
     <string name="searchSong">Enter an anime theme</string>
     <string name="profile_header">Profile</string>
+    <string name="title_one">Welcome to</string>
+    <string name="playGame">Play</string>
+    <string name="viewProfile">Profile</string>
+    <string name="connectToMAL">Connect to MAL</string>
+    <string name="logout">Log Out</string>
 </resources>
 

@@ -108,13 +108,7 @@ fun ShopScreen(
             items(
                 items = items,
                 key = { item -> item.id }
-            ) { item ->
-                ShopItemCard(
-                    item = item,
-                    onClick = {
-                        selectedItem = item
-                    }
-                )
+            ) {
             }
         }
     }

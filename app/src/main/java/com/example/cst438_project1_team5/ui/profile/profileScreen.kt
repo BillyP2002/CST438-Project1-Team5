@@ -73,6 +73,7 @@ private data class BackgroundOption(
 )
 
 private val avatars = listOf(
+    //defaults
     AvatarOption("cat", "🐱"),
     AvatarOption("fox", "🦊"),
     AvatarOption("ghost", "👻"),
