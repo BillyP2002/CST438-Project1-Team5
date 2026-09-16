@@ -1,4 +1,4 @@
-package com.example.cst438_project1_team5.api
+package com.example.cst438_project1_team5.api.malAPI
 
 data class malUser(
     val name: String,

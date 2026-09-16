@@ -1,4 +1,4 @@
-package com.example.cst438_project1_team5.api
+package com.example.cst438_project1_team5.api.malAPI
 
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
