@@ -53,7 +53,13 @@ data class PastChallengeSong(
     val playedAt: Long
 )
 
-class MusicDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
+class MusicDatabaseHelper(context: Context) :
+    SQLiteOpenHelper(
+        context,
+        DATABASE_NAME,
+        null,
+        DATABASE_VERSION
+    ) {
 
     override fun onCreate(db: SQLiteDatabase) {
         db.execSQL("PRAGMA foreign_keys = ON;")
@@ -107,9 +113,13 @@ class MusicDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE
             """.trimIndent()
         )
 
-        db.execSQL("CREATE UNIQUE INDEX idx_user_song_list_unique ON $SONG_LIST_TABLE(user_id, song_id)")
+        db.execSQL(
+            "CREATE UNIQUE INDEX idx_user_song_list_unique ON $SONG_LIST_TABLE(user_id, song_id)"
+        )
         db.execSQL("CREATE INDEX idx_song_list_user_id ON $SONG_LIST_TABLE(user_id)")
-        db.execSQL("CREATE INDEX idx_daily_challenge_user_date ON $DAILY_CHALLENGE_TABLE(user_id, challenge_date)")
+        db.execSQL(
+            "CREATE INDEX idx_daily_challenge_user_date ON $DAILY_CHALLENGE_TABLE(user_id, challenge_date)"
+        )
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
@@ -196,14 +206,23 @@ class MusicDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE
 
             val updated = ContentValues().apply {
                 put("failed_attempts", failedAttempts)
-                put("locked_until", if (lockDuration > 0L) System.currentTimeMillis() + lockDuration else 0L)
+                put(
+                    "locked_until",
+                    if (lockDuration > 0L) System.currentTimeMillis() + lockDuration else 0L
+                )
             }
             writableDatabase.update(USER_TABLE, updated, "id = ?", arrayOf(user.id.toString()))
             null
         }
     }
 
-    fun addSongToUserList(userId: Long, songId: String, title: String, artist: String, album: String? = null): Long {
+    fun addSongToUserList(
+        userId: Long,
+        songId: String,
+        title: String,
+        artist: String,
+        album: String? = null
+    ): Long {
         val values = ContentValues().apply {
             put("user_id", userId)
             put("song_id", songId)
@@ -237,7 +256,16 @@ class MusicDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE
     fun getUserSongList(userId: Long): List<SongListEntry> {
         val cursor = readableDatabase.query(
             SONG_LIST_TABLE,
-            arrayOf("id", "user_id", "song_id", "title", "artist", "album", "is_favorite", "created_at"),
+            arrayOf(
+                "id",
+                "user_id",
+                "song_id",
+                "title",
+                "artist",
+                "album",
+                "is_favorite",
+                "created_at"
+            ),
             "user_id = ?",
             arrayOf(userId.toString()),
             null,
@@ -292,10 +320,22 @@ class MusicDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE
         )
     }
 
-    fun getPastPlayedSongsForChallenge(userId: Long, challengeDate: String): List<PastChallengeSong> {
+    fun getPastPlayedSongsForChallenge(
+        userId: Long,
+        challengeDate: String
+    ): List<PastChallengeSong> {
         val cursor = readableDatabase.query(
             DAILY_CHALLENGE_TABLE,
-            arrayOf("id", "user_id", "challenge_date", "song_id", "title", "artist", "album", "played_at"),
+            arrayOf(
+                "id",
+                "user_id",
+                "challenge_date",
+                "song_id",
+                "title",
+                "artist",
+                "album",
+                "played_at"
+            ),
             "user_id = ? AND challenge_date = ?",
             arrayOf(userId.toString(), challengeDate),
             null,
@@ -364,7 +404,14 @@ class MusicDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE
             passwordSalt = cursor.getString(cursor.getColumnIndexOrThrow("password_salt")),
             passwordIterations = cursor.getInt(cursor.getColumnIndexOrThrow("password_iterations")),
             createdAt = cursor.getLong(cursor.getColumnIndexOrThrow("created_at")),
-            lastLoginAt = if (cursor.isNull(lastLoginIndex)) null else cursor.getLong(lastLoginIndex),
+            lastLoginAt = if (cursor.isNull(
+                    lastLoginIndex
+                )
+            ) {
+                    null
+                } else {
+                    cursor.getLong(lastLoginIndex)
+                },
             failedAttempts = cursor.getInt(cursor.getColumnIndexOrThrow("failed_attempts")),
             lockedUntil = cursor.getLong(cursor.getColumnIndexOrThrow("locked_until"))
         )
@@ -412,7 +459,11 @@ object PasswordSecurity {
         return salt
     }
 
-    fun hashPassword(password: String, salt: ByteArray, iterations: Int = DEFAULT_ITERATIONS): String {
+    fun hashPassword(
+        password: String,
+        salt: ByteArray,
+        iterations: Int = DEFAULT_ITERATIONS
+    ): String {
         val keySpec = PBEKeySpec(password.toCharArray(), salt, iterations, 256)
         val factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256")
         val hashed = factory.generateSecret(keySpec).encoded

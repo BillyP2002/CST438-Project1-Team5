@@ -1,7 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
-    id("pmd")
+    alias(libs.plugins.detekt)
 }
 
 android {
@@ -37,6 +37,8 @@ android {
 }
 
 dependencies {
+    detektPlugins(libs.detekt.ktlint.rules)
+
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.foundation)
@@ -48,47 +50,39 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.foundation)
     implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(libs.retrofit)
-    implementation(libs.retrofit.kotlinx.serialization)
-    implementation(libs.kotlinx.serialization.json)
-    implementation(libs.media3.exoplayer)
-    implementation(libs.media3.ui)
+
+    implementation("androidx.media3:media3-exoplayer:1.11.0")
+    implementation("androidx.media3:media3-ui:1.11.0")
     testImplementation(libs.junit)
+    testImplementation("com.squareup.okhttp3:mockwebserver:4.11.0")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation("com.squareup.okhttp3:mockwebserver:4.11.0")
+    androidTestImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     debugImplementation(libs.androidx.compose.ui.tooling)
-    implementation(libs.retrofit.gson)
-    implementation(libs.okhttp.logging)
-
-    pmd(libs.pmd.java)
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.11.0")
 }
 
-pmd {
-    toolVersion = "6.55.0"
-    ruleSets = listOf("category/java/errorprone.xml", "category/java/codestyle.xml")
+detekt {
+    toolVersion = libs.versions.detekt.get()
+    source.setFrom("src/main/java", "src/test/java", "src/androidTest/java")
+    config.setFrom(files("config/detekt/detekt.yml"))
+    buildUponDefaultConfig = true
+    baseline = file("config/detekt/baseline.xml")
+    basePath.set(projectDir)
 }
 
-tasks.register<Pmd>("pmdMain") {
-    description = "Run PMD on main source"
-    source = fileTree("src/main/java")
-    include("**/*.kt", "**/*.java")
+tasks.withType<dev.detekt.gradle.Detekt>().configureEach {
     reports {
+        checkstyle.required.set(true)
         html.required.set(true)
-        xml.required.set(true)
+        markdown.required.set(true)
+        sarif.required.set(true)
     }
-}
-
-tasks.register("spotbugsMain") {
-    description = "Run SpotBugs static analysis (rule set: spotbugs-exclude.xml)"
-    doLast {
-        println("SpotBugs analysis configured with exclusion rules in spotbugs-exclude.xml")
-        println("To run SpotBugs: manually execute 'spotbugs' CLI tool with: -exclude spotbugs-exclude.xml")
-    }
-}
-
-tasks.named("check") {
-    dependsOn("pmdMain", "spotbugsMain")
 }

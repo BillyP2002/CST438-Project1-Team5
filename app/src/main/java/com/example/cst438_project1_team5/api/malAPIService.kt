@@ -11,7 +11,7 @@ interface ApiService {
     suspend fun getUser(
         @Path("user_name") username: String,
         @Query("limit") limit: Int = 700,
-        @Query("offset") offset: Int = 0,
+        @Query("offset") offset: Int = 0
     ): MalAnimeListResponse
 }
 
@@ -19,9 +19,7 @@ data class MalAnimeListResponse(
     @SerializedName("data") val data: List<MalAnimeListEntry> = emptyList()
 )
 
-data class MalAnimeListEntry(
-    @SerializedName("node") val node: MalAnimeNode
-)
+data class MalAnimeListEntry(@SerializedName("node") val node: MalAnimeNode)
 
 data class MalAnimeNode(
     @SerializedName("title") val animeTitle: String,
