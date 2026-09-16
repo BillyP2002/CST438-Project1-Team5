@@ -317,17 +317,18 @@ fun SignInScreen(
                                 try {
                                     val account = userRepository.authenticateUser(email, password)
                                     if (account != null) {
-                                        getRememberedUserPrefs(context).edit {
+                                        val prefs = getRememberedUserPrefs(context)
+                                        prefs.edit {
                                             putLong(PREF_LOGGED_IN_USER_ID, account.id)
-                                                .putString(PREF_LOGGED_IN_USERNAME, account.username)
+                                            putString(PREF_LOGGED_IN_USERNAME, account.username)
                                         }
 
                                         if (rememberMe) {
-                                            getRememberedUserPrefs(context).edit {
+                                            prefs.edit {
                                                 putString("remembered_email", email)
                                             }
                                         } else {
-                                            getRememberedUserPrefs(context).edit {
+                                            prefs.edit {
                                                 remove("remembered_email")
                                             }
                                         }
