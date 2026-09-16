@@ -61,7 +61,7 @@ jobs:
         # All other branches, including main, continue to require this step to pass.
         continue-on-error: ${{ github.head_ref == 'features/kyle-parker-1500/ci-cd-checks' || github.ref == 'refs/heads/features/kyle-parker-1500/ci-cd-checks' }}
         with:
-          api-level: 35
+          api-level: 34
           target: google_apis
           arch: x86_64
           emulator-options: -no-window -no-snapshot -noaudio -no-boot-anim -gpu swiftshader_indirect
@@ -70,9 +70,9 @@ jobs:
             adb kill-server || true
             adb start-server
             adb wait-for-device
-            timeout 300 sh -c 'until [ "$(adb shell getprop sys.boot_completed 2>/dev/null | tr -d "\r")" = "1" ]; do sleep 5; done'
+            timeout 300 sh -c 'until [ "$(adb shell getprop sys.boot_completed 2>/dev/null | tr -d "\r")" = "1" ]; do sleep 10; done'
             adb shell input keyevent 82 || true
-            sleep 15
+            adb shell pm clear com.example.cst438_project1_team5 || true
             ./gradlew --no-daemon :app:connectedDebugAndroidTest --stacktrace --info
       - name: Upload instrumented-test reports
         if: always()

@@ -28,6 +28,7 @@ class AuthScreenTest {
     fun setUp() {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
         val database = AppDatabase.getDatabase(context)
+        database.clearAllTables()
         userRepository = UserRepository(database.userDao())
 
         composeRule.setContent {
