@@ -67,10 +67,10 @@ jobs:
           emulator-options: -no-window -no-snapshot -noaudio -no-boot-anim -gpu swiftshader_indirect
           disable-animations: true
           script: |
+            adb start-server
             adb wait-for-device
-            until [ "$(adb shell getprop sys.boot_completed | tr -d '\r')" = "1" ]; do
-              sleep 5
-            done
+            timeout 300 sh -c 'until [ "$(adb shell getprop sys.boot_completed 2>/dev/null | tr -d "\r")" = "1" ]; do sleep 5; done'
+            adb shell input keyevent 82 || true
             ./gradlew --no-daemon :app:connectedDebugAndroidTest
       - name: Upload instrumented-test reports
         if: always()

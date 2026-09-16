@@ -106,10 +106,7 @@ private val backgrounds = listOf(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileScreen(
-    musicRepository: MusicRepository,
-    userId: Long? = null
-) {
+fun ProfileScreen(musicRepository: MusicRepository, userId: Long? = null) {
     var username by rememberSaveable { mutableStateOf(PLAYER_NAME) }
     var selectedAvatarId by rememberSaveable { mutableStateOf("cat") }
     var selectedFrameId by rememberSaveable { mutableStateOf("gold") }
