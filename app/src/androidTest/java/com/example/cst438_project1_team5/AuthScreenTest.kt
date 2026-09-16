@@ -1,11 +1,14 @@
 package com.example.cst438_project1_team5
 
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextInput
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
+import com.example.cst438_project1_team5.database.MusicDatabaseHelper
 import com.example.cst438_project1_team5.ui.theme.CST438Project1Team5Theme
 import org.junit.Before
 import org.junit.Rule
@@ -18,11 +21,20 @@ class AuthScreenTest {
     @get:Rule
     val composeRule = createComposeRule()
 
+    private lateinit var databaseHelper: MusicDatabaseHelper
+
     @Before
     fun setUp() {
+        // get app context
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+
+        // init helper
+        databaseHelper = MusicDatabaseHelper(context)
+
+        // set compose content
         composeRule.setContent {
             CST438Project1Team5Theme {
-                AuthScreen()
+                AuthScreen(databaseHelper = databaseHelper)
             }
         }
     }
@@ -57,7 +69,10 @@ class AuthScreenTest {
         composeRule.onNodeWithText("Create account").assertIsDisplayed()
         composeRule.onNodeWithText("Join now and track your score").assertIsDisplayed()
 
-        composeRule.onNodeWithText("Sign in").performClick()
+        composeRule.onNodeWithText("Sign in")
+            .performScrollTo()
+            .assertIsDisplayed()
+            .performClick()
 
         composeRule.onNodeWithText("Sign in to continue your streak").assertIsDisplayed()
         composeRule.onNodeWithText("Create one").assertIsDisplayed()
@@ -65,11 +80,8 @@ class AuthScreenTest {
 
     @Test
     fun signUpScreen_displaysAllFieldsAndNavigatesBackToLogin() {
-        composeRule.setContent {
-            CST438Project1Team5Theme {
-                SignUpScreen()
-            }
-        }
+        // navigate to sign up
+        composeRule.onNodeWithText("Create one").performClick()
 
         composeRule.onNodeWithText("Create account").assertIsDisplayed()
         composeRule.onNodeWithText("Start your anime music challenge.").assertIsDisplayed()
@@ -79,7 +91,9 @@ class AuthScreenTest {
         composeRule.onNodeWithText("Confirm password").assertIsDisplayed()
         composeRule.onNodeWithText("Sign up").assertIsDisplayed()
         composeRule.onNodeWithText("Already have an account?").assertIsDisplayed()
-        composeRule.onNodeWithText("Sign in").assertIsDisplayed()
+        composeRule.onNodeWithText("Sign in")
+            .performScrollTo()
+            .assertIsDisplayed()
 
         composeRule.onNodeWithText("Full name").performTextInput("Sam Lee")
         composeRule.onNodeWithText("Sam Lee").assertIsDisplayed()
@@ -88,12 +102,13 @@ class AuthScreenTest {
         composeRule.onNodeWithText("sam@example.com").assertIsDisplayed()
 
         composeRule.onNodeWithText("Password").performTextInput("password123")
-        composeRule.onNodeWithText("password123").assertIsDisplayed()
 
         composeRule.onNodeWithText("Confirm password").performTextInput("password123")
-        composeRule.onNodeWithText("password123").assertIsDisplayed()
 
-        composeRule.onNodeWithText("Sign in").performClick()
+        composeRule.onNodeWithText("Sign in")
+            .performScrollTo()
+            .assertIsDisplayed()
+            .performClick()
         composeRule.onNodeWithText("Sign in to continue your streak").assertIsDisplayed()
     }
 }

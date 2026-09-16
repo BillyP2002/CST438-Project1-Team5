@@ -17,7 +17,7 @@ data class AnimeThemeSong(
     val deletedAt: String?,
     val link: String, // link to stream audio
     @SerializedName("views_count")
-    val viewsCount: Int, // number of views the resource got (for recs)
+    val viewsCount: Int // number of views the resource got (for recs)
 )
 
 data class AnimeThemeSongsResponse(

@@ -21,5 +21,4 @@ val placeholderShopItems: List<ShopItem> = List(8) { index ->
         animeCoinPrice = itemNumber * 10,
         imageResId = R.drawable.shop_item_placeholder
     )
-
 }

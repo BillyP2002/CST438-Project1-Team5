@@ -1,6 +1,5 @@
 package com.example.cst438_project1_team5.ui.soundTest
 
-import android.net.Uri
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -25,18 +24,14 @@ import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.ExoPlayer
 import com.example.cst438_project1_team5.database.MusicDatabaseHelper
 import com.example.cst438_project1_team5.database.PastChallengeSong
-import kotlinx.serialization.Serializable
 import java.time.LocalDate
+import kotlinx.serialization.Serializable
 
 @Serializable
 data class AnimeIndexResponse(val anime: List<ApiAnime> = emptyList())
 
 @Serializable
-data class ApiAnime(
-    val id: Int,
-    val name: String,
-    val animeThemes: List<ApiTheme> = emptyList()
-)
+data class ApiAnime(val id: Int, val name: String, val animeThemes: List<ApiTheme> = emptyList())
 
 @Serializable
 data class ApiTheme(
@@ -57,10 +52,7 @@ data class ApiEntry(
 )
 
 @Serializable
-data class ApiVideo(
-    val link: String? = null,
-    val filename: String? = null
-)
+data class ApiVideo(val link: String? = null, val filename: String? = null)
 
 data class GameRound(
     val animeTitle: String,
@@ -121,7 +113,10 @@ fun SoundTestScreen(
                     album = null
                 )
                 hasRecordedSong = true
-                challengeHistory = databaseHelper.getPastPlayedSongsForChallenge(userId, challengeDate)
+                challengeHistory = databaseHelper.getPastPlayedSongsForChallenge(
+                    userId,
+                    challengeDate
+                )
             }
         }) {
             Text(if (isPlaying) "Pause" else "Play")
