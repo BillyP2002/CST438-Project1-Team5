@@ -11,6 +11,13 @@ interface ChallengeDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun recordChallenge(challenge: ChallengeSongEntity): Long
 
-    @Query("SELECT * FROM daily_challenge_history WHERE user_id = :userId AND challenge_date = :date ORDER BY played_at DESC")
-    suspend fun getChallengeHistory(userId: Long, date: String): List<ChallengeSongEntity>
+    @Query(
+        "SELECT * FROM daily_challenge_history " +
+            "WHERE user_id = :userId AND challenge_date = :date " +
+            "ORDER BY played_at DESC"
+    )
+    suspend fun getChallengeHistory(
+        userId: Long,
+        date: String
+    ): List<ChallengeSongEntity>
 }

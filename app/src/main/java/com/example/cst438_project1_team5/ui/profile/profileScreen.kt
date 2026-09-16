@@ -56,6 +56,7 @@ import com.example.cst438_project1_team5.database.entities.SongEntity
 import kotlinx.coroutines.launch
 
 private const val PLAYER_NAME = "player"
+private const val MAX_USERNAME_LENGTH = 20
 
 private data class AvatarOption(val id: String, val emoji: String)
 
@@ -112,14 +113,7 @@ fun ProfileScreen(musicRepository: MusicRepository, userId: Long? = null) {
     var selectedFrameId by rememberSaveable { mutableStateOf("gold") }
     var selectedStickerId by rememberSaveable { mutableStateOf("sparkles") }
     var selectedBackgroundId by rememberSaveable { mutableStateOf("night") }
-    var songTitle by rememberSaveable { mutableStateOf("") }
-    var songArtist by rememberSaveable { mutableStateOf("") }
     var songList by remember { mutableStateOf<List<SongEntity>>(emptyList()) }
-
-    val avatar = avatars.first { it.id == selectedAvatarId }
-    val frame = frames.first { it.id == selectedFrameId }
-    val sticker = stickers.first { it.id == selectedStickerId }
-    val background = backgrounds.first { it.id == selectedBackgroundId }
 
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
@@ -131,11 +125,7 @@ fun ProfileScreen(musicRepository: MusicRepository, userId: Long? = null) {
     }
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Customize Profile") }
-            )
-        },
+        topBar = { TopAppBar(title = { Text("Customize Profile") }) },
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { paddingValues ->
         Column(
@@ -148,154 +138,189 @@ fun ProfileScreen(musicRepository: MusicRepository, userId: Long? = null) {
         ) {
             ProfilePreview(
                 username = username.ifBlank { "Player" },
-                avatar = avatar,
-                frame = frame,
-                sticker = sticker,
-                background = background
+                avatar = avatars.first { it.id == selectedAvatarId },
+                frame = frames.first { it.id == selectedFrameId },
+                sticker = stickers.first { it.id == selectedStickerId },
+                background = backgrounds.first { it.id == selectedBackgroundId }
             )
 
             OutlinedTextField(
                 value = username,
-                onValueChange = { username = it.take(20) },
+                onValueChange = { username = it.take(MAX_USERNAME_LENGTH) },
                 label = { Text("Player name") },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth()
             )
 
-            CustomizationRow(
-                title = "Avatar",
-                options = avatars,
-                selectedId = selectedAvatarId,
-                label = { it.emoji },
-                onSelected = { selectedAvatarId = it }
+            ProfileCustomizationSection(
+                selectedAvatarId = selectedAvatarId,
+                onAvatarSelected = { selectedAvatarId = it },
+                selectedFrameId = selectedFrameId,
+                onFrameSelected = { selectedFrameId = it },
+                selectedStickerId = selectedStickerId,
+                onStickerSelected = { selectedStickerId = it },
+                selectedBackgroundId = selectedBackgroundId,
+                onBackgroundSelected = { selectedBackgroundId = it }
             )
 
-            CustomizationRow(
-                title = "Frame",
-                options = frames,
-                selectedId = selectedFrameId,
-                label = { it.label },
-                onSelected = { selectedFrameId = it }
-            )
-
-            CustomizationRow(
-                title = "Sticker",
-                options = stickers,
-                selectedId = selectedStickerId,
-                label = { if (it.emoji.isBlank()) "None" else it.emoji },
-                onSelected = { selectedStickerId = it }
-            )
-
-            CustomizationRow(
-                title = "Background",
-                options = backgrounds,
-                selectedId = selectedBackgroundId,
-                label = { it.label },
-                onSelected = { selectedBackgroundId = it }
-            )
-
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp)
-            ) {
-                Column(
-                    modifier = Modifier.padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    Text(
-                        text = "My Song List",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
-                    )
-
-                    OutlinedTextField(
-                        value = songTitle,
-                        onValueChange = { songTitle = it },
-                        label = { Text("Song title") },
-                        singleLine = true,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-
-                    OutlinedTextField(
-                        value = songArtist,
-                        onValueChange = { songArtist = it },
-                        label = { Text("Artist") },
-                        singleLine = true,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-
-                    Button(
-                        onClick = {
-                            if (userId != null && songTitle.isNotBlank() &&
-                                songArtist.isNotBlank()
-                            ) {
-                                scope.launch {
-                                    musicRepository.addSongToUserList(
-                                        userId = userId,
-                                        songId = "manual_${System.currentTimeMillis()}",
-                                        title = songTitle.trim(),
-                                        artist = songArtist.trim()
-                                    )
-                                    songList = musicRepository.getUserSongList(userId)
-                                    songTitle = ""
-                                    songArtist = ""
-                                    snackbarHostState.showSnackbar("Song saved to your list")
-                                }
-                            }
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF7C3AED))
-                    ) {
-                        Text("Add to my song list")
-                    }
-
-                    if (songList.isEmpty()) {
-                        Text(
-                            text = "No songs saved yet.",
-                            color = Color(0xFFCBD5E1)
-                        )
-                    } else {
-                        songList.forEach { song ->
-                            Card(
-                                modifier = Modifier.fillMaxWidth(),
-                                colors = CardDefaults.cardColors(containerColor = Color(0xFF1E293B))
-                            ) {
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(12.dp),
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Column {
-                                        Text(
-                                            song.title,
-                                            fontWeight = FontWeight.Bold,
-                                            color = Color.White
-                                        )
-                                        Text(song.artist, color = Color(0xFFCBD5E1))
-                                    }
-                                    if (song.isFavorite) {
-                                        Text("★", color = Color(0xFFFBBF24))
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            Button(
-                onClick = {
+            SongListSection(
+                userId = userId,
+                songList = songList,
+                onSongAdded = {
                     scope.launch {
-                        snackbarHostState.showSnackbar("Profile saved!")
+                        songList = musicRepository.getUserSongList(userId!!)
+                        snackbarHostState.showSnackbar("Song saved to your list")
                     }
                 },
+                musicRepository = musicRepository
+            )
+
+            Button(
+                onClick = { scope.launch { snackbarHostState.showSnackbar("Profile saved!") } },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 24.dp)
             ) {
                 Text("Save profile")
+            }
+        }
+    }
+}
+
+@Composable
+private fun ProfileCustomizationSection(
+    selectedAvatarId: String,
+    onAvatarSelected: (String) -> Unit,
+    selectedFrameId: String,
+    onFrameSelected: (String) -> Unit,
+    selectedStickerId: String,
+    onStickerSelected: (String) -> Unit,
+    selectedBackgroundId: String,
+    onBackgroundSelected: (String) -> Unit
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        CustomizationRow(
+            title = "Avatar",
+            options = avatars,
+            selectedId = selectedAvatarId,
+            label = { it.emoji },
+            onSelected = onAvatarSelected
+        )
+        CustomizationRow(
+            title = "Frame",
+            options = frames,
+            selectedId = selectedFrameId,
+            label = { it.label },
+            onSelected = onFrameSelected
+        )
+        CustomizationRow(
+            title = "Sticker",
+            options = stickers,
+            selectedId = selectedStickerId,
+            label = { if (it.emoji.isBlank()) "None" else it.emoji },
+            onSelected = onStickerSelected
+        )
+        CustomizationRow(
+            title = "Background",
+            options = backgrounds,
+            selectedId = selectedBackgroundId,
+            label = { it.label },
+            onSelected = onBackgroundSelected
+        )
+    }
+}
+
+@Composable
+private fun SongListSection(
+    userId: Long?,
+    songList: List<SongEntity>,
+    onSongAdded: () -> Unit,
+    musicRepository: MusicRepository
+) {
+    var songTitle by rememberSaveable { mutableStateOf("") }
+    var songArtist by rememberSaveable { mutableStateOf("") }
+    val scope = rememberCoroutineScope()
+
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp)
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Text(
+                text = "My Song List",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold
+            )
+
+            OutlinedTextField(
+                value = songTitle,
+                onValueChange = { songTitle = it },
+                label = { Text("Song title") },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            OutlinedTextField(
+                value = songArtist,
+                onValueChange = { songArtist = it },
+                label = { Text("Artist") },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Button(
+                onClick = {
+                    if (userId != null && songTitle.isNotBlank() && songArtist.isNotBlank()) {
+                        scope.launch {
+                            musicRepository.addSongToUserList(
+                                userId = userId,
+                                songId = "manual_${System.currentTimeMillis()}",
+                                title = songTitle.trim(),
+                                artist = songArtist.trim()
+                            )
+                            songTitle = ""
+                            songArtist = ""
+                            onSongAdded()
+                        }
+                    }
+                },
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF7C3AED))
+            ) {
+                Text("Add to my song list")
+            }
+
+            if (songList.isEmpty()) {
+                Text(text = "No songs saved yet.", color = Color(0xFFCBD5E1))
+            } else {
+                songList.forEach { song -> SongItem(song) }
+            }
+        }
+    }
+}
+
+@Composable
+private fun SongItem(song: SongEntity) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFF1E293B))
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column {
+                Text(song.title, fontWeight = FontWeight.Bold, color = Color.White)
+                Text(song.artist, color = Color(0xFFCBD5E1))
+            }
+            if (song.isFavorite) {
+                Text("★", color = Color(0xFFFBBF24))
             }
         }
     }
@@ -340,15 +365,10 @@ private fun ProfilePreview(
                             )
                             .padding(18.dp)
                     )
-
                     if (sticker.emoji.isNotBlank()) {
-                        Text(
-                            text = sticker.emoji,
-                            fontSize = 28.sp
-                        )
+                        Text(text = sticker.emoji, fontSize = 28.sp)
                     }
                 }
-
                 Text(
                     text = username,
                     style = MaterialTheme.typography.titleLarge,
@@ -368,7 +388,6 @@ private fun <T> CustomizationRow(
     label: (T) -> String,
     onSelected: (String) -> Unit
 ) where T : Any {
-    // Each option type currently has an `id`; this extracts it safely.
     fun idOf(option: T): String = when (option) {
         is AvatarOption -> option.id
         is FrameOption -> option.id
@@ -383,14 +402,12 @@ private fun <T> CustomizationRow(
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.SemiBold
         )
-
         LazyRow(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             contentPadding = PaddingValues(end = 8.dp)
         ) {
             items(options) { option ->
                 val optionId = idOf(option)
-
                 FilterChip(
                     selected = selectedId == optionId,
                     onClick = { onSelected(optionId) },
@@ -407,8 +424,5 @@ fun ProfileScreenPreview() {
     val context = LocalContext.current
     val database = AppDatabase.getDatabase(context)
     val musicRepository = MusicRepository(database.songDao(), database.challengeDao())
-    ProfileScreen(
-        musicRepository = musicRepository,
-        userId = null
-    )
+    ProfileScreen(musicRepository = musicRepository, userId = null)
 }

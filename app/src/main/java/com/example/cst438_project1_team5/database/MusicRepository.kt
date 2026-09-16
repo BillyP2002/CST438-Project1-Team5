@@ -5,10 +5,7 @@ import com.example.cst438_project1_team5.database.dao.SongDao
 import com.example.cst438_project1_team5.database.entities.ChallengeSongEntity
 import com.example.cst438_project1_team5.database.entities.SongEntity
 
-class MusicRepository(
-    private val songDao: SongDao,
-    private val challengeDao: ChallengeDao,
-) {
+class MusicRepository(private val songDao: SongDao, private val challengeDao: ChallengeDao) {
 
     suspend fun addSongToUserList(
         userId: Long,
@@ -27,13 +24,11 @@ class MusicRepository(
         return songDao.insertSong(song)
     }
 
-    suspend fun addSongToFavorites(userId: Long, songId: String): Int {
-        return songDao.markFavorite(userId, songId)
-    }
+    suspend fun addSongToFavorites(userId: Long, songId: String): Int =
+        songDao.markFavorite(userId, songId)
 
-    suspend fun getUserSongList(userId: Long): List<SongEntity> {
-        return songDao.getUserSongs(userId)
-    }
+    suspend fun getUserSongList(userId: Long): List<SongEntity> =
+        songDao.getUserSongs(userId)
 
     suspend fun recordDailyChallengeSong(
         userId: Long,
@@ -57,7 +52,6 @@ class MusicRepository(
     suspend fun getPastPlayedSongsForChallenge(
         userId: Long,
         challengeDate: String
-    ): List<ChallengeSongEntity> {
-        return challengeDao.getChallengeHistory(userId, challengeDate)
-    }
+    ): List<ChallengeSongEntity> =
+        challengeDao.getChallengeHistory(userId, challengeDate)
 }

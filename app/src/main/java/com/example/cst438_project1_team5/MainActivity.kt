@@ -93,7 +93,7 @@ class MainActivity : ComponentActivity() {
             CST438Project1Team5Theme {
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
-                    containerColor = Color.Transparent,
+                    containerColor = Color.Transparent
                 ) { innerPadding ->
                     AuthScreen(
                         modifier = Modifier.padding(innerPadding),

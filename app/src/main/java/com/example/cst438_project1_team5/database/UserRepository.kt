@@ -17,7 +17,9 @@ class UserRepository(private val userDao: UserDao) {
         require(cleanUsername.isNotEmpty()) { "Username cannot be empty." }
         require(cleanEmail.isNotEmpty()) { "Email cannot be empty." }
         require(isValidEmail(cleanEmail)) { "Email format is invalid." }
-        require(password.length >= 12) { "Password must be at least 12 characters long." }
+        require(password.length >= MIN_PASSWORD_LENGTH) {
+            "Password must be at least $MIN_PASSWORD_LENGTH characters long."
+        }
 
         val normalizedUser = cleanUsername.lowercase(Locale.US)
         val normalizedEmail = cleanEmail.lowercase(Locale.US)
@@ -37,7 +39,7 @@ class UserRepository(private val userDao: UserDao) {
             passwordHash = hash,
             passwordSalt = Base64.encodeToString(salt, Base64.NO_WRAP),
             passwordIterations = DEFAULT_ITERATIONS,
-            createdAt = System.currentTimeMillis(),
+            createdAt = System.currentTimeMillis()
         )
 
         return userDao.insertUser(user)
@@ -47,16 +49,19 @@ class UserRepository(private val userDao: UserDao) {
         val normalizedIdentifier = identifier.trim().lowercase(Locale.US)
         val user = userDao.getUserByUsername(normalizedIdentifier)
             ?: userDao.getUserByEmail(normalizedIdentifier)
-            ?: return null
 
-        if (System.currentTimeMillis() < user.lockedUntil) {
+        if (user == null || System.currentTimeMillis() < user.lockedUntil) {
             return null
         }
 
         val salt = Base64.decode(user.passwordSalt, Base64.NO_WRAP)
         val expectedHash = hashPassword(password, salt, user.passwordIterations)
 
-        return if (constantTimeEquals(expectedHash, user.passwordHash)) {
+        return updateLoginState(user, constantTimeEquals(expectedHash, user.passwordHash))
+    }
+
+    private suspend fun updateLoginState(user: UserEntity, isSuccess: Boolean): UserEntity? {
+        return if (isSuccess) {
             val updatedUser = user.copy(
                 lastLoginAt = System.currentTimeMillis(),
                 failedAttempts = 0,
@@ -66,15 +71,23 @@ class UserRepository(private val userDao: UserDao) {
             updatedUser
         } else {
             val failedAttempts = user.failedAttempts + 1
-            val lockDuration = if (failedAttempts >= 5) {
-                15L * 60L * 1000L
+            val lockDuration = if (failedAttempts >= MAX_FAILED_ATTEMPTS) {
+                LOCK_DURATION_MS
+            } else {
+                0L
+            }
+
+            val lockedUntil = if (lockDuration >
+                0L
+            ) {
+                System.currentTimeMillis() + lockDuration
             } else {
                 0L
             }
 
             val updatedUser = user.copy(
                 failedAttempts = failedAttempts,
-                lockedUntil = if (lockDuration > 0L) System.currentTimeMillis() + lockDuration else 0L
+                lockedUntil = lockedUntil
             )
             userDao.updateUser(updatedUser)
             null
@@ -117,5 +130,8 @@ class UserRepository(private val userDao: UserDao) {
 
     companion object {
         const val DEFAULT_ITERATIONS = 120_000
+        private const val MIN_PASSWORD_LENGTH = 12
+        private const val MAX_FAILED_ATTEMPTS = 5
+        private const val LOCK_DURATION_MS = 15L * 60L * 1000L
     }
 }

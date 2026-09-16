@@ -25,7 +25,9 @@ naming:
     propertyPattern: '[a-z][A-Za-z0-9]*'
     privatePropertyPattern: '(_)?[a-z][A-Za-z0-9]*'
   PackageNaming:
-    packagePattern: '[a-z]+(\.[a-z][a-z0-9]*)*'
+    packagePattern: '[a-z]+(\.[a-z][a-z0-9_]*)*'
+  PackageName:
+    active: false
   TopLevelPropertyNaming:
     constantPattern: '[A-Z][A-Z0-9_]*'
     propertyPattern: '[a-z][A-Za-z0-9]*'

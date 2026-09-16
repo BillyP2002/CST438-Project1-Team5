@@ -73,13 +73,13 @@ jobs:
             timeout 300 sh -c 'until [ "$(adb shell getprop sys.boot_completed 2>/dev/null | tr -d "\r")" = "1" ]; do sleep 5; done'
             adb shell input keyevent 82 || true
             sleep 15
-            ./gradlew --no-daemon :app:connectedDebugAndroidTest
+            ./gradlew --no-daemon :app:connectedDebugAndroidTest --stacktrace --info
       - name: Upload instrumented-test reports
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: instrumented-test-reports
           path: |
-            app/build/reports/androidTests/
-            app/build/outputs/androidTest-results/
+            app/build/reports/androidTests/connected/**
+            app/build/outputs/androidTest-results/connected/**
           if-no-files-found: warn
