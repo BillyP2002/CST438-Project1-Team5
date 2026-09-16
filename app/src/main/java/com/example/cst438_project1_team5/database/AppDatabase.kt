@@ -15,7 +15,7 @@ import com.example.cst438_project1_team5.database.entities.UserEntity
     entities = [
         UserEntity::class,
         SongEntity::class,
-        ChallengeSongEntity::class
+        ChallengeSongEntity::class,
     ],
     version = 1,
     exportSchema = false
@@ -27,19 +27,19 @@ abstract class AppDatabase : RoomDatabase() {
 
     companion object {
         @Volatile
-        private var INSTANCE: AppDatabase? = null
+        private var instance: AppDatabase? = null
 
         fun getDatabase(context: Context): AppDatabase {
-            return INSTANCE ?: synchronized(this) {
-                val instance = Room.databaseBuilder(
+            return instance ?: synchronized(this) {
+                val dbInstance = Room.databaseBuilder(
                     context.applicationContext,
                     AppDatabase::class.java,
                     "music_app_secure.db"
                 )
-                .fallbackToDestructiveMigration() // Mirroring SQLiteOpenHelper's onUpgrade behavior for now
+                .fallbackToDestructiveMigration(true) // Mirroring SQLiteOpenHelper's onUpgrade behavior for now
                 .build()
-                INSTANCE = instance
-                instance
+                instance = dbInstance
+                dbInstance
             }
         }
     }

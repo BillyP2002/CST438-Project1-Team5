@@ -7,7 +7,7 @@ import com.example.cst438_project1_team5.database.entities.SongEntity
 
 class MusicRepository(
     private val songDao: SongDao,
-    private val challengeDao: ChallengeDao
+    private val challengeDao: ChallengeDao,
 ) {
 
     suspend fun addSongToUserList(

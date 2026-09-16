@@ -37,7 +37,7 @@ class UserRepository(private val userDao: UserDao) {
             passwordHash = hash,
             passwordSalt = Base64.encodeToString(salt, Base64.NO_WRAP),
             passwordIterations = DEFAULT_ITERATIONS,
-            createdAt = System.currentTimeMillis()
+            createdAt = System.currentTimeMillis(),
         )
 
         return userDao.insertUser(user)
