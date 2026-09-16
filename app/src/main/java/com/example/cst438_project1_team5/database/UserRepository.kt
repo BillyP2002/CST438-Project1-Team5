@@ -61,14 +61,14 @@ class UserRepository(private val userDao: UserDao) {
     }
 
     private suspend fun updateLoginState(user: UserEntity, isSuccess: Boolean): UserEntity? {
-        return if (isSuccess) {
+        if (isSuccess) {
             val updatedUser = user.copy(
                 lastLoginAt = System.currentTimeMillis(),
                 failedAttempts = 0,
                 lockedUntil = 0
             )
             userDao.updateUser(updatedUser)
-            updatedUser
+            return updatedUser
         } else {
             val failedAttempts = user.failedAttempts + 1
             val lockDuration = if (failedAttempts >= MAX_FAILED_ATTEMPTS) {
@@ -77,9 +77,7 @@ class UserRepository(private val userDao: UserDao) {
                 0L
             }
 
-            val lockedUntil = if (lockDuration >
-                0L
-            ) {
+            val lockedUntil = if (lockDuration > 0L) {
                 System.currentTimeMillis() + lockDuration
             } else {
                 0L
@@ -90,7 +88,7 @@ class UserRepository(private val userDao: UserDao) {
                 lockedUntil = lockedUntil
             )
             userDao.updateUser(updatedUser)
-            null
+            return null
         }
     }
 

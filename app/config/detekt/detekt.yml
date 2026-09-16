@@ -25,9 +25,8 @@ naming:
     propertyPattern: '[a-z][A-Za-z0-9]*'
     privatePropertyPattern: '(_)?[a-z][A-Za-z0-9]*'
   PackageNaming:
-    packagePattern: '[a-z]+(\.[a-z][a-z0-9_]*)*'
-  PackageName:
     active: false
+    packagePattern: '[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)*'
   TopLevelPropertyNaming:
     constantPattern: '[A-Z][A-Z0-9_]*'
     propertyPattern: '[a-z][A-Za-z0-9]*'
@@ -41,4 +40,6 @@ style:
   NewLineAtEndOfFile:
     active: false
   WildcardImport:
+    active: false
+  ExpressionBodySyntax:
     active: false

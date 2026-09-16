@@ -73,7 +73,16 @@
     <ID>PackageName:ShopScreenTest.kt:package com.example.cst438_project1_team5</ID>
     <ID>PackageName:Theme.kt:package com.example.cst438_project1_team5.ui.theme</ID>
     <ID>PackageName:Type.kt:package com.example.cst438_project1_team5.ui.theme</ID>
+    <ID>PackageName:UserRepository.kt:package com.example.cst438_project1_team5.database</ID>
     <ID>PackageName:UserService.kt:package com.example.cst438_project1_team5.api.anime_themes</ID>
+    <ID>PackageName:AppDatabase.kt:package com.example.cst438_project1_team5.database</ID>
+    <ID>PackageName:ChallengeDao.kt:package com.example.cst438_project1_team5.database.dao</ID>
+    <ID>PackageName:MusicRepository.kt:package com.example.cst438_project1_team5.database</ID>
+    <ID>PackageName:SongDao.kt:package com.example.cst438_project1_team5.database.dao</ID>
+    <ID>PackageName:UserDao.kt:package com.example.cst438_project1_team5.database.dao</ID>
+    <ID>PackageName:ChallengeSongEntity.kt:package com.example.cst438_project1_team5.database.entities</ID>
+    <ID>PackageName:SongEntity.kt:package com.example.cst438_project1_team5.database.entities</ID>
+    <ID>PackageName:UserEntity.kt:package com.example.cst438_project1_team5.database.entities</ID>
     <ID>PackageName:malAPIRepository.kt:package com.example.cst438_project1_team5.api</ID>
     <ID>PackageName:malAPIService.kt:package com.example.cst438_project1_team5.api</ID>
     <ID>PackageName:malUser.kt:package com.example.cst438_project1_team5.api</ID>
@@ -98,6 +107,16 @@
     <ID>PackageNaming:ShopScreen.kt:package com.example.cst438_project1_team5.ui.shop</ID>
     <ID>PackageNaming:ShopScreenTest.kt:package com.example.cst438_project1_team5</ID>
     <ID>PackageNaming:Theme.kt:package com.example.cst438_project1_team5.ui.theme</ID>
+    <ID>PackageNaming:Type.kt:package com.example.cst438_project1_team5.ui.theme</ID>
+    <ID>PackageNaming:UserRepository.kt:package com.example.cst438_project1_team5.database</ID>
+    <ID>PackageNaming:AppDatabase.kt:package com.example.cst438_project1_team5.database</ID>
+    <ID>PackageNaming:ChallengeDao.kt:package com.example.cst438_project1_team5.database.dao</ID>
+    <ID>PackageNaming:MusicRepository.kt:package com.example.cst438_project1_team5.database</ID>
+    <ID>PackageNaming:SongDao.kt:package com.example.cst438_project1_team5.database.dao</ID>
+    <ID>PackageNaming:UserDao.kt:package com.example.cst438_project1_team5.database.dao</ID>
+    <ID>PackageNaming:ChallengeSongEntity.kt:package com.example.cst438_project1_team5.database.entities</ID>
+    <ID>PackageNaming:SongEntity.kt:package com.example.cst438_project1_team5.database.entities</ID>
+    <ID>PackageNaming:UserEntity.kt:package com.example.cst438_project1_team5.database.entities</ID>
     <ID>PackageNaming:Type.kt:package com.example.cst438_project1_team5.ui.theme</ID>
     <ID>PackageNaming:UserService.kt:package com.example.cst438_project1_team5.api.anime_themes</ID>
     <ID>PackageNaming:malAPIRepository.kt:package com.example.cst438_project1_team5.api</ID>

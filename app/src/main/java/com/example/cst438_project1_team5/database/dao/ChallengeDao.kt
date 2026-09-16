@@ -16,8 +16,5 @@ interface ChallengeDao {
             "WHERE user_id = :userId AND challenge_date = :date " +
             "ORDER BY played_at DESC"
     )
-    suspend fun getChallengeHistory(
-        userId: Long,
-        date: String
-    ): List<ChallengeSongEntity>
+    suspend fun getChallengeHistory(userId: Long, date: String): List<ChallengeSongEntity>
 }

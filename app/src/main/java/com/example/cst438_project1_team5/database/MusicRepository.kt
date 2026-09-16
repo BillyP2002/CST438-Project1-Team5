@@ -24,11 +24,12 @@ class MusicRepository(private val songDao: SongDao, private val challengeDao: Ch
         return songDao.insertSong(song)
     }
 
-    suspend fun addSongToFavorites(userId: Long, songId: String): Int =
-        songDao.markFavorite(userId, songId)
+    suspend fun addSongToFavorites(userId: Long, songId: String): Int {
+        val favoriteCount = songDao.markFavorite(userId, songId)
+        return favoriteCount
+    }
 
-    suspend fun getUserSongList(userId: Long): List<SongEntity> =
-        songDao.getUserSongs(userId)
+    suspend fun getUserSongList(userId: Long): List<SongEntity> = songDao.getUserSongs(userId)
 
     suspend fun recordDailyChallengeSong(
         userId: Long,
@@ -52,6 +53,8 @@ class MusicRepository(private val songDao: SongDao, private val challengeDao: Ch
     suspend fun getPastPlayedSongsForChallenge(
         userId: Long,
         challengeDate: String
-    ): List<ChallengeSongEntity> =
-        challengeDao.getChallengeHistory(userId, challengeDate)
+    ): List<ChallengeSongEntity> {
+        val history = challengeDao.getChallengeHistory(userId, challengeDate)
+        return history
+    }
 }

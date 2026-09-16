@@ -29,17 +29,15 @@ abstract class AppDatabase : RoomDatabase() {
         @Volatile
         private var instance: AppDatabase? = null
 
-        fun getDatabase(context: Context): AppDatabase =
-            instance ?: synchronized(this) {
-                val dbInstance = Room.databaseBuilder(
-                    context.applicationContext,
-                    AppDatabase::class.java,
-                    "music_app_secure.db"
-                )
-                    .fallbackToDestructiveMigration(true)
-                    .build()
-                instance = dbInstance
-                dbInstance
-            }
+        fun getDatabase(context: Context): AppDatabase = instance ?: synchronized(this) {
+            val dbInstance = Room.databaseBuilder(
+                context.applicationContext,
+                AppDatabase::class.java,
+                "music_app_secure.db"
+            ).fallbackToDestructiveMigration(true)
+                .build()
+            instance = dbInstance
+            dbInstance
+        }
     }
 }
