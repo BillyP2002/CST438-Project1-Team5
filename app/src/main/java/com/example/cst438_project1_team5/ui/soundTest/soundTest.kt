@@ -22,10 +22,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.ExoPlayer
-import com.example.cst438_project1_team5.database.MusicDatabaseHelper
-import com.example.cst438_project1_team5.database.PastChallengeSong
+import com.example.cst438_project1_team5.database.AppDatabase
+import com.example.cst438_project1_team5.database.MusicRepository
+import com.example.cst438_project1_team5.database.entities.ChallengeSongEntity
 import java.time.LocalDate
 import kotlinx.serialization.Serializable
+import kotlinx.coroutines.launch
+import androidx.compose.runtime.rememberCoroutineScope
 
 @Serializable
 data class AnimeIndexResponse(val anime: List<ApiAnime> = emptyList())
@@ -64,19 +67,20 @@ data class GameRound(
 @Composable
 fun SoundTestScreen(
     round: GameRound,
-    databaseHelper: MusicDatabaseHelper = MusicDatabaseHelper(LocalContext.current),
+    musicRepository: MusicRepository,
     userId: Long? = null,
     challengeDate: String = LocalDate.now().toString()
 ) {
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     val player = remember(context) { ExoPlayer.Builder(context).build() }
     var isPlaying by remember { mutableStateOf(false) }
-    var challengeHistory by remember { mutableStateOf<List<PastChallengeSong>>(emptyList()) }
+    var challengeHistory by remember { mutableStateOf<List<ChallengeSongEntity>>(emptyList()) }
     var hasRecordedSong by remember { mutableStateOf(false) }
 
     LaunchedEffect(userId, challengeDate) {
         if (userId != null) {
-            challengeHistory = databaseHelper.getPastPlayedSongsForChallenge(userId, challengeDate)
+            challengeHistory = musicRepository.getPastPlayedSongsForChallenge(userId, challengeDate)
         }
     }
 
@@ -104,19 +108,21 @@ fun SoundTestScreen(
             }
 
             if (userId != null && !hasRecordedSong && round.songTitle != null) {
-                databaseHelper.recordDailyChallengeSong(
-                    userId = userId,
-                    challengeDate = challengeDate,
-                    songId = round.songTitle ?: "unknown-song",
-                    title = round.songTitle ?: "Unknown song",
-                    artist = "Daily challenge",
-                    album = null
-                )
-                hasRecordedSong = true
-                challengeHistory = databaseHelper.getPastPlayedSongsForChallenge(
-                    userId,
-                    challengeDate
-                )
+                scope.launch {
+                    musicRepository.recordDailyChallengeSong(
+                        userId = userId,
+                        challengeDate = challengeDate,
+                        songId = round.songTitle ?: "unknown-song",
+                        title = round.songTitle ?: "Unknown song",
+                        artist = "Daily challenge",
+                        album = null
+                    )
+                    hasRecordedSong = true
+                    challengeHistory = musicRepository.getPastPlayedSongsForChallenge(
+                        userId,
+                        challengeDate
+                    )
+                }
             }
         }) {
             Text(if (isPlaying) "Pause" else "Play")

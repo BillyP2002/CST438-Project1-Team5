@@ -16,6 +16,8 @@ media3 = "1.11.1"
 okhttp = "4.11.0"
 pmd = "6.55.0"
 spotbugs = "4.8.1"
+room = "2.8.5"
+ksp = "2.2.10-2.0.2"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -45,8 +47,12 @@ media3-ui = { group = "androidx.media3", name = "media3-ui", version.ref = "medi
 okhttp-logging = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp" }
 pmd-java = { group = "net.sourceforge.pmd", name = "pmd-java", version.ref = "pmd" }
 spotbugs = { group = "com.github.spotbugs", name = "spotbugs", version.ref = "spotbugs" }
+androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
+androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
+androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 detekt = { id = "dev.detekt", version.ref = "detekt" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
