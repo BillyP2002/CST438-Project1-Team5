@@ -1,9 +1,9 @@
 package com.example.cst438_project1_team5.api.malAPI
 
-class malAPIRepository (private val accessToken : String) {
-    suspend fun getList(name: String): Result<malUser> = try {
-        val response = RetrofitClient.api.getUser(name, authorization = "Bearer $accessToken")
-        val user = malUser(
+class MalAPIRepository (private val accessToken : String) {
+    suspend fun getList(name: String): Result<MalUser> = try {
+        val response = MyAnimeListRetrofitClient.api.getUser(name, authorization = "Bearer $accessToken")
+        val user = MalUser(
             name = name,
             showsWatched = response.data.map { entry ->
                 Show(

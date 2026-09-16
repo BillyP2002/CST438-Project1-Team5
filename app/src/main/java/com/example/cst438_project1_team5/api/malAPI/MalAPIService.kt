@@ -6,7 +6,7 @@ import retrofit2.http.Header
 import retrofit2.http.Path
 import retrofit2.http.Query
 
-interface ApiService {
+interface MalAPIService {
     // Fetch MAL user's list by their username.
     @GET("users/{user_name}/animelist")
     suspend fun getUser(

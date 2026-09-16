@@ -1,6 +1,6 @@
 package com.example.cst438_project1_team5.api.malAPI
 
-data class malUser(
+data class MalUser(
     val name: String,
     val showsWatched: List<Show> = emptyList()
 )
