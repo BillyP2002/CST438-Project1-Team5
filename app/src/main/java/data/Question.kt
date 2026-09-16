@@ -1,8 +1,17 @@
 package data
 
 class Question(val show: String){
-    var guesses = 0
-    var duration = 1
+    private var guesses = 0
+    private var duration = 1
+    private var completed = false
+
+    fun getDuration() : Int{
+        return duration
+    }
+
+    fun getCompleted() : Boolean{
+        return completed
+    }
 
     /**
      * Returns whether the user's guess was successful, and a getter can be used to
@@ -14,23 +23,27 @@ class Question(val show: String){
         if(guesses < 5){
             when (guesses) {
                 1 -> {
-                    duration = 3;
+                    duration = 3
                 }
                 2 -> {
-                    duration = 7;
+                    duration = 7
                 }
                 3 -> {
-                    duration = 14;
+                    duration = 14
                 }
                 4 -> {
-                    duration = 16;
+                    duration = 16
                 }
             }
             guesses++
             if (answer.uppercase().equals(show.uppercase())){
+                completed = true
                 return true
             }
         }
-        return false;
+        else{
+            completed = true
+        }
+        return false
     }
 }
