@@ -56,7 +56,7 @@ class AuthScreenTest {
         composeRule.onNodeWithText("Remember me").assertIsDisplayed()
         composeRule.onNodeWithText("Forgot?").assertIsDisplayed()
         composeRule.onNodeWithText("Sign in").assertIsDisplayed()
-        composeRule.onNodeWithText("Don’t have an account?").assertIsDisplayed()
+        composeRule.onNodeWithText("Don't have an account?").assertIsDisplayed()
         composeRule.onNodeWithText("Create one").assertIsDisplayed()
     }
 

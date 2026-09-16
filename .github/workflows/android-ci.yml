@@ -67,13 +67,12 @@ jobs:
           emulator-options: -no-window -no-snapshot -noaudio -no-boot-anim -gpu swiftshader_indirect
           disable-animations: true
           script: |
-            adb kill-server || true
-            adb start-server
-            adb wait-for-device
+            adb wait-for-device || true
             adb shell settings put global window_animation_scale 0 || true
             adb shell settings put global transition_animation_scale 0 || true
             adb shell settings put global animator_duration_scale 0 || true
             adb shell input keyevent 82 || true
+            adb shell pm clear com.example.cst438_project1_team5 || true
             ./gradlew --no-daemon :app:connectedDebugAndroidTest --stacktrace --info
       - name: Upload instrumented-test reports
         if: always()
