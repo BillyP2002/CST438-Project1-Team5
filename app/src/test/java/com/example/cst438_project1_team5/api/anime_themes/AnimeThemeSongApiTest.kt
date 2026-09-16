@@ -1,6 +1,5 @@
 package com.example.cst438_project1_team5.api.anime_themes
 
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import kotlinx.coroutines.test.runTest
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -11,11 +10,9 @@ import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-@RunWith(AndroidJUnit4::class)
 class AnimeThemeSongApiTest {
 
     private lateinit var mockWebServer: MockWebServer

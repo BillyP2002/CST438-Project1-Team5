@@ -6,11 +6,13 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextInput
+import androidx.room.Room
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.example.cst438_project1_team5.database.AppDatabase
 import com.example.cst438_project1_team5.database.UserRepository
 import com.example.cst438_project1_team5.ui.theme.CST438Project1Team5Theme
+import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -23,19 +25,25 @@ class AuthScreenTest {
     val composeRule = createComposeRule()
 
     private lateinit var userRepository: UserRepository
+    private lateinit var database: AppDatabase
 
     @Before
     fun setUp() {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
-        val database = AppDatabase.getDatabase(context)
-        database.clearAllTables()
+        // Use an in-memory database for testing to ensure isolation and speed
+        database = Room.inMemoryDatabaseBuilder(context, AppDatabase::class.java).build()
         userRepository = UserRepository(database.userDao())
 
         composeRule.setContent {
-            CST438Project1Team5Theme {
+            CST438Project1Team5Theme(dynamicColor = false) {
                 AuthScreen(userRepository = userRepository)
             }
         }
+    }
+
+    @After
+    fun tearDown() {
+        database.close()
     }
 
     @Test

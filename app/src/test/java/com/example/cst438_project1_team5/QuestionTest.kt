@@ -1,12 +1,9 @@
 package com.example.cst438_project1_team5
 
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import data.Question
-import junit.framework.TestCase.assertEquals
+import org.junit.Assert.assertEquals
 import org.junit.Test
-import org.junit.runner.RunWith
 
-@RunWith(AndroidJUnit4::class)
 class TakeQuizTest {
 
     @Test
