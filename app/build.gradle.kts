@@ -1,14 +1,15 @@
+import dev.detekt.gradle.Detekt
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.detekt)
+    alias(libs.plugins.ksp)
 }
 
 android {
     namespace = "com.example.cst438_project1_team5"
-    compileSdk {
-        version = release(37)
-    }
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "com.example.cst438_project1_team5"
@@ -22,9 +23,7 @@ android {
 
     buildTypes {
         release {
-            optimization {
-                enable = false
-            }
+            isMinifyEnabled = false
         }
     }
     compileOptions {
@@ -50,6 +49,10 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.foundation)
     implementation(libs.androidx.lifecycle.runtime.ktx)
+
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    ksp(libs.androidx.room.compiler)
 
     implementation("androidx.media3:media3-exoplayer:1.11.0")
     implementation("androidx.media3:media3-ui:1.11.0")
@@ -80,7 +83,7 @@ detekt {
     failOnSeverity.set(dev.detekt.gradle.extensions.FailOnSeverity.Error)
 }
 
-tasks.withType<dev.detekt.gradle.Detekt>().configureEach {
+tasks.withType<Detekt>().configureEach {
     reports {
         checkstyle.required.set(true)
         html.required.set(true)

@@ -132,7 +132,7 @@ class AnimeThemeSongApiTest {
               "deleted_at": null,
               "link": "https://a.animethemes.moe/Bakemonogatari-OP1.ogg",
               "views_count": 42,
-              "videos": 
+              "videos": []
             }
         """
 
