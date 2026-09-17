@@ -9,6 +9,7 @@ interface AnimeThemeSongApi {
     @GET("audio/")
     suspend fun getRandomAudio(
         @Query("sort") sort: String = "random",
+        @Query("include") include: String = "videos",
         @Query("page[size]") pageSize: Int = 1
     ): retrofit2.Response<AnimeThemeSongsResponse>
 
@@ -16,4 +17,10 @@ interface AnimeThemeSongApi {
     suspend fun getSong(
         @Path("basename") basename: String
     ): retrofit2.Response<AnimeThemeSongResponse>
+
+    @GET("video")
+    suspend fun getVideo(
+        @Query("include") include: String = "audio",
+        @Query("filter[uncen]") uncen: Boolean = false
+    ): retrofit2.Response<AnimeVideosResponse>
 }

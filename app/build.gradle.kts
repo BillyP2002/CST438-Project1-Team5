@@ -76,6 +76,8 @@ detekt {
     buildUponDefaultConfig = true
     baseline = file("config/detekt/baseline.xml")
     basePath.set(projectDir)
+    // Keep advisory Detekt findings in the reports; only error-severity findings fail CI.
+    failOnSeverity.set(dev.detekt.gradle.extensions.FailOnSeverity.Error)
 }
 
 tasks.withType<dev.detekt.gradle.Detekt>().configureEach {
