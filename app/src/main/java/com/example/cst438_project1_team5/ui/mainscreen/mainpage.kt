@@ -1,5 +1,6 @@
 package com.example.cst438_project1_team5.ui.mainscreen
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -27,7 +28,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.cst438_project1_team5.MainActivity
 import com.example.cst438_project1_team5.ui.theme.CST438Project1Team5Theme
+import com.example.cst438_project1_team5.ui.profile.ProfileActivity
+import com.example.cst438_project1_team5.ui.shop.ShopActivity
+
+//import androidx.compose.foundation.layout.weight
 
 class MainPageActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,7 +47,24 @@ class MainPageActivity : ComponentActivity() {
                     containerColor = Color.Transparent
                 ) { innerPadding ->
                     MainPageScreen(
-                        modifier = Modifier.padding(innerPadding)
+                        modifier = Modifier.padding(innerPadding),
+                        onProfile =
+                            {
+                                startActivity(Intent(this@MainPageActivity, ProfileActivity::class.java))
+                            },
+                        onShop =
+                            {
+                                startActivity(Intent(this@MainPageActivity, ShopActivity::class.java))
+                            },
+                        onLogout =
+                            {
+                                startActivity(Intent(this@MainPageActivity, MainActivity::class.java))
+                            },
+                        onPlay =
+                            {
+                                //activity not made yet
+                                //startActivity(Intent(this@MainPageActivity, GameActivity::class.java))
+                            }
                     )
                 }
             }
@@ -136,6 +159,8 @@ private fun MainMenuButton(
         )
     }
 }
+
+
 
 @Preview(showSystemUi = true)
 @Composable
