@@ -49,7 +49,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat.startActivity
 import com.example.cst438_project1_team5.ui.theme.CST438Project1Team5Theme
 
 enum class AuthMode {
@@ -246,7 +245,9 @@ fun SignInScreen(
                     Spacer(modifier = Modifier.height(16.dp))
 
                     Button(
-                        onClick = { /*startActivity(Intent(this, MainPage::mainpage)*/},
+                        onClick = {
+                            //startActivity(Intent(this@MainActivity, MainPageActivity::class.java))
+                        },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(52.dp),
