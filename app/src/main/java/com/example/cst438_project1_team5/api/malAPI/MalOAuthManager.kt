@@ -65,4 +65,10 @@ class MalOAuthManager (private val context: Context){
             Base64.URL_SAFE or Base64.NO_WRAP or Base64.NO_PADDING
         )
     }
+
+    fun getAccessToken(): String? {
+        return context
+            .getSharedPreferences("mal_oauth_prefs", Context.MODE_PRIVATE)
+            .getString("access_token", null)
+    }
 }
