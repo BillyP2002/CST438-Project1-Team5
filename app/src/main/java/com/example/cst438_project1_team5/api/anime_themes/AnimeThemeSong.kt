@@ -19,6 +19,7 @@ data class AnimeThemeSong(
     val link: String, // link to stream audio
     @SerializedName("views_count")
     val viewsCount: Int // number of views the resource got (for recs)
+    val videos: List<AnimeVideo>? = null // only populated when include=videos is used
 )
 
 data class AnimeThemeSongsResponse(
@@ -51,18 +52,25 @@ data class AnimeVideo(
     val size: Int,
     val mimetype: String,
     val resolution: Int?,
-    @SerializedName("no_credit")
     val nc: Boolean,
     val subbed: Boolean,
     val lyrics: Boolean,
-    @SerializedName("uncensored")
-    val uncen: Boolean, // necessary to have this be false (default is true)
+    val uncen: Boolean = false, // necessary to have this be false (default is true)
     val source: Source,
     val overlap: Overlap,
     val tags: String,
     val link: String,
-    val view_count: Int,
+    val views_count: Int,
     val created_at: Date,
     val updated_at: Date,
     val deleted_at: Date,
+    val audio: AnimeThemeSong? = null,
+)
+
+data class AnimeVideosResponse (
+    val videos: List<AnimeVideo>
+)
+
+data class AnimeVideoResponse (
+    val video: AnimeVideo
 )
