@@ -1,13 +1,13 @@
 package com.example.cst438_project1_team5.api.anime_themes
 
-object GetAudio {
-    suspend fun randomAudio(): AnimeThemeSong? {
+object GetAudioAndVideo {
+    suspend fun randomAudio(): Pair<AnimeThemeSong, AnimeVideo?>? {
         val response = RetrofitClient.animeSongApi.getRandomAudio()
 
-        return if (response.isSuccessful) {
-            response.body()?.songs?.firstOrNull()
-        } else {
-            null
-        }
+        if (!response.isSuccessful) return null
+        val audio = response.body()?.songs?.firstOrNull() ?: return null
+        val video = audio.videos?.firstOrNull { !it.uncen }
+
+        return audio to video
     }
 }
