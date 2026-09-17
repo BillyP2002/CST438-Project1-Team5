@@ -19,7 +19,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -29,6 +32,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -40,37 +44,26 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.cst438_project1_team5.database.AppDatabase
+import com.example.cst438_project1_team5.database.MusicRepository
+import com.example.cst438_project1_team5.database.SongListEntry
 import kotlinx.coroutines.launch
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.ui.tooling.preview.Preview
 
 private const val PLAYER_NAME = "player"
 
-private data class AvatarOption(
-    val id: String,
-    val emoji: String
-)
+private data class AvatarOption(val id: String, val emoji: String)
 
-private data class FrameOption(
-    val id: String,
-    val label: String,
-    val color: Color
-)
+private data class FrameOption(val id: String, val label: String, val color: Color)
 
-private data class StickerOption(
-    val id: String,
-    val emoji: String
-)
+private data class StickerOption(val id: String, val emoji: String)
 
-private data class BackgroundOption(
-    val id: String,
-    val label: String,
-    val colors: List<Color>
-)
+private data class BackgroundOption(val id: String, val label: String, val colors: List<Color>)
 
 private val avatars = listOf(
     //defaults
@@ -113,14 +106,18 @@ private val backgrounds = listOf(
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
 @Composable
-fun ProfileScreen() {
+fun ProfileScreen(repository: MusicRepository, userId: Long? = null) {
     var username by rememberSaveable { mutableStateOf(PLAYER_NAME) }
     var selectedAvatarId by rememberSaveable { mutableStateOf("cat") }
     var selectedFrameId by rememberSaveable { mutableStateOf("gold") }
     var selectedStickerId by rememberSaveable { mutableStateOf("sparkles") }
     var selectedBackgroundId by rememberSaveable { mutableStateOf("night") }
+    var songTitle by rememberSaveable { mutableStateOf("") }
+    var songArtist by rememberSaveable { mutableStateOf("") }
+    var songList by remember {
+        mutableStateOf<List<SongListEntry>>(emptyList())
+    }
 
     val avatar = avatars.first { it.id == selectedAvatarId }
     val frame = frames.first { it.id == selectedFrameId }
@@ -129,6 +126,12 @@ fun ProfileScreen() {
 
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
+
+    LaunchedEffect(userId) {
+        if (userId != null) {
+            songList = repository.getUserSongList(userId)
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -194,9 +197,99 @@ fun ProfileScreen() {
                 onSelected = { selectedBackgroundId = it }
             )
 
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp)
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Text(
+                        text = "My Song List",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+
+                    OutlinedTextField(
+                        value = songTitle,
+                        onValueChange = { songTitle = it },
+                        label = { Text("Song title") },
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    OutlinedTextField(
+                        value = songArtist,
+                        onValueChange = { songArtist = it },
+                        label = { Text("Artist") },
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Button(
+                        onClick = {
+                            if (userId != null && songTitle.isNotBlank() &&
+                                songArtist.isNotBlank()
+                            ) {
+                                scope.launch {
+                                    repository.addSongToUserList(
+                                        userId = userId,
+                                        songId = "manual_${System.currentTimeMillis()}",
+                                        title = songTitle.trim(),
+                                        artist = songArtist.trim()
+                                    )
+                                    songList = repository.getUserSongList(userId)
+                                    songTitle = ""
+                                    songArtist = ""
+                                    snackbarHostState.showSnackbar("Song saved to your list")
+                                }
+                            }
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF7C3AED))
+                    ) {
+                        Text("Add to my song list")
+                    }
+
+                    if (songList.isEmpty()) {
+                        Text(
+                            text = "No songs saved yet.",
+                            color = Color(0xFFCBD5E1)
+                        )
+                    } else {
+                        songList.forEach { song ->
+                            Card(
+                                modifier = Modifier.fillMaxWidth(),
+                                colors = CardDefaults.cardColors(containerColor = Color(0xFF1E293B))
+                            ) {
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(12.dp),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Column {
+                                        Text(
+                                            song.title,
+                                            fontWeight = FontWeight.Bold,
+                                            color = Color.White
+                                        )
+                                        Text(song.artist, color = Color(0xFFCBD5E1))
+                                    }
+                                    if (song.isFavorite) {
+                                        Text("★", color = Color(0xFFFBBF24))
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
             Button(
                 onClick = {
-                    // Later, replace this with a ViewModel/DataStore save call.
                     scope.launch {
                         snackbarHostState.showSnackbar("Profile saved!")
                     }
@@ -209,6 +302,15 @@ fun ProfileScreen() {
             }
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ProfileScreenPreview() {
+    val context = LocalContext.current
+    val database = AppDatabase.getInstance(context)
+    val repository = MusicRepository(database)
+    ProfileScreen(repository = repository, userId = 1L)
 }
 
 @Composable

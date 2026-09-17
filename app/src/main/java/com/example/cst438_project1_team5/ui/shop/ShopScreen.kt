@@ -51,9 +51,7 @@ private const val STARTING_ANIME_COIN_BALANCE = 100
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ShopScreen(
-    items: List<ShopItem> = placeholderShopItems
-) {
+fun ShopScreen(items: List<ShopItem> = placeholderShopItems) {
     var selectedItem by remember { mutableStateOf<ShopItem?>(null) }
     var showCartDialog by remember { mutableStateOf(false) }
     var animeCoinBalance by remember { mutableIntStateOf(STARTING_ANIME_COIN_BALANCE) }
@@ -256,11 +254,7 @@ private fun CartDialog(
 }
 
 @Composable
-fun ShopItemCard(
-    item: ShopItem,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
+fun ShopItemCard(item: ShopItem, onClick: () -> Unit, modifier: Modifier = Modifier) {
     val accessibilityDescription = stringResource(
         R.string.open_item_details,
         item.title
@@ -288,11 +282,7 @@ fun ShopItemCard(
 }
 
 @Composable
-fun ShopItemDialog(
-    item: ShopItem,
-    onDismiss: () -> Unit,
-    onAddToCart: () -> Unit
-) {
+fun ShopItemDialog(item: ShopItem, onDismiss: () -> Unit, onAddToCart: () -> Unit) {
     AlertDialog(
         onDismissRequest = onDismiss,
         title = {

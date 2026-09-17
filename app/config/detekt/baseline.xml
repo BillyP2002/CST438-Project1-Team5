@@ -1,0 +1,129 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>ComplexCondition:MainActivity.kt:fullName.isBlank() || email.isBlank() || password.isBlank() || confirmPassword.isBlank()</ID>
+    <ID>EmptyKotlinFile:malAPItest.kt:.malAPItest.kt</ID>
+    <ID>Filename:QuestionTest.kt:com.example.cst438_project1_team5.QuestionTest.kt</ID>
+    <ID>Filename:malAPIRepository.kt:com.example.cst438_project1_team5.api.malAPIRepository.kt</ID>
+    <ID>Filename:malAPIService.kt:com.example.cst438_project1_team5.api.malAPIService.kt</ID>
+    <ID>Filename:malAPItest.kt:.malAPItest.kt</ID>
+    <ID>Filename:malUser.kt:com.example.cst438_project1_team5.api.malUser.kt</ID>
+    <ID>Filename:myanimelistAPI.kt:com.example.cst438_project1_team5.api.myanimelistAPI.kt</ID>
+    <ID>Filename:profileScreen.kt:com.example.cst438_project1_team5.ui.profile.profileScreen.kt</ID>
+    <ID>Filename:soundTest.kt:com.example.cst438_project1_team5.ui.soundTest.soundTest.kt</ID>
+    <ID>Filename:soundTestScreen.kt:com.example.cst438_project1_team5.ui.soundTest.soundTestScreen.kt</ID>
+    <ID>Indentation:MainActivity.kt: </ID>
+    <ID>Indentation:MusicDatabaseHelper.kt:MusicDatabaseHelper$ </ID>
+    <ID>LongMethod:MainActivity.kt:@Composable fun SignInScreen</ID>
+    <ID>LongMethod:MainActivity.kt:@Composable fun SignUpScreen</ID>
+    <ID>LongMethod:ShopScreen.kt:@Composable private fun CartDialog</ID>
+    <ID>LongMethod:ShopScreen.kt:@OptIn(ExperimentalMaterial3Api::class) @Composable fun ShopScreen</ID>
+    <ID>LongMethod:profileScreen.kt:@OptIn(ExperimentalMaterial3Api::class) @Preview @Composable fun ProfileScreen</ID>
+    <ID>LongMethod:soundTest.kt:@Composable fun SoundTestScreen</ID>
+    <ID>MagicNumber:MainActivity.kt:0xFF020617</ID>
+    <ID>MagicNumber:MainActivity.kt:0xFF0F172A</ID>
+    <ID>MagicNumber:MainActivity.kt:0xFF111827</ID>
+    <ID>MagicNumber:MainActivity.kt:0xFF475569</ID>
+    <ID>MagicNumber:MainActivity.kt:0xFF7C3AED</ID>
+    <ID>MagicNumber:MainActivity.kt:0xFF7DD3FC</ID>
+    <ID>MagicNumber:MainActivity.kt:0xFF94A3B8</ID>
+    <ID>MagicNumber:MainActivity.kt:0xFFC7D2FE</ID>
+    <ID>MagicNumber:MainActivity.kt:0xFFCBD5E1</ID>
+    <ID>MagicNumber:MainActivity.kt:0xFFDDE7FF</ID>
+    <ID>MagicNumber:MainActivity.kt:0xFFE2E8F0</ID>
+    <ID>MagicNumber:MainActivity.kt:0xFFFCA5A5</ID>
+    <ID>MagicNumber:MusicDatabaseHelper.kt:MusicDatabaseHelper$12</ID>
+    <ID>MagicNumber:profileScreen.kt:0xFF1E293B</ID>
+    <ID>MagicNumber:profileScreen.kt:0xFF7C3AED</ID>
+    <ID>MagicNumber:profileScreen.kt:0xFFCBD5E1</ID>
+    <ID>MagicNumber:profileScreen.kt:0xFFFBBF24</ID>
+    <ID>MagicNumber:profileScreen.kt:20</ID>
+    <ID>MagicNumber:soundTest.kt:0xFF111827</ID>
+    <ID>MagicNumber:soundTest.kt:0xFFCBD5E1</ID>
+    <ID>MagicNumber:soundTest.kt:0xFFE2E8F0</ID>
+    <ID>MagicNumber:soundTestScreen.kt:0xFF475569</ID>
+    <ID>MagicNumber:soundTestScreen.kt:0xFF7DD3FC</ID>
+    <ID>MagicNumber:soundTestScreen.kt:0xFFCBD5E1</ID>
+    <ID>MatchingDeclarationName:QuestionTest.kt:TakeQuizTest</ID>
+    <ID>MatchingDeclarationName:malAPIRepository.kt:MalAPIRepository</ID>
+    <ID>MatchingDeclarationName:myanimelistAPI.kt:RetrofitClient</ID>
+    <ID>NoEmptyFile:malAPItest.kt:.malAPItest.kt</ID>
+    <ID>NoWildcardImports:ExampleInstrumentedTest.kt:import org.junit.Assert.*</ID>
+    <ID>NoWildcardImports:ExampleUnitTest.kt:import org.junit.Assert.*</ID>
+    <ID>ObjectPropertyNaming:AnimeThemeSongApiTest.kt:AnimeThemeSongApiTest.Companion$private const val audioCollectionJson = """ { "audio": [$audioJson] } """</ID>
+    <ID>ObjectPropertyNaming:AnimeThemeSongApiTest.kt:AnimeThemeSongApiTest.Companion$private const val audioJson = """ { "id": 1, "basename": "Bakemonogatari-OP1.ogg", "filename": "Bakemonogatari-OP1", "path": "audio/Bakemonogatari-OP1.ogg", "size": 12345, "mimetype": "audio/ogg", "created_at": "2026-01-01T00:00:00.000000Z", "updated_at": "2026-01-02T00:00:00.000000Z", "deleted_at": null, "link": "https://a.animethemes.moe/Bakemonogatari-OP1.ogg", "views_count": 42 } """</ID>
+    <ID>ObjectPropertyNaming:AnimeThemeSongApiTest.kt:AnimeThemeSongApiTest.Companion$private const val singleAudioJson = """ { "audio": $audioJson } """</ID>
+    <ID>ObjectPropertyNaming:MusicDatabaseHelper.kt:MusicDatabaseHelper.Companion$private val USER_COLUMNS = arrayOf( "id", "username", "email", "password_hash", "password_salt", "password_iterations", "created_at", "last_login_at", "failed_attempts", "locked_until" )</ID>
+    <ID>PackageName:AnimeThemeSong.kt:package com.example.cst438_project1_team5.api.anime_themes</ID>
+    <ID>PackageName:AnimeThemeSongApi.kt:package com.example.cst438_project1_team5.api.anime_themes</ID>
+    <ID>PackageName:AnimeThemeSongApiTest.kt:package com.example.cst438_project1_team5.api.anime_themes</ID>
+    <ID>PackageName:AuthScreenTest.kt:package com.example.cst438_project1_team5</ID>
+    <ID>PackageName:Color.kt:package com.example.cst438_project1_team5.ui.theme</ID>
+    <ID>PackageName:ExampleInstrumentedTest.kt:package com.example.cst438_project1_team5</ID>
+    <ID>PackageName:ExampleUnitTest.kt:package com.example.cst438_project1_team5</ID>
+    <ID>PackageName:GetAudio.kt:package com.example.cst438_project1_team5.api.anime_themes</ID>
+    <ID>PackageName:MainActivity.kt:package com.example.cst438_project1_team5</ID>
+    <ID>PackageName:MusicDatabaseHelper.kt:package com.example.cst438_project1_team5.database</ID>
+    <ID>PackageName:QuestionTest.kt:package com.example.cst438_project1_team5</ID>
+    <ID>PackageName:RequestInterceptor.kt:package com.example.cst438_project1_team5.api.anime_themes</ID>
+    <ID>PackageName:RetrofitClient.kt:package com.example.cst438_project1_team5.api.anime_themes</ID>
+    <ID>PackageName:ShopItem.kt:package com.example.cst438_project1_team5.ui.shop</ID>
+    <ID>PackageName:ShopScreen.kt:package com.example.cst438_project1_team5.ui.shop</ID>
+    <ID>PackageName:ShopScreenTest.kt:package com.example.cst438_project1_team5</ID>
+    <ID>PackageName:Theme.kt:package com.example.cst438_project1_team5.ui.theme</ID>
+    <ID>PackageName:Type.kt:package com.example.cst438_project1_team5.ui.theme</ID>
+    <ID>PackageName:UserService.kt:package com.example.cst438_project1_team5.api.anime_themes</ID>
+    <ID>PackageName:malAPIRepository.kt:package com.example.cst438_project1_team5.api</ID>
+    <ID>PackageName:malAPIService.kt:package com.example.cst438_project1_team5.api</ID>
+    <ID>PackageName:malUser.kt:package com.example.cst438_project1_team5.api</ID>
+    <ID>PackageName:myanimelistAPI.kt:package com.example.cst438_project1_team5.api</ID>
+    <ID>PackageName:profileScreen.kt:package com.example.cst438_project1_team5.ui.profile</ID>
+    <ID>PackageName:soundTest.kt:package com.example.cst438_project1_team5.ui.soundTest</ID>
+    <ID>PackageName:soundTestScreen.kt:package com.example.cst438_project1_team5.ui.soundTest</ID>
+    <ID>PackageNaming:AnimeThemeSong.kt:package com.example.cst438_project1_team5.api.anime_themes</ID>
+    <ID>PackageNaming:AnimeThemeSongApi.kt:package com.example.cst438_project1_team5.api.anime_themes</ID>
+    <ID>PackageNaming:AnimeThemeSongApiTest.kt:package com.example.cst438_project1_team5.api.anime_themes</ID>
+    <ID>PackageNaming:AuthScreenTest.kt:package com.example.cst438_project1_team5</ID>
+    <ID>PackageNaming:Color.kt:package com.example.cst438_project1_team5.ui.theme</ID>
+    <ID>PackageNaming:ExampleInstrumentedTest.kt:package com.example.cst438_project1_team5</ID>
+    <ID>PackageNaming:ExampleUnitTest.kt:package com.example.cst438_project1_team5</ID>
+    <ID>PackageNaming:GetAudio.kt:package com.example.cst438_project1_team5.api.anime_themes</ID>
+    <ID>PackageNaming:MainActivity.kt:package com.example.cst438_project1_team5</ID>
+    <ID>PackageNaming:MusicDatabaseHelper.kt:package com.example.cst438_project1_team5.database</ID>
+    <ID>PackageNaming:QuestionTest.kt:package com.example.cst438_project1_team5</ID>
+    <ID>PackageNaming:RequestInterceptor.kt:package com.example.cst438_project1_team5.api.anime_themes</ID>
+    <ID>PackageNaming:RetrofitClient.kt:package com.example.cst438_project1_team5.api.anime_themes</ID>
+    <ID>PackageNaming:ShopItem.kt:package com.example.cst438_project1_team5.ui.shop</ID>
+    <ID>PackageNaming:ShopScreen.kt:package com.example.cst438_project1_team5.ui.shop</ID>
+    <ID>PackageNaming:ShopScreenTest.kt:package com.example.cst438_project1_team5</ID>
+    <ID>PackageNaming:Theme.kt:package com.example.cst438_project1_team5.ui.theme</ID>
+    <ID>PackageNaming:Type.kt:package com.example.cst438_project1_team5.ui.theme</ID>
+    <ID>PackageNaming:UserService.kt:package com.example.cst438_project1_team5.api.anime_themes</ID>
+    <ID>PackageNaming:malAPIRepository.kt:package com.example.cst438_project1_team5.api</ID>
+    <ID>PackageNaming:malAPIService.kt:package com.example.cst438_project1_team5.api</ID>
+    <ID>PackageNaming:malUser.kt:package com.example.cst438_project1_team5.api</ID>
+    <ID>PackageNaming:myanimelistAPI.kt:package com.example.cst438_project1_team5.api</ID>
+    <ID>PackageNaming:profileScreen.kt:package com.example.cst438_project1_team5.ui.profile</ID>
+    <ID>PackageNaming:soundTest.kt:package com.example.cst438_project1_team5.ui.soundTest</ID>
+    <ID>PackageNaming:soundTestScreen.kt:package com.example.cst438_project1_team5.ui.soundTest</ID>
+    <ID>PropertyName:AnimeThemeSongApiTest.kt:AnimeThemeSongApiTest.Companion$private const val audioCollectionJson = """ { "audio": [$audioJson] } """</ID>
+    <ID>PropertyName:AnimeThemeSongApiTest.kt:AnimeThemeSongApiTest.Companion$private const val audioJson = """ { "id": 1, "basename": "Bakemonogatari-OP1.ogg", "filename": "Bakemonogatari-OP1", "path": "audio/Bakemonogatari-OP1.ogg", "size": 12345, "mimetype": "audio/ogg", "created_at": "2026-01-01T00:00:00.000000Z", "updated_at": "2026-01-02T00:00:00.000000Z", "deleted_at": null, "link": "https://a.animethemes.moe/Bakemonogatari-OP1.ogg", "views_count": 42 } """</ID>
+    <ID>PropertyName:AnimeThemeSongApiTest.kt:AnimeThemeSongApiTest.Companion$private const val singleAudioJson = """ { "audio": $audioJson } """</ID>
+    <ID>ReturnCount:MusicDatabaseHelper.kt:MusicDatabaseHelper$fun authenticateUser: UserAccount?</ID>
+    <ID>TooGenericExceptionCaught:MainActivity.kt:e: Exception</ID>
+    <ID>TooGenericExceptionCaught:malAPIRepository.kt:MalAPIRepository$e: Exception</ID>
+    <ID>TooManyFunctions:MusicDatabaseHelper.kt:MusicDatabaseHelper : SQLiteOpenHelper</ID>
+    <ID>TopLevelPropertyNaming:Color.kt:val Pink40 = Color(0xFF7D5260)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt:val Pink80 = Color(0xFFEFB8C8)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt:val Purple40 = Color(0xFF6650a4)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt:val Purple80 = Color(0xFFD0BCFF)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt:val PurpleGrey40 = Color(0xFF625b71)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt:val PurpleGrey80 = Color(0xFFCCC2DC)</ID>
+    <ID>TopLevelPropertyNaming:Theme.kt:private val DarkColorScheme = darkColorScheme( primary = Purple80, secondary = PurpleGrey80, tertiary = Pink80 )</ID>
+    <ID>TopLevelPropertyNaming:Theme.kt:private val LightColorScheme = lightColorScheme( primary = Purple40, secondary = PurpleGrey40, tertiary = Pink40 /* Other default colors to override background = Color(0xFFFFFBFE), surface = Color(0xFFFFFBFE), onPrimary = Color.White, onSecondary = Color.White, onTertiary = Color.White, onBackground = Color(0xFF1C1B1F), onSurface = Color(0xFF1C1B1F), */ )</ID>
+    <ID>TopLevelPropertyNaming:Type.kt:// Set of Material typography styles to start with val Typography = Typography( bodyLarge = TextStyle( fontFamily = FontFamily.Default, fontWeight = FontWeight.Normal, fontSize = 16.sp, lineHeight = 24.sp, letterSpacing = 0.5.sp ) /* Other default text styles to override titleLarge = TextStyle( fontFamily = FontFamily.Default, fontWeight = FontWeight.Normal, fontSize = 22.sp, lineHeight = 28.sp, letterSpacing = 0.sp ), labelSmall = TextStyle( fontFamily = FontFamily.Default, fontWeight = FontWeight.Medium, fontSize = 11.sp, lineHeight = 16.sp, letterSpacing = 0.5.sp ) */ )</ID>
+    <ID>UnusedParameter:soundTestScreen.kt:modifier: Modifier = Modifier</ID>
+    <ID>ValueParameterComment:AnimeThemeSong.kt:AnimeThemeSong$// number of views the resource got (for recs)</ID>
+  </CurrentIssues>
+</SmellBaseline>
