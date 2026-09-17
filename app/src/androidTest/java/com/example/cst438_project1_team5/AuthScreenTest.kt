@@ -31,7 +31,9 @@ class AuthScreenTest {
     fun setUp() {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
         // Use an in-memory database for testing to ensure isolation and speed
-        database = Room.inMemoryDatabaseBuilder(context, AppDatabase::class.java).build()
+        database = Room.inMemoryDatabaseBuilder(context, AppDatabase::class.java)
+            .allowMainThreadQueries()
+            .build()
         userRepository = UserRepository(database.userDao())
 
         composeRule.setContent {

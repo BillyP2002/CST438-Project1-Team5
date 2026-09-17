@@ -70,12 +70,11 @@ jobs:
             adb kill-server || true
             adb start-server
             adb wait-for-device
-            timeout 300 sh -c 'until [ "$(adb shell getprop sys.boot_completed 2>/dev/null | tr -d "\r")" = "1" ]; do sleep 5; done'
+            timeout 300 sh -c 'until [ "$(adb shell getprop sys.boot_completed 2>/dev/null | tr -d "\r")" = "1" ]; do sleep 10; done'
             adb shell settings put global window_animation_scale 0 || true
             adb shell settings put global transition_animation_scale 0 || true
             adb shell settings put global animator_duration_scale 0 || true
             adb shell input keyevent 82 || true
-            adb shell pm clear com.example.cst438_project1_team5 || true
             ./gradlew --no-daemon :app:connectedDebugAndroidTest --stacktrace --info
       - name: Upload instrumented-test reports
         if: always()
