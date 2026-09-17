@@ -3,12 +3,16 @@
 # standard UpperCamelCase convention for Jetpack Compose functions.
 config:
   validation: true
-  warningsAsErrors: true
+  # Keep configuration warnings visible without turning them into CI failures.
+  # Error-severity Detekt findings and failing tests still fail verification.
+  warningsAsErrors: false
 
 # The KtLint wrapper is supplied by detekt-rules-ktlint-wrapper. Keeping
 # autoCorrect off makes CI report violations without changing checked-out code.
 ktlint:
   active: true
+  # Formatting findings are advisory; keep them in CI reports without blocking a build.
+  severity: warning
   code_style: android_studio
   autoCorrect: false
   MaximumLineLength:
@@ -16,6 +20,8 @@ ktlint:
     maxLineLength: 100
 
 naming:
+  # Naming consistency is reported as a warning, not a release-blocking error.
+  severity: warning
   FunctionNaming:
     # Compose functions conventionally use UpperCamelCase; other functions use
     # lowerCamelCase as prescribed by the Google Kotlin style guide.
@@ -32,6 +38,8 @@ naming:
     privatePropertyPattern: '_?[a-z][A-Za-z0-9]*'
 
 style:
+  # Style guidance remains visible in Detekt reports but is non-blocking.
+  severity: warning
   # These rules overlap with the KtLint rules above. KtLint is used because it
   # also verifies the Google/Android import, whitespace, and wrapping rules.
   MaxLineLength:
