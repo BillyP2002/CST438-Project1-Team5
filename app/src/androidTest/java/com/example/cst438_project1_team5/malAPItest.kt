@@ -17,4 +17,5 @@ class malAPITest {
         println(result)
         assertTrue(result.isSuccess)
     }
+
 }
