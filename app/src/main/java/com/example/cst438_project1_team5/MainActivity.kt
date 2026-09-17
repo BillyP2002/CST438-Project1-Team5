@@ -1,6 +1,7 @@
 package com.example.cst438_project1_team5
 
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
@@ -58,6 +59,8 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.edit
 import androidx.lifecycle.lifecycleScope
 import com.example.cst438_project1_team5.api.anime_themes.GetAudio
+import com.example.cst438_project1_team5.api.malAPI.MalOAuthClient
+import com.example.cst438_project1_team5.api.malAPI.MalOAuthManager
 import com.example.cst438_project1_team5.database.MusicDatabaseHelper
 import com.example.cst438_project1_team5.ui.theme.CST438Project1Team5Theme
 import kotlinx.coroutines.launch
@@ -76,6 +79,53 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        //MAL API authorization steps
+        val code = intent.data?.getQueryParameter("code")
+
+        if (code != null) {
+            Log.d("MAL_OAUTH", "Got authorization code")
+
+            val prefs = getSharedPreferences(
+                "mal_oauth_prefs",
+                MODE_PRIVATE
+            )
+
+            val codeVerifier = prefs.getString("code_verifier", null)
+
+            if (codeVerifier != null) {
+                lifecycleScope.launch {
+                    try {
+                        val response = MalOAuthClient.api.getAccessToken(
+                            clientId = "98c1359eecdd8abb0c397113b580ce15",
+                            code = code,
+                            codeVerifier = codeVerifier,
+                            redirectUri = "cst438project1team5://oauth"
+                        )
+
+                        val accessToken = response.access_token
+
+                        Log.d("MAL_OAUTH", "Access token obtained!")
+
+                    } catch (e: retrofit2.HttpException) {
+                        Log.e(
+                            "MAL_OAUTH",
+                            "Token exchange failed: ${e.code()} ${e.message()}"
+                        )
+
+                        Log.e(
+                            "MAL_OAUTH",
+                            "Error body: ${e.response()?.errorBody()?.string()}"
+                        )
+                    } catch (e: Exception) {
+                        Log.e("MAL_OAUTH", "Token exchange failed", e)
+                    }
+                }
+            } else {
+                Log.e("MAL_OAUTH", "No code verifier found")
+            }
+        }
+
         databaseHelper = MusicDatabaseHelper(applicationContext)
 
         // theme song api random song loading
@@ -390,6 +440,24 @@ fun SignInScreen(
                         Text(
                             text = stringResource(R.string.sound_test),
                             color = Color(0xFF7DD3FC),
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                    Button(
+                        onClick = {
+                            MalOAuthManager(context).linkMalAccount()
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(52.dp),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFF2196F3)
+                        )
+                    ) {
+                        Text(
+                            text = "Link MAL Account",
+                            color = Color.White,
                             fontWeight = FontWeight.Bold
                         )
                     }

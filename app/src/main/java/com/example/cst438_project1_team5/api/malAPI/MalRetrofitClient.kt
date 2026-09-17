@@ -8,7 +8,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.security.SecureRandom
 import kotlin.jvm.java
 
-object MyAnimeListRetrofitClient {
+object MalRetrofitClient {
     private const val BASE_URL = "https://api.myanimelist.net/v2/"
 
     private val logging = HttpLoggingInterceptor().apply {
@@ -26,15 +26,4 @@ object MyAnimeListRetrofitClient {
         .build()
         .create(MalAPIService::class.java)
 
-    //Necessary to obtain an OAuth token, which is necessary as a whole for the MAL API.
-    //Code verifier is identical to the code challenge under MAL API.
-    fun getCodeVerifier() : String{
-        val bytes = ByteArray(32)
-        SecureRandom().nextBytes(bytes)
-
-        return Base64.encodeToString(
-            bytes,
-            Base64.URL_SAFE or Base64.NO_WRAP or Base64.NO_PADDING
-        )
-    }
 }
