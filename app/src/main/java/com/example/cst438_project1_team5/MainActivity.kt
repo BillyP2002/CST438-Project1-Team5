@@ -43,6 +43,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -58,7 +59,8 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.edit
 import androidx.lifecycle.lifecycleScope
 import com.example.cst438_project1_team5.api.anime_themes.GetAudio
-import com.example.cst438_project1_team5.database.MusicDatabaseHelper
+import com.example.cst438_project1_team5.database.AppDatabase
+import com.example.cst438_project1_team5.database.MusicRepository
 import com.example.cst438_project1_team5.ui.theme.CST438Project1Team5Theme
 import kotlinx.coroutines.launch
 
@@ -72,11 +74,12 @@ enum class AuthMode {
 }
 
 class MainActivity : ComponentActivity() {
-    private lateinit var databaseHelper: MusicDatabaseHelper
+    private lateinit var repository: MusicRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        databaseHelper = MusicDatabaseHelper(applicationContext)
+        val database = AppDatabase.getInstance(applicationContext)
+        repository = MusicRepository(database)
 
         // theme song api random song loading
         lifecycleScope.launch {
@@ -94,7 +97,7 @@ class MainActivity : ComponentActivity() {
                 ) { innerPadding ->
                     AuthScreen(
                         modifier = Modifier.padding(innerPadding),
-                        databaseHelper = databaseHelper
+                        repository = repository
                     )
                 }
             }
@@ -103,19 +106,19 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun AuthScreen(modifier: Modifier = Modifier, databaseHelper: MusicDatabaseHelper) {
+fun AuthScreen(modifier: Modifier = Modifier, repository: MusicRepository) {
     var currentMode by rememberSaveable { mutableStateOf(AuthMode.SignIn) }
 
     when (currentMode) {
         AuthMode.SignIn -> SignInScreen(
             modifier = modifier,
-            databaseHelper = databaseHelper,
+            repository = repository,
             onCreateAccountClick = { currentMode = AuthMode.SignUp }
         )
 
         AuthMode.SignUp -> SignUpScreen(
             modifier = modifier,
-            databaseHelper = databaseHelper,
+            repository = repository,
             onAlreadyHaveAccountClick = { currentMode = AuthMode.SignIn }
         )
     }
@@ -132,10 +135,11 @@ private fun getLoggedInUserId(context: Context): Long? {
 @Composable
 fun SignInScreen(
     modifier: Modifier = Modifier,
-    databaseHelper: MusicDatabaseHelper,
+    repository: MusicRepository,
     onCreateAccountClick: () -> Unit = {}
 ) {
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     var email by rememberSaveable {
         mutableStateOf(
             getRememberedUserPrefs(context).getString("remembered_email", "") ?: ""
@@ -309,35 +313,43 @@ fun SignInScreen(
                             isSigningIn = true
                             authError = ""
 
-                            try {
-                                val account = databaseHelper.authenticateUser(email, password)
-                                if (account != null) {
-                                    getRememberedUserPrefs(context).edit {
-                                        putLong(PREF_LOGGED_IN_USER_ID, account.id)
-                                            .putString(PREF_LOGGED_IN_USERNAME, account.username)
-                                    }
+                            scope.launch {
+                                try {
+                                    val account = repository.authenticateUser(email, password)
+                                    if (account != null) {
+                                        getRememberedUserPrefs(context).edit {
+                                            putLong(
+                                                PREF_LOGGED_IN_USER_ID,
+                                                account.id
+                                            )
+                                                .putString(
+                                                    PREF_LOGGED_IN_USERNAME,
+                                                    account.username
+                                                )
+                                        }
 
-                                    if (rememberMe) {
-                                        getRememberedUserPrefs(context).edit {
-                                            putString("remembered_email", email)
+                                        if (rememberMe) {
+                                            getRememberedUserPrefs(context).edit {
+                                                putString("remembered_email", email)
+                                            }
+                                        } else {
+                                            getRememberedUserPrefs(context).edit {
+                                                remove("remembered_email")
+                                            }
                                         }
+                                            Toast.makeText(
+                                                context,
+                                                "Signed in successfully!",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
                                     } else {
-                                        getRememberedUserPrefs(context).edit {
-                                            remove("remembered_email")
-                                        }
+                                        authError = "Invalid credentials or account is locked."
                                     }
-                                    Toast.makeText(
-                                        context,
-                                        "Signed in successfully!",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                } else {
-                                    authError = "Invalid credentials or account is locked."
+                                } catch (e: Exception) {
+                                    authError = e.message ?: "Unable to sign in."
+                                } finally {
+                                    isSigningIn = false
                                 }
-                            } catch (e: Exception) {
-                                authError = e.message ?: "Unable to sign in."
-                            } finally {
-                                isSigningIn = false
                             }
                         },
                         modifier = Modifier
@@ -402,10 +414,11 @@ fun SignInScreen(
 @Composable
 fun SignUpScreen(
     modifier: Modifier = Modifier,
-    databaseHelper: MusicDatabaseHelper,
+    repository: MusicRepository,
     onAlreadyHaveAccountClick: () -> Unit = {}
 ) {
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     var fullName by rememberSaveable { mutableStateOf("") }
     var email by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
@@ -613,24 +626,26 @@ fun SignUpScreen(
                             isSigningUp = true
                             authError = ""
 
-                            try {
-                                databaseHelper.registerUser(fullName, email, password)
-                                Toast.makeText(
-                                    context,
-                                    "Account created successfully!",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                                fullName = ""
-                                email = ""
-                                password = ""
-                                confirmPassword = ""
-                                onAlreadyHaveAccountClick()
-                            } catch (e: IllegalArgumentException) {
-                                authError = e.message ?: "Unable to create account."
-                            } catch (e: Exception) {
-                                authError = e.message ?: "Unable to create account."
-                            } finally {
-                                isSigningUp = false
+                            scope.launch {
+                                try {
+                                    repository.registerUser(fullName, email, password)
+                                    Toast.makeText(
+                                        context,
+                                        "Account created successfully!",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                    fullName = ""
+                                    email = ""
+                                    password = ""
+                                    confirmPassword = ""
+                                    onAlreadyHaveAccountClick()
+                                } catch (e: IllegalArgumentException) {
+                                    authError = e.message ?: "Unable to create account."
+                                } catch (e: Exception) {
+                                    authError = e.message ?: "Unable to create account."
+                                } finally {
+                                    isSigningUp = false
+                                }
                             }
                         },
                         modifier = Modifier
@@ -703,9 +718,11 @@ private fun ScreenBackground(content: @Composable () -> Unit) {
 @Composable
 fun SignInScreenPreview() {
     val context = LocalContext.current
+    val database = AppDatabase.getInstance(context)
+    val repository = MusicRepository(database)
     CST438Project1Team5Theme {
         SignInScreen(
-            databaseHelper = MusicDatabaseHelper(context),
+            repository = repository,
             onCreateAccountClick = {}
         )
     }
@@ -715,9 +732,11 @@ fun SignInScreenPreview() {
 @Composable
 fun SignUpScreenPreview() {
     val context = LocalContext.current
+    val database = AppDatabase.getInstance(context)
+    val repository = MusicRepository(database)
     CST438Project1Team5Theme {
         SignUpScreen(
-            databaseHelper = MusicDatabaseHelper(context),
+            repository = repository,
             onAlreadyHaveAccountClick = {}
         )
     }

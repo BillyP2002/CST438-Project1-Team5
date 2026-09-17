@@ -8,7 +8,8 @@ import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextInput
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import com.example.cst438_project1_team5.database.MusicDatabaseHelper
+import com.example.cst438_project1_team5.database.AppDatabase
+import com.example.cst438_project1_team5.database.MusicRepository
 import com.example.cst438_project1_team5.ui.theme.CST438Project1Team5Theme
 import org.junit.Before
 import org.junit.Rule
@@ -21,20 +22,21 @@ class AuthScreenTest {
     @get:Rule
     val composeRule = createComposeRule()
 
-    private lateinit var databaseHelper: MusicDatabaseHelper
+    private lateinit var repository: MusicRepository
 
     @Before
     fun setUp() {
         // get app context
         val context = InstrumentationRegistry.getInstrumentation().targetContext
 
-        // init helper
-        databaseHelper = MusicDatabaseHelper(context)
+        // init database and repository
+        val database = AppDatabase.getInstance(context)
+        repository = MusicRepository(database)
 
         // set compose content
         composeRule.setContent {
             CST438Project1Team5Theme {
-                AuthScreen(databaseHelper = databaseHelper)
+                AuthScreen(repository = repository)
             }
         }
     }

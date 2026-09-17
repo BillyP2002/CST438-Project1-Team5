@@ -50,7 +50,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.cst438_project1_team5.database.MusicDatabaseHelper
+import com.example.cst438_project1_team5.database.AppDatabase
+import com.example.cst438_project1_team5.database.MusicRepository
 import com.example.cst438_project1_team5.database.SongListEntry
 import kotlinx.coroutines.launch
 
@@ -104,12 +105,8 @@ private val backgrounds = listOf(
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
 @Composable
-fun ProfileScreen(
-    databaseHelper: MusicDatabaseHelper = MusicDatabaseHelper(LocalContext.current),
-    userId: Long? = null
-) {
+fun ProfileScreen(repository: MusicRepository, userId: Long? = null) {
     var username by rememberSaveable { mutableStateOf(PLAYER_NAME) }
     var selectedAvatarId by rememberSaveable { mutableStateOf("cat") }
     var selectedFrameId by rememberSaveable { mutableStateOf("gold") }
@@ -117,12 +114,8 @@ fun ProfileScreen(
     var selectedBackgroundId by rememberSaveable { mutableStateOf("night") }
     var songTitle by rememberSaveable { mutableStateOf("") }
     var songArtist by rememberSaveable { mutableStateOf("") }
-    var songList by remember(
-        userId
-    ) {
-        mutableStateOf<List<SongListEntry>>(
-            if (userId != null) databaseHelper.getUserSongList(userId) else emptyList()
-        )
+    var songList by remember {
+        mutableStateOf<List<SongListEntry>>(emptyList())
     }
 
     val avatar = avatars.first { it.id == selectedAvatarId }
@@ -135,7 +128,7 @@ fun ProfileScreen(
 
     LaunchedEffect(userId) {
         if (userId != null) {
-            songList = databaseHelper.getUserSongList(userId)
+            songList = repository.getUserSongList(userId)
         }
     }
 
@@ -238,16 +231,16 @@ fun ProfileScreen(
                             if (userId != null && songTitle.isNotBlank() &&
                                 songArtist.isNotBlank()
                             ) {
-                                databaseHelper.addSongToUserList(
-                                    userId = userId,
-                                    songId = "manual_${System.currentTimeMillis()}",
-                                    title = songTitle.trim(),
-                                    artist = songArtist.trim()
-                                )
-                                songList = databaseHelper.getUserSongList(userId)
-                                songTitle = ""
-                                songArtist = ""
                                 scope.launch {
+                                    repository.addSongToUserList(
+                                        userId = userId,
+                                        songId = "manual_${System.currentTimeMillis()}",
+                                        title = songTitle.trim(),
+                                        artist = songArtist.trim()
+                                    )
+                                    songList = repository.getUserSongList(userId)
+                                    songTitle = ""
+                                    songArtist = ""
                                     snackbarHostState.showSnackbar("Song saved to your list")
                                 }
                             }
@@ -308,6 +301,15 @@ fun ProfileScreen(
             }
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ProfileScreenPreview() {
+    val context = LocalContext.current
+    val database = AppDatabase.getInstance(context)
+    val repository = MusicRepository(database)
+    ProfileScreen(repository = repository, userId = 1L)
 }
 
 @Composable

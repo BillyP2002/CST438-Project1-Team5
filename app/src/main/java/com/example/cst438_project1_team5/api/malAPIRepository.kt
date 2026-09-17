@@ -1,9 +1,9 @@
 package com.example.cst438_project1_team5.api
 
 class MalAPIRepository {
-    suspend fun getList(name: String): Result<MalUser> = try {
+    suspend fun getList(name: String): Result<malUser> = try {
         val response = RetrofitClient.api.getUser(name)
-        val user = MalUser(
+        val user = malUser(
             name = name,
             showsWatched = response.data.map { entry ->
                 Show(
