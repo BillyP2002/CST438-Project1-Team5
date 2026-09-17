@@ -5,7 +5,6 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitClient {
     private const val BASE_URL = "https://api.animethemes.moe/"
-    private const val PATH = "/song"
 
     val animeSongApi: AnimeThemeSongApi by lazy {
         Retrofit.Builder()
