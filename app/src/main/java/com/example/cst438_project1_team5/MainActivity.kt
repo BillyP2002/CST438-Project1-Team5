@@ -355,7 +355,6 @@ fun SignInScreen(
 
                     Button(
                         onClick = {
-                            //startActivity(Intent(this@MainActivity, MainPageActivity::class.java))
                             if (email.isBlank() || password.isBlank()) {
                                 authError = "Please enter both email and password."
                                 return@Button
@@ -424,6 +423,8 @@ fun SignInScreen(
                             fontWeight = FontWeight.Bold,
                             color = Color.White
                         )
+
+
                     }
 
                     Spacer(modifier = Modifier.height(20.dp))

@@ -102,3 +102,5 @@ tasks.withType<Detekt>().configureEach {
         sarif.required.set(true)
     }
 }
+
+

@@ -1,4 +1,5 @@
 package com.example.cst438_project1_team5.ui.shop
+import com.example.cst438_project1_team5.R
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
