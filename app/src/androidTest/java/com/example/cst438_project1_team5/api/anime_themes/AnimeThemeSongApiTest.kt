@@ -79,7 +79,7 @@ class AnimeThemeSongApiTest {
 
     @Test
     fun getSong_requestsBasename_andMapsSingleAudioResponse() = runTest {
-        mockWebServer.enqueue(jsonResponse(singleAudioJson))
+        mockWebServer.enqueue(jsonResponse(SINGLE_AUDIO_JSON))
 
         val response = api.getSong("Bakemonogatari-OP1.ogg")
 
@@ -119,7 +119,7 @@ class AnimeThemeSongApiTest {
         .setBody(body)
 
     private companion object {
-        private const val audioJson = """
+        private const val AUDIO_JSON = """
             {
               "id": 1,
               "basename": "Bakemonogatari-OP1.ogg",
@@ -137,11 +137,11 @@ class AnimeThemeSongApiTest {
         """
 
         private const val audioCollectionJson = """
-            { "audio": [$audioJson] }
+            { "audio": [$AUDIO_JSON] }
         """
 
-        private const val singleAudioJson = """
-            { "audio": $audioJson }
+        private const val SINGLE_AUDIO_JSON = """
+            { "audio": $AUDIO_JSON }
         """
     }
 }
