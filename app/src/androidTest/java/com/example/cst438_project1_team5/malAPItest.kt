@@ -9,20 +9,25 @@ import org.junit.Assume.assumeTrue
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
+import android.util.Log
 
 @RunWith(AndroidJUnit4::class)
 class malAPITest {
 
     @Test
     fun getList() = runBlocking {
-        val context = InstrumentationRegistry
-            .getInstrumentation()
-            .targetContext
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
         val malOAuthManager = MalOAuthManager(context)
         val accessToken = malOAuthManager.getAccessToken()
-        assumeTrue("MAL integration test requires a locally stored OAuth token", !accessToken.isNullOrBlank())
+
+        assumeTrue(
+            "Test skipped: No locally stored OAuth token found. Ensure you logged in via the app UI first!",
+            !accessToken.isNullOrBlank()
+        )
+
         val repository = MalApiRepository(requireNotNull(accessToken))
         val result = repository.getList("Marxeru")
+
         println(result.exceptionOrNull()?.stackTraceToString())
         println(result)
         assertTrue(result.isSuccess)

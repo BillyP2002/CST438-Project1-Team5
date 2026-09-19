@@ -107,7 +107,10 @@ class MainActivity : ComponentActivity() {
                             redirectUri = "cst438project1team5://oauth"
                         )
 
-                        prefs.edit { putString("access_token", response.access_token) }
+                        prefs.edit {
+                            putString("access_token", response.access_token)
+                            putString("refresh_token", response.refresh_token)
+                        }
 
                         Log.d("MAL_OAUTH", "Access token obtained!")
 
