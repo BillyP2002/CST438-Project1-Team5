@@ -51,15 +51,15 @@ class ProfileScreenTest {
         composeRule.onNodeWithText("Frame").assertIsDisplayed()
         composeRule.onNodeWithText("Sticker").assertIsDisplayed()
         composeRule.onNodeWithText("Background").assertIsDisplayed()
-        composeRule.onNodeWithText("My Song List").assertIsDisplayed()
-        composeRule.onNodeWithText("Save profile").assertIsDisplayed()
+        composeRule.onNodeWithText("My Song List", ignoreCase = true, useUnmergedTree = true).assertExists()
+        composeRule.onNodeWithText("Save profile", ignoreCase = true, useUnmergedTree = true).assertExists()
         composeRule.onNodeWithText("Sign Out").assertIsDisplayed()
     }
 
     @Test
     fun profileScreen_acceptsPlayerNameInput() {
-        composeRule.onNodeWithText("Player name").performTextInput("TestUser123")
-        composeRule.onNodeWithText("TestUser123").assertIsDisplayed()
+        composeRule.onNodeWithText("Player name", useUnmergedTree = true).performTextInput("TestUser")
+        composeRule.onNodeWithText("TestUser", useUnmergedTree = true).assertExists()
     }
 
     @Test

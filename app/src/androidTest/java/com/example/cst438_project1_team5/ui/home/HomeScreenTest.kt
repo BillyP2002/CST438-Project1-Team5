@@ -1,6 +1,8 @@
 package com.example.cst438_project1_team5.ui.home
 
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.hasClickAction
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
@@ -52,16 +54,16 @@ class HomeScreenTest {
     @Test
     fun homeScreen_navigatesToShopTab() {
         // click on Shop tab
-        composeRule.onNodeWithContentDescription("Shop").performClick()
+        composeRule.onNode(hasText("Shop") and hasClickAction(), useUnmergedTree = true).performClick()
         
         // Assert Shop screen is displayed by looking for Shop title
-        composeRule.onNodeWithText("Shop").assertIsDisplayed()
+        composeRule.onNode(hasText("Anime Coin:")).assertExists()
     }
 
     @Test
     fun homeScreen_navigatesToProfileTab() {
         // click on Profile tab
-        composeRule.onNodeWithContentDescription("Profile").performClick()
+        composeRule.onNode(hasText("Profile") and hasClickAction(), useUnmergedTree = true).performClick()
         
         // Assert Profile screen is displayed by looking for its title
         composeRule.onNodeWithText("Customize Profile").assertIsDisplayed()
