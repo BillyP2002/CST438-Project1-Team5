@@ -1,4 +1,7 @@
-package com.example.cst438_project1_team5.api.malAPI
+package com.example.cst438_project1_team5.api.malapi
+
+import java.io.IOException
+import retrofit2.HttpException
 
 class MalApiRepository(private val accessToken: String) {
     suspend fun getList(name: String): Result<MalUser> = try {
@@ -14,7 +17,9 @@ class MalApiRepository(private val accessToken: String) {
             }
         )
         Result.success(user)
-    } catch (e: Exception) {
+    } catch (e: HttpException) {
+        Result.failure(e)
+    } catch (e: IOException) {
         Result.failure(e)
     }
 }

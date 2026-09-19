@@ -1,4 +1,4 @@
-package com.example.cst438_project1_team5.api.malAPI
+package com.example.cst438_project1_team5.api.malapi
 
 import com.google.gson.annotations.SerializedName
 import retrofit2.http.GET
