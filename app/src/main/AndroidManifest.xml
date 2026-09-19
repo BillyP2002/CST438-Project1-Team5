@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
+
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
@@ -24,15 +25,16 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
             <intent-filter android:label="MAL Login Callback">
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
-                <data android:scheme="cst438project1team5" android:host="oauth" />
+                <data
+                    android:host="oauth"
+                    android:scheme="cst438project1team5" />
             </intent-filter>
-
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -40,10 +42,15 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:scheme="cst438project"
-                    android:host="cst438project1team5://oauth" />
+                    android:host="cst438project1team5://oauth"
+                    android:scheme="cst438project" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".ui.mainscreen.MainPageActivity"
+            android:exported="false"
+            android:theme="@style/Theme.CST438Project1Team5"
+            android:windowSoftInputMode="adjustResize" />
     </application>
 
 </manifest>
