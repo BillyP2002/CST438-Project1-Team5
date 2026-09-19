@@ -36,7 +36,7 @@ class AuthScreenTest {
         // set compose content
         composeRule.setContent {
             CST438Project1Team5Theme {
-                AuthScreen(repository = repository)
+                AuthScreen(repository = repository, onSignInSuccess = {})
             }
         }
     }
