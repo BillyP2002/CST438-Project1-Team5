@@ -194,11 +194,7 @@ fun SignInScreen(
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    var email by rememberSaveable {
-        mutableStateOf(
-            getRememberedUserPrefs(context).getString("remembered_email", "") ?: ""
-        )
-    }
+    var email by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
     var rememberMe by remember { mutableStateOf(false) }
     var authError by rememberSaveable { mutableStateOf("") }
