@@ -47,24 +47,25 @@ class MainPageActivity : ComponentActivity() {
                     containerColor = Color.Transparent
                 ) { innerPadding ->
                     MainPageScreen(
-                        modifier = Modifier.padding(innerPadding),
-                        onProfile =
-                            {
-                                startActivity(Intent(this@MainPageActivity, ProfileActivity::class.java))
-                            },
-                        onShop =
-                            {
-                                startActivity(Intent(this@MainPageActivity, ShopActivity::class.java))
-                            },
-                        onLogout =
-                            {
-                                startActivity(Intent(this@MainPageActivity, MainActivity::class.java))
-                            },
-                        onPlay =
-                            {
-                                //activity not made yet
-                                //startActivity(Intent(this@MainPageActivity, GameActivity::class.java))
-                            }
+                        modifier = Modifier.padding(innerPadding)
+//                        onProfile =
+//                            {
+//                                startActivity(Intent(this@MainPageActivity, ProfileActivity::class.java))
+//                            },
+//                        onShop =
+//                            {
+//                                startActivity(Intent(this@MainPageActivity, ShopActivity::class.java))
+//                            },
+//                        onLogout =
+//                            {
+//                                startActivity(Intent(this@MainPageActivity, MainActivity::class.java))
+//                            },
+//                        onPlay =
+//                            {
+//                                //activity not made yet
+//                                //startActivity(Intent(this@MainPageActivity, GameActivity::class.java))
+//                            }
+//
                     )
                 }
             }
