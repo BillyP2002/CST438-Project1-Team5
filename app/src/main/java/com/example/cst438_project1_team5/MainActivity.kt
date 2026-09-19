@@ -64,8 +64,9 @@ import com.example.cst438_project1_team5.api.malapi.MalOAuthClient
 import com.example.cst438_project1_team5.api.malapi.MalOAuthManager
 import com.example.cst438_project1_team5.database.AppDatabase
 import com.example.cst438_project1_team5.database.MusicRepository
-import com.example.cst438_project1_team5.ui.theme.CST438Project1Team5Theme
 import com.example.cst438_project1_team5.ui.components.ScreenBackground
+import com.example.cst438_project1_team5.ui.home.HomeScreen
+import com.example.cst438_project1_team5.ui.theme.CST438Project1Team5Theme
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
@@ -78,6 +79,11 @@ private const val MAL_LINK_BUTTON_COLOR = 0xFF2196F3
 enum class AuthMode {
     SignIn,
     SignUp
+}
+
+enum class AppScreenState {
+    Auth,
+    Home
 }
 
 class MainActivity : ComponentActivity() {
@@ -144,15 +150,33 @@ class MainActivity : ComponentActivity() {
 
         enableEdgeToEdge()
         setContent {
+            var currentScreen by rememberSaveable { mutableStateOf(if (getLoggedInUserId(this) != null) AppScreenState.Home else AppScreenState.Auth) }
+            
             CST438Project1Team5Theme {
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
                     containerColor = Color.Transparent
                 ) { innerPadding ->
-                    AuthScreen(
-                        modifier = Modifier.padding(innerPadding),
-                        repository = repository
-                    )
+                    if (currentScreen == AppScreenState.Auth) {
+                        AuthScreen(
+                            modifier = Modifier.padding(innerPadding),
+                            repository = repository,
+                            onSignInSuccess = { currentScreen = AppScreenState.Home }
+                        )
+                    } else {
+                        val userId = getLoggedInUserId(this@MainActivity) ?: -1L
+                        HomeScreen(
+                            repository = repository,
+                            userId = userId,
+                            onSignOut = {
+                                getRememberedUserPrefs(this@MainActivity).edit { 
+                                    remove(PREF_LOGGED_IN_USER_ID)
+                                    remove(PREF_LOGGED_IN_USERNAME)
+                                }
+                                currentScreen = AppScreenState.Auth
+                            }
+                        )
+                    }
                 }
             }
         }
@@ -160,14 +184,19 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun AuthScreen(modifier: Modifier = Modifier, repository: MusicRepository) {
+fun AuthScreen(
+    modifier: Modifier = Modifier, 
+    repository: MusicRepository,
+    onSignInSuccess: () -> Unit
+) {
     var currentMode by rememberSaveable { mutableStateOf(AuthMode.SignIn) }
 
     when (currentMode) {
         AuthMode.SignIn -> SignInScreen(
             modifier = modifier,
             repository = repository,
-            onCreateAccountClick = { currentMode = AuthMode.SignUp }
+            onCreateAccountClick = { currentMode = AuthMode.SignUp },
+            onSignInSuccess = onSignInSuccess
         )
 
         AuthMode.SignUp -> SignUpScreen(
@@ -190,7 +219,8 @@ private fun getLoggedInUserId(context: Context): Long? {
 fun SignInScreen(
     modifier: Modifier = Modifier,
     repository: MusicRepository,
-    onCreateAccountClick: () -> Unit = {}
+    onCreateAccountClick: () -> Unit = {},
+    onSignInSuccess: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -392,6 +422,7 @@ fun SignInScreen(
                                                 "Signed in successfully!",
                                                 Toast.LENGTH_SHORT
                                             ).show()
+                                            onSignInSuccess()
                                     } else {
                                         authError = "Invalid credentials or account is locked."
                                     }
@@ -443,18 +474,6 @@ fun SignInScreen(
                     ) {
                         Text(
                             text = stringResource(R.string.sign_up_text),
-                            color = Color(0xFF7DD3FC),
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                    TextButton(
-                        onClick = {
-                        },
-
-                        modifier = Modifier.align(Alignment.CenterHorizontally)
-                    ) {
-                        Text(
-                            text = stringResource(R.string.sound_test),
                             color = Color(0xFF7DD3FC),
                             fontWeight = FontWeight.Bold
                         )

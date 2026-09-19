@@ -31,6 +31,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -110,7 +111,11 @@ private val backgrounds = listOf(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileScreen(repository: MusicRepository, userId: Long? = null) {
+fun ProfileScreen(
+    repository: MusicRepository, 
+    userId: Long? = null,
+    onSignOut: () -> Unit = {}
+) {
     var username by rememberSaveable { mutableStateOf(PLAYER_NAME) }
     var selectedAvatarId by rememberSaveable { mutableStateOf("cat") }
     var selectedFrameId by rememberSaveable { mutableStateOf("gold") }
@@ -143,7 +148,12 @@ fun ProfileScreen(repository: MusicRepository, userId: Long? = null) {
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color.Transparent,
                     titleContentColor = Color.White
-                )
+                ),
+                actions = {
+                    TextButton(onClick = onSignOut) {
+                        Text("Sign Out", color = Color(0xFFFCA5A5))
+                    }
+                }
             )
         },
         containerColor = Color.Transparent,
