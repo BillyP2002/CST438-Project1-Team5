@@ -65,6 +65,7 @@ import com.example.cst438_project1_team5.api.malapi.MalOAuthManager
 import com.example.cst438_project1_team5.database.AppDatabase
 import com.example.cst438_project1_team5.database.MusicRepository
 import com.example.cst438_project1_team5.ui.theme.CST438Project1Team5Theme
+import com.example.cst438_project1_team5.ui.components.ScreenBackground
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
@@ -774,24 +775,7 @@ fun SignUpScreen(
     }
 }
 
-@Composable
-private fun ScreenBackground(content: @Composable () -> Unit) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(
-                Brush.verticalGradient(
-                    colors = listOf(
-                        Color(0xFF0F172A),
-                        Color(0xFF111827),
-                        Color(0xFF020617)
-                    )
-                )
-            )
-    ) {
-        content()
-    }
-}
+
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable

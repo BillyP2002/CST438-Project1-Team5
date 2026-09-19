@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -27,6 +28,7 @@ import androidx.media3.exoplayer.ExoPlayer
 import com.example.cst438_project1_team5.database.AppDatabase
 import com.example.cst438_project1_team5.database.MusicRepository
 import com.example.cst438_project1_team5.database.PastChallengeSong
+import com.example.cst438_project1_team5.ui.components.ScreenBackground
 import java.time.LocalDate
 import kotlinx.serialization.Serializable
 
@@ -97,58 +99,61 @@ fun SoundTestScreen(
         }
     }
 
-    Column(modifier = Modifier.padding(16.dp)) {
-        Button(onClick = {
-            if (player.isPlaying) {
-                player.pause()
-                isPlaying = false
-            } else {
-                player.play()
-                isPlaying = true
-            }
-
-            if (userId != null && !hasRecordedSong && round.songTitle != null) {
-                scope.launch {
-                    repository.recordDailyChallengeSong(
-                        userId = userId,
-                        challengeDate = challengeDate,
-                        songId = round.songTitle ?: "unknown-song",
-                        title = round.songTitle ?: "Unknown song",
-                        artist = "Daily challenge",
-                        album = null
-                    )
-                    hasRecordedSong = true
-                    challengeHistory = repository.getPastPlayedSongsForChallenge(
-                        userId,
-                        challengeDate
-                    )
-                }
-            }
-        }) {
-            Text(if (isPlaying) "Pause" else "Play")
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Card(
-            colors = CardDefaults.cardColors(containerColor = Color(0xFF111827))
-        ) {
-            Column(modifier = Modifier.padding(16.dp)) {
-                Text(
-                    text = "Daily challenge history",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = Color.White
-                )
-
-                if (challengeHistory.isEmpty()) {
-                    Text("No songs recorded yet for this challenge.", color = Color(0xFFCBD5E1))
+    ScreenBackground {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Button(onClick = {
+                if (player.isPlaying) {
+                    player.pause()
+                    isPlaying = false
                 } else {
-                    challengeHistory.forEach { song ->
-                        Text(
-                            text = "• ${song.title} by ${song.artist}",
-                            color = Color(0xFFE2E8F0),
-                            modifier = Modifier.padding(top = 4.dp)
+                    player.play()
+                    isPlaying = true
+                }
+
+                if (userId != null && !hasRecordedSong && round.songTitle != null) {
+                    scope.launch {
+                        repository.recordDailyChallengeSong(
+                            userId = userId,
+                            challengeDate = challengeDate,
+                            songId = round.songTitle ?: "unknown-song",
+                            title = round.songTitle ?: "Unknown song",
+                            artist = "Daily challenge",
+                            album = null
                         )
+                        hasRecordedSong = true
+                        challengeHistory = repository.getPastPlayedSongsForChallenge(
+                            userId,
+                            challengeDate
+                        )
+                    }
+                }
+            },
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF7C3AED))) {
+                Text(if (isPlaying) "Pause" else "Play", color = Color.White)
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Card(
+                colors = CardDefaults.cardColors(containerColor = Color(0xFF111827).copy(alpha = 0.9f))
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text(
+                        text = "Daily challenge history",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = Color.White
+                    )
+
+                    if (challengeHistory.isEmpty()) {
+                        Text("No songs recorded yet for this challenge.", color = Color(0xFFCBD5E1))
+                    } else {
+                        challengeHistory.forEach { song ->
+                            Text(
+                                text = "• ${song.title} by ${song.artist}",
+                                color = Color(0xFFE2E8F0),
+                                modifier = Modifier.padding(top = 4.dp)
+                            )
+                        }
                     }
                 }
             }
