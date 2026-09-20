@@ -32,6 +32,7 @@ enum class HomeTab {
     Profile
 }
 
+@Suppress("LongMethod")
 @Composable
 fun HomeScreen(
     repository: MusicRepository,

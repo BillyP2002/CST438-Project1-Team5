@@ -109,6 +109,7 @@ private val backgrounds = listOf(
     )
 )
 
+@Suppress("LongMethod")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(

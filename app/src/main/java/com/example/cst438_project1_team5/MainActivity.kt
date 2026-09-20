@@ -89,6 +89,7 @@ enum class AppScreenState {
 class MainActivity : ComponentActivity() {
     private lateinit var repository: MusicRepository
 
+    @Suppress("LongMethod")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val database = AppDatabase.getInstance(applicationContext)
