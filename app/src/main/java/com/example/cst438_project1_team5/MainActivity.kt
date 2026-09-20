@@ -1,7 +1,6 @@
 package com.example.cst438_project1_team5
 
 import android.content.Context
-import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
@@ -66,6 +65,9 @@ import com.example.cst438_project1_team5.database.AppDatabase
 import com.example.cst438_project1_team5.database.MusicRepository
 import com.example.cst438_project1_team5.ui.theme.CST438Project1Team5Theme
 import kotlinx.coroutines.launch
+import com.example.cst438_project1_team5.ui.mainscreen.MainPageComposable
+import com.example.cst438_project1_team5.ui.profile.ProfileScreen
+import com.example.cst438_project1_team5.ui.shop.ShopScreen
 
 private const val AUTH_PREFS_NAME = "music_auth_prefs"
 private const val PREF_LOGGED_IN_USER_ID = "logged_in_user_id"
@@ -73,7 +75,10 @@ private const val PREF_LOGGED_IN_USERNAME = "logged_in_username"
 
 enum class AuthMode {
     SignIn,
-    SignUp
+    SignUp,
+    MainPage,
+    Profile,
+    Shop
 }
 
 class MainActivity : ComponentActivity() {
@@ -156,6 +161,19 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
+fun BackButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    TextButton(
+        onClick = onClick,
+        modifier = modifier
+    ) {
+        Text("Back")
+    }
+}
+
+@Composable
 fun AuthScreen(modifier: Modifier = Modifier, repository: MusicRepository) {
     var currentMode by rememberSaveable { mutableStateOf(AuthMode.SignIn) }
 
@@ -163,14 +181,43 @@ fun AuthScreen(modifier: Modifier = Modifier, repository: MusicRepository) {
         AuthMode.SignIn -> SignInScreen(
             modifier = modifier,
             repository = repository,
-            onCreateAccountClick = { currentMode = AuthMode.SignUp }
+            onCreateAccountClick = {
+                currentMode = AuthMode.SignUp
+            },
+            onSignInSuccess = {
+                currentMode = AuthMode.MainPage
+            },
+            onBackButton = {
+                currentMode = AuthMode.MainPage
+            }
         )
 
         AuthMode.SignUp -> SignUpScreen(
             modifier = modifier,
             repository = repository,
-            onAlreadyHaveAccountClick = { currentMode = AuthMode.SignIn }
+            onAlreadyHaveAccountClick = {
+                currentMode = AuthMode.SignIn
+            }
         )
+
+        AuthMode.MainPage -> MainPageComposable(
+            modifier = modifier,
+            onProfile = {
+                currentMode = AuthMode.Profile
+            },
+            onShop = {
+                currentMode = AuthMode.Shop
+            },
+            onLogout = {
+                currentMode = AuthMode.SignIn
+            }
+        )
+
+        AuthMode.Profile -> ProfileScreen(
+            repository = repository
+        )
+
+        AuthMode.Shop -> ShopScreen()
     }
 }
 
@@ -186,8 +233,11 @@ private fun getLoggedInUserId(context: Context): Long? {
 fun SignInScreen(
     modifier: Modifier = Modifier,
     repository: MusicRepository,
-    onCreateAccountClick: () -> Unit = {}
-) {
+    onCreateAccountClick: () -> Unit = {},
+    onSignInSuccess: () -> Unit = {},
+    onBackButton: () -> Unit = {}
+)
+{
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     var email by rememberSaveable {
@@ -392,6 +442,8 @@ fun SignInScreen(
                                                 "Signed in successfully!",
                                                 Toast.LENGTH_SHORT
                                             ).show()
+
+                                            onSignInSuccess()
                                     } else {
                                         authError = "Invalid credentials or account is locked."
                                     }
@@ -793,7 +845,6 @@ fun SignInScreenPreview() {
     CST438Project1Team5Theme {
         SignInScreen(
             repository = repository,
-            onCreateAccountClick = {}
         )
     }
 }

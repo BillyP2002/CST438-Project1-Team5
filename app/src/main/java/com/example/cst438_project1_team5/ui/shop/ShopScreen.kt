@@ -43,6 +43,9 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.cst438_project1_team5.AuthMode
+import com.example.cst438_project1_team5.AuthScreen
+import com.example.cst438_project1_team5.BackButton
 import com.example.cst438_project1_team5.R
 import com.example.cst438_project1_team5.ui.theme.CST438Project1Team5Theme
 import kotlinx.coroutines.launch
@@ -51,7 +54,9 @@ private const val STARTING_ANIME_COIN_BALANCE = 100
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ShopScreen(items: List<ShopItem> = placeholderShopItems) {
+fun ShopScreen(items: List<ShopItem> = placeholderShopItems, onBackButton: () -> Unit = {})
+{
+    Column { BackButton(onClick = onBackButton) }
     var selectedItem by remember { mutableStateOf<ShopItem?>(null) }
     var showCartDialog by remember { mutableStateOf(false) }
     var animeCoinBalance by remember { mutableIntStateOf(STARTING_ANIME_COIN_BALANCE) }
@@ -67,6 +72,7 @@ fun ShopScreen(items: List<ShopItem> = placeholderShopItems) {
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
+
         topBar = {
             TopAppBar(
                 title = {
@@ -84,6 +90,13 @@ fun ShopScreen(items: List<ShopItem> = placeholderShopItems) {
                             text = stringResource(
                                 R.string.cart_count,
                                 cartItemCount
+                            )
+                        )
+                    }
+                    TextButton(onClick = {  }) {
+                        Text(
+                            text = stringResource(
+                                R.string.back_button
                             )
                         )
                     }
