@@ -11,6 +11,7 @@
         <DialogSelection />
       </SelectionState>
       <SelectionState runConfigName="MainPageComposablePreview">
+      <SelectionState runConfigName="getList()">
         <option name="selectionMode" value="DROPDOWN" />
         <DialogSelection />
       </SelectionState>

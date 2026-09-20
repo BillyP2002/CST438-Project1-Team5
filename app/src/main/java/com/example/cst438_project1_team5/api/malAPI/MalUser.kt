@@ -1,4 +1,4 @@
-package com.example.cst438_project1_team5.api.malAPI
+package com.example.cst438_project1_team5.api.malapi
 
 data class MalUser(
     val name: String,
@@ -6,4 +6,4 @@ data class MalUser(
 )
 
 // Didn't use anime_id as that is under development; title should be a unique identifier.
-data class Show(val title: String, val completedStatus: String, val score: Int? = null)
+data class Show(val title: String, val completedStatus: String?, val score: Int? = null)

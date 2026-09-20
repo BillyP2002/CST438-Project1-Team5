@@ -59,8 +59,8 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.edit
 import androidx.lifecycle.lifecycleScope
 import com.example.cst438_project1_team5.api.anime_themes.GetAudioAndVideo
-import com.example.cst438_project1_team5.api.malAPI.MalOAuthClient
-import com.example.cst438_project1_team5.api.malAPI.MalOAuthManager
+import com.example.cst438_project1_team5.api.malapi.MalOAuthClient
+import com.example.cst438_project1_team5.api.malapi.MalOAuthManager
 import com.example.cst438_project1_team5.database.AppDatabase
 import com.example.cst438_project1_team5.database.MusicRepository
 import com.example.cst438_project1_team5.ui.theme.CST438Project1Team5Theme
@@ -68,10 +68,13 @@ import kotlinx.coroutines.launch
 import com.example.cst438_project1_team5.ui.mainscreen.MainPageComposable
 import com.example.cst438_project1_team5.ui.profile.ProfileScreen
 import com.example.cst438_project1_team5.ui.shop.ShopScreen
+import retrofit2.HttpException
+import java.io.IOException
 
 private const val AUTH_PREFS_NAME = "music_auth_prefs"
 private const val PREF_LOGGED_IN_USER_ID = "logged_in_user_id"
 private const val PREF_LOGGED_IN_USERNAME = "logged_in_username"
+private const val MAL_LINK_BUTTON_COLOR = 0xFF2196F3
 
 enum class AuthMode {
     SignIn,
@@ -112,7 +115,10 @@ class MainActivity : ComponentActivity() {
                             redirectUri = "cst438project1team5://oauth"
                         )
 
-                        prefs.edit { putString("access_token", response.access_token) }
+                        prefs.edit {
+                            putString("access_token", response.access_token)
+                            putString("refresh_token", response.refresh_token)
+                        }
 
                         Log.d("MAL_OAUTH", "Access token obtained!")
 
@@ -126,8 +132,8 @@ class MainActivity : ComponentActivity() {
                             "MAL_OAUTH",
                             "Error body: ${e.response()?.errorBody()?.string()}"
                         )
-                    } catch (e: Exception) {
-                        Log.e("MAL_OAUTH", "Token exchange failed", e)
+                    } catch (e: IOException) {
+                        Log.e("MAL_OAUTH", "Network error during token exchange", e)
                     }
                 }
             } else {
@@ -447,8 +453,12 @@ fun SignInScreen(
                                     } else {
                                         authError = "Invalid credentials or account is locked."
                                     }
-                                } catch (e: Exception) {
-                                    authError = e.message ?: "Unable to sign in."
+                                } catch (e: IOException) {
+                                    authError = "Network error. Please try again."
+                                    Log.e("Auth", "Network error", e)
+                                } catch (e: HttpException) {
+                                    authError = "Server error: ${e.code()}."
+                                    Log.e("Auth", "Server error", e)
                                 } finally {
                                     isSigningIn = false
                                 }
@@ -518,7 +528,7 @@ fun SignInScreen(
                             .height(52.dp),
                         shape = RoundedCornerShape(16.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFF2196F3)
+                            containerColor = Color(MAL_LINK_BUTTON_COLOR)
                         )
                     ) {
                         Text(
@@ -763,8 +773,12 @@ fun SignUpScreen(
                                     onAlreadyHaveAccountClick()
                                 } catch (e: IllegalArgumentException) {
                                     authError = e.message ?: "Unable to create account."
-                                } catch (e: Exception) {
-                                    authError = e.message ?: "Unable to create account."
+                                } catch (e: IOException) {
+                                    authError = "Network error. Please try again."
+                                    Log.e("Auth", "Network error", e)
+                                } catch (e: HttpException) {
+                                    authError = "Server error: ${e.code()}."
+                                    Log.e("Auth", "Server error", e)
                                 } finally {
                                     isSigningUp = false
                                 }

@@ -1,4 +1,4 @@
-package com.example.cst438_project1_team5.api.malAPI
+package com.example.cst438_project1_team5.api.malapi
 
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
