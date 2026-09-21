@@ -46,11 +46,11 @@
                     android:scheme="cst438project" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".ui.mainscreen.MainPageActivity"
-            android:exported="false"
-            android:theme="@style/Theme.CST438Project1Team5"
-            android:windowSoftInputMode="adjustResize" />
+<!--        <activity-->
+<!--            android:name=".ui.mainscreen.MainActivity"-->
+<!--            android:exported="false"-->
+<!--            android:theme="@style/Theme.CST438Project1Team5"-->
+<!--            android:windowSoftInputMode="adjustResize" />-->
     </application>
 
 </manifest>
