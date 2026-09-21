@@ -70,6 +70,7 @@ import com.example.cst438_project1_team5.ui.profile.ProfileScreen
 import com.example.cst438_project1_team5.ui.shop.ShopScreen
 import retrofit2.HttpException
 import java.io.IOException
+import androidx.activity.compose.BackHandler
 
 private const val AUTH_PREFS_NAME = "music_auth_prefs"
 private const val PREF_LOGGED_IN_USER_ID = "logged_in_user_id"
@@ -166,22 +167,29 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@Composable
-fun BackButton(
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    TextButton(
-        onClick = onClick,
-        modifier = modifier
-    ) {
-        Text("Back")
-    }
-}
+//@Composable
+//fun BackButton(
+//    onClick: () -> Unit,
+//    modifier: Modifier = Modifier
+//) {
+//    TextButton(
+//        onClick = onClick,
+//        modifier = modifier
+//    ) {
+//        Text("Back")
+//    }
+//}
 
 @Composable
 fun AuthScreen(modifier: Modifier = Modifier, repository: MusicRepository) {
     var currentMode by rememberSaveable { mutableStateOf(AuthMode.SignIn) }
+
+    BackHandler(
+        enabled = currentMode == AuthMode.Profile ||
+                currentMode == AuthMode.Shop
+    ) {
+        currentMode = AuthMode.MainPage
+    }
 
     when (currentMode) {
         AuthMode.SignIn -> SignInScreen(
@@ -193,9 +201,9 @@ fun AuthScreen(modifier: Modifier = Modifier, repository: MusicRepository) {
             onSignInSuccess = {
                 currentMode = AuthMode.MainPage
             },
-            onBackButton = {
-                currentMode = AuthMode.MainPage
-            }
+//            onBackButton = {
+//                currentMode = AuthMode.MainPage
+//            }
         )
 
         AuthMode.SignUp -> SignUpScreen(
@@ -241,7 +249,7 @@ fun SignInScreen(
     repository: MusicRepository,
     onCreateAccountClick: () -> Unit = {},
     onSignInSuccess: () -> Unit = {},
-    onBackButton: () -> Unit = {}
+//    onBackButton: () -> Unit = {}
 )
 {
     val context = LocalContext.current

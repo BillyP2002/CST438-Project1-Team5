@@ -50,6 +50,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+//import com.example.cst438_project1_team5.BackButton
 import com.example.cst438_project1_team5.database.AppDatabase
 import com.example.cst438_project1_team5.database.MusicRepository
 import com.example.cst438_project1_team5.database.SongListEntry
@@ -108,6 +109,10 @@ private val backgrounds = listOf(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(repository: MusicRepository, userId: Long? = null) {
+//    Column {
+//        BackButton(
+//            onClick = onBackButton
+//        )
     var username by rememberSaveable { mutableStateOf(PLAYER_NAME) }
     var selectedAvatarId by rememberSaveable { mutableStateOf("cat") }
     var selectedFrameId by rememberSaveable { mutableStateOf("gold") }
@@ -287,6 +292,7 @@ fun ProfileScreen(repository: MusicRepository, userId: Long? = null) {
                     }
                 }
             }
+        }
 
             Button(
                 onClick = {
@@ -302,7 +308,6 @@ fun ProfileScreen(repository: MusicRepository, userId: Long? = null) {
             }
         }
     }
-}
 
 @Preview(showBackground = true)
 @Composable
