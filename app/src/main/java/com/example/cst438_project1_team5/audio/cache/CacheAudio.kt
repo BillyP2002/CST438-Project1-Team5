@@ -1,5 +1,6 @@
 package com.example.cst438_project1_team5.audio.cache
 
+import android.net.Uri
 import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -29,6 +30,16 @@ class CacheAudio (private val cacheDir: File) {
      */
     private fun filenameFor(url: String): String =
         url.toHttpUrl().pathSegments.last()
+
+    /**
+     * A function that gets the Uri from the cached file in order
+     * to build a MediaItem around the .setUri() function.
+     * @param cachedFile File
+     * @return Uri
+     */
+    fun getUriFromFilename(cachedFile: File): Uri {
+        return Uri.fromFile(cachedFile)
+    }
 
     /**
      * Async function that gets audio file from AnimeThemesAPI.
