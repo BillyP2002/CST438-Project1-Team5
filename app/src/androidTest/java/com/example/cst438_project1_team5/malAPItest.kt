@@ -1,15 +1,14 @@
 package com.example.cst438_project1_team5
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.example.cst438_project1_team5.api.malapi.MalApiRepository
-import com.example.cst438_project1_team5.api.malapi.MalOAuthManager
 import kotlinx.coroutines.runBlocking
 import androidx.test.platform.app.InstrumentationRegistry
 import org.junit.Assume.assumeTrue
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
-import android.util.Log
+import com.example.cst438_project1_team5.api.malapi.MalApiRepository
+import com.example.cst438_project1_team5.api.malapi.MalOAuthManager
 
 @RunWith(AndroidJUnit4::class)
 class MalApiTest {
@@ -24,7 +23,7 @@ class MalApiTest {
             !accessToken.isNullOrBlank()
         )
         val repository = MalApiRepository(requireNotNull(accessToken))
-        val result = repository.getList("Marxeru")
+        val result = repository.getList()
 
         println(result.exceptionOrNull()?.stackTraceToString())
         println(result)
