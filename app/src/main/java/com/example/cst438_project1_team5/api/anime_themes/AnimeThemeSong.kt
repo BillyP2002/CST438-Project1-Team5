@@ -75,3 +75,22 @@ data class AnimeVideosResponse (
 data class AnimeVideoResponse (
     val video: AnimeVideo
 )
+
+//ResourceResponse, Resource, and Anime are involved in getting an anime by the MAL id
+data class ResourceResponse(
+    @SerializedName("resources")
+    val resources: List<Resource>
+)
+
+data class Resource(
+    @SerializedName("anime")
+    val anime: List<Anime>
+)
+
+data class Anime(
+    @SerializedName("id")
+    val id: Int,
+
+    @SerializedName("name")
+    val name: String
+)
