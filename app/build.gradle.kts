@@ -36,7 +36,6 @@ android {
 }
 
 dependencies {
-    implementation(libs.androidx.media3.ui)
     detektPlugins(libs.detekt.ktlint.rules)
 
     implementation(platform(libs.androidx.compose.bom))
