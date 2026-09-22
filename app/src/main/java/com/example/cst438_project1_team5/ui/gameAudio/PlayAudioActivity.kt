@@ -23,15 +23,7 @@ class PlayAudioActivity : ComponentActivity() {
      * returns MediaItem
      */
     private fun createMediaItem(level: GameLevels): MediaItem {
-        MediaItem.Builder()
-            .setUri(cachedFileUri)
-            .setClippingConfiguration(
-                MediaItem.ClippingConfiguration.Builder()
-                    .setStartPositionMs(0)
-                    .setEndPositionMs(level.ms)
-                    .build()
-            )
-            .build()
+
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,23 +36,6 @@ class PlayAudioActivity : ComponentActivity() {
         setContent {
             defaultGameView()
         }
-    }
-
-    /**
-     * Enum class that defines the 5 levels of the game.
-     * Level seconds are returned as millisecond values.
-     * Impossible- 0.5s
-     * Hard- 1s
-     * Medium- 3s
-     * Chill- 8s
-     * Easy- 15s
-     */
-    enum class GameLevels(val ms: Long) {
-        IMPOSSIBLE(500),
-        HARD(1000),
-        MEDIUM(3000),
-        CHILL(8000),
-        EASY(15000)
     }
 
     /**
