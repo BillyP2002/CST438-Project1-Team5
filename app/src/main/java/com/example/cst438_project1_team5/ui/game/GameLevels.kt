@@ -1,4 +1,4 @@
-package com.example.cst438_project1_team5.ui.gameAudio
+package com.example.cst438_project1_team5.ui.game
 
 /**
  * Enum class that defines the 5 levels of the game.

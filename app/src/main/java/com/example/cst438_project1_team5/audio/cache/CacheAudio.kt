@@ -74,7 +74,7 @@ class CacheAudio (private val cacheDir: File) {
      * Deletes a specific cached source (when round ends)
      * @return Boolean
      */
-    fun evict(url: String): Boolean{
+    fun evict(url: String): Boolean {
         val destFile: File = File(cacheDir, filenameFor(url))
         var deleted: Boolean = false
         if (destFile.exists()) {

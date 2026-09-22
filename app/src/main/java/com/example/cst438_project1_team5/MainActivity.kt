@@ -78,6 +78,7 @@ private const val PREF_LOGGED_IN_USERNAME = "logged_in_username"
 private const val MAL_LINK_BUTTON_COLOR = 0xFF2196F3
 
 enum class AuthMode {
+    Play,
     SignIn,
     SignUp,
     MainPage,
@@ -216,6 +217,9 @@ fun AuthScreen(modifier: Modifier = Modifier, repository: MusicRepository) {
 
         AuthMode.MainPage -> MainPageComposable(
             modifier = modifier,
+            onPlay = {
+                currentMode = AuthMode.Play
+            },
             onProfile = {
                 currentMode = AuthMode.Profile
             },
@@ -226,6 +230,8 @@ fun AuthScreen(modifier: Modifier = Modifier, repository: MusicRepository) {
                 currentMode = AuthMode.SignIn
             }
         )
+
+        AuthMode.Play -> GameScreen()
 
         AuthMode.Profile -> ProfileScreen(
             repository = repository

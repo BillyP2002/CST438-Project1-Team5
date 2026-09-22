@@ -2,7 +2,7 @@ package com.example.cst438_project1_team5.audio
 
 import android.net.Uri
 import androidx.media3.common.MediaItem
-import com.example.cst438_project1_team5.ui.gameAudio.GameLevels
+import com.example.cst438_project1_team5.ui.game.GameLevels
 
 class MediaItemClipBuilder(private val cachedFileUri: Uri) {
 
