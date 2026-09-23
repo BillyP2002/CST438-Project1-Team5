@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -59,6 +60,15 @@ private val GameActiveLevel = Color(0xFF22D3EE)
 private val GameInactiveLevel = Color(0xFF334155)
 private val GameError = Color(0xFFFCA5A5)
 
+/** Data retained for the success screen after the player completes every hint level. */
+data class GameResult(
+    val score: Int,
+    val videoUrl: String,
+    val animeTitle: String
+) {
+    val animeCoins: Int get() = score * 10
+}
+
 /**
  * A round starts from a random AnimeThemes video. Its related audio supplies
  * [GameRound.sourceUrl] and its related anime supplies [GameRound.correctAnswer].
@@ -68,8 +78,8 @@ private val GameError = Color(0xFFFCA5A5)
 @Suppress("LongMethod", "TooGenericExceptionCaught", "CyclomaticComplexMethod")
 fun GameScreen(
     modifier: Modifier = Modifier,
-    /** Called with the accumulated score; the future score activity can be launched here. */
-    onFinish: (Int) -> Unit = {}
+    /** Called after the player has revealed every hint level. */
+    onFinish: (GameResult) -> Unit = {}
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -121,7 +131,7 @@ fun GameScreen(
 
     LaunchedEffect(Unit) { startNewRound() }
 
-    Column(modifier = modifier.padding(16.dp)) {
+    Column(modifier = modifier.fillMaxSize().padding(16.dp)) {
         when {
             isLoadingRound -> Text("Finding a theme…", color = GameText)
 
@@ -144,7 +154,6 @@ fun GameScreen(
                     feedback = null
                 },
                 feedback = feedback,
-                totalScore = totalScore,
                 onSubmit = {
                     val submittedGuess = guessText
                     if (submittedGuess.isBlank()) {
@@ -190,9 +199,15 @@ fun GameScreen(
                 onNewRound = ::startNewRound,
                 onFinish = {
                     audioClipPlayer.pause()
-                    feedback = "Final score: $totalScore"
-                    onFinish(totalScore)
-                }
+                    onFinish(
+                        GameResult(
+                            score = totalScore,
+                            videoUrl = round!!.videoUrl,
+                            animeTitle = round!!.correctAnswer
+                        )
+                    )
+                },
+                canFinish = levelIndex == GameLevels.entries.lastIndex
             )
         }
     }
@@ -211,10 +226,10 @@ private fun GameRoundContent(
     guessText: String,
     onGuessChange: (String) -> Unit,
     feedback: String?,
-    totalScore: Int,
     onSubmit: () -> Unit,
     onNewRound: () -> Unit,
-    onFinish: () -> Unit
+    onFinish: () -> Unit,
+    canFinish: Boolean
 ) {
     val (cachedFile, loadError) = rememberCachedAudioState(round.sourceUrl, cacheAudio)
 
@@ -239,14 +254,14 @@ private fun GameRoundContent(
                 audioClipPlayer.play(clipBuilder.generateMediaItemFromGameLevel(currentLevel))
             }
 
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text("Difficulty: $currentLevelName", color = GameText, fontSize = 25.sp)
-                Text("Clip length: ${currentLevel.ms / 1_000.0}s", color = GameMutedText)
-                Text("Score: $totalScore", color = Color(0xFFFDE68A))
-            }
+            Box(modifier = Modifier.fillMaxSize()) {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text("Difficulty: $currentLevelName", color = GameText, fontSize = 25.sp)
+                    Text("Clip length: ${currentLevel.ms / 1_000.0}s", color = GameMutedText)
+                    Text("Reveal every level to unlock Finish", color = Color(0xFFFDE68A))
 
             Column(
                 modifier = Modifier
@@ -269,9 +284,17 @@ private fun GameRoundContent(
             OutlinedTextField(
                 value = guessText,
                 onValueChange = onGuessChange,
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 10.dp),
                 label = { Text("Your anime guess") },
                 singleLine = true,
+                trailingIcon = {
+                    androidx.compose.material3.TextButton(
+                        onClick = onSubmit,
+                        enabled = guessText.isNotBlank()
+                    ) { Text("Submit") }
+                },
                 colors = TextFieldDefaults.colors(
                     focusedTextColor = GameText,
                     unfocusedTextColor = GameText,
@@ -288,14 +311,14 @@ private fun GameRoundContent(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 10.dp),
+                    .padding(top = 8.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 GameButton(
                     modifier = Modifier.weight(1f).height(48.dp),
-                    onClick = onSubmit
-                ) { Text("Submit") }
+                    onClick = onNewRound
+                ) { Text("New Round") }
                 GameButton(
                     modifier = Modifier.weight(1f).height(48.dp),
                     onClick = {
@@ -319,28 +342,25 @@ private fun GameRoundContent(
                 ) { Text("Next Hint") }
             }
 
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
+            feedback?.let {
+                Text(it, color = GameText, modifier = Modifier.padding(top = 10.dp))
+            }
+
+                }
+
+                if (canFinish) {
                 GameButton(
-                    modifier = Modifier.weight(1f).height(48.dp),
-                    onClick = onNewRound
-                ) { Text("New Round") }
-                GameButton(
-                    modifier = Modifier.weight(1f).height(48.dp),
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .fillMaxWidth()
+                        .height(52.dp),
                     onClick = onFinish,
                     colors = ButtonDefaults.buttonColors(
                         containerColor = GameSecondary,
                         contentColor = GameText
                     )
                 ) { Text("Finish") }
-            }
-
-            feedback?.let {
-                Text(it, color = GameText, modifier = Modifier.padding(top = 10.dp))
+                }
             }
         }
     }

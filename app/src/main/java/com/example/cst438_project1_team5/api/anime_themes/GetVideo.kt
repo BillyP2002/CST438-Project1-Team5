@@ -3,7 +3,9 @@ package com.example.cst438_project1_team5.api.anime_themes
 /** A playable game round assembled entirely from AnimeThemes API values. */
 data class GameRound(
     val sourceUrl: String,
-    val correctAnswer: String
+    val correctAnswer: String,
+    /** The filtered AnimeThemes video includes the matching theme-song audio. */
+    val videoUrl: String = ""
 )
 
 object GetVideo {
@@ -15,7 +17,9 @@ object GetVideo {
         val response = RetrofitClient.animeSongApi.getRandomVideo()
         if (!response.isSuccessful) return null
 
-        val video = response.body()?.videos?.firstOrNull() ?: return null
+        // Keep this check even though the API request filters `uncen=false` so a
+        // malformed response can never reach the success playback screen.
+        val video = response.body()?.videos?.firstOrNull { !it.uncen } ?: return null
         val audio = video.audio ?: return null
         val anime = video.animethemeentries.firstNotNullOfOrNull {
             it.animetheme?.anime
@@ -23,7 +27,8 @@ object GetVideo {
 
         return GameRound(
             sourceUrl = audio.link,
-            correctAnswer = anime.name
+            correctAnswer = anime.name,
+            videoUrl = video.link
         )
     }
 
