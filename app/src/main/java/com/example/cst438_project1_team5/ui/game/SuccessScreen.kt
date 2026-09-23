@@ -1,6 +1,5 @@
 package com.example.cst438_project1_team5.ui.game
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,18 +8,21 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.cst438_project1_team5.AuthMode
+import com.example.cst438_project1_team5.ui.components.ScreenBackground
 
 @Preview
 @Composable
@@ -28,38 +30,33 @@ fun SuccessScreen(
     modifier: Modifier = Modifier,
     onBack: () -> Unit = {}
 ) {
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-            .background(
-                Brush.verticalGradient(
-                    colors = listOf(
-                        Color(0xFF4A4A4A),
-                        Color(0xFF383838)
-                    )
-                )
-            )
-            .padding(horizontal = 24.dp)
-    ) {
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally
+    ScreenBackground {
+        Box(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(horizontal = 24.dp)
         ) {
-            Spacer(modifier = Modifier.height(188.dp))
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = "Congratulations!!!",
+                    style = MaterialTheme.typography.headlineLarge.copy(
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    ),
+                    textAlign = TextAlign.Center
+                )
 
-            Text(
-                text = "Congratulations!!!",
-                color = Color.White,
-                fontSize = 43.sp,
-                textAlign = TextAlign.Center
-            )
+                Spacer(modifier = Modifier.height(64.dp))
 
-            Spacer(modifier = Modifier.height(64.dp))
-
-            MenuButton(
-                text = "Back to Menu",
-                onClick = onBack
-            )
+                MenuButton(
+                    text = "Back to Menu",
+                    onClick = onBack
+                )
+            }
         }
     }
 }
@@ -69,14 +66,21 @@ fun MenuButton(
     text: String,
     onClick: () -> Unit
 ) {
-    TextButton(
+    Button(
         onClick = onClick,
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(52.dp),
+        shape = RoundedCornerShape(16.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = Color(0xFF7C3AED)
+        )
     ) {
         Text(
             text = text,
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
             color = Color.White,
-            fontSize = 32.sp,
             textAlign = TextAlign.Center
         )
     }

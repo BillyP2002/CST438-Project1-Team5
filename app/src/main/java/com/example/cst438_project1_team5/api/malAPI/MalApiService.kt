@@ -25,6 +25,6 @@ data class MalAnimeListEntry(@SerializedName("node") val node: MalAnimeNode)
 
 data class MalAnimeNode(
     @SerializedName("title") val animeTitle: String,
-    @SerializedName("status") val status: String,
+    @SerializedName("status") val status: String? = null,
     @SerializedName("list_score") val listScore: Int? = null
 )

@@ -17,6 +17,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -43,11 +44,11 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.cst438_project1_team5.AuthMode
-import com.example.cst438_project1_team5.AuthScreen
-//import com.example.cst438_project1_team5.BackButton
+import androidx.compose.ui.graphics.Color
+import androidx.compose.material3.TopAppBarDefaults
 import com.example.cst438_project1_team5.R
 import com.example.cst438_project1_team5.ui.theme.CST438Project1Team5Theme
+import com.example.cst438_project1_team5.ui.components.ScreenBackground
 import kotlinx.coroutines.launch
 
 private const val STARTING_ANIME_COIN_BALANCE = 100
@@ -72,25 +73,32 @@ fun ShopScreen(items: List<ShopItem> = placeholderShopItems)
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-
+        containerColor = Color.Transparent,
         topBar = {
             TopAppBar(
                 title = {
-                    Text(text = stringResource(R.string.shop_title))
+                    Text(text = stringResource(R.string.shop_title), color = Color.White)
                 },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.Transparent,
+                    titleContentColor = Color.White,
+                    actionIconContentColor = Color.White
+                ),
                 actions = {
                     Text(
                         text = stringResource(
                             R.string.anime_coin_balance,
                             animeCoinBalance
-                        )
+                        ),
+                        color = Color(0xFF7DD3FC)
                     )
                     TextButton(onClick = { showCartDialog = true }) {
                         Text(
                             text = stringResource(
                                 R.string.cart_count,
                                 cartItemCount
-                            )
+                            ),
+                            color = Color(0xFF7DD3FC)
                         )
                     }
 //                    TextButton(onClick = onBackButton) {
@@ -107,7 +115,8 @@ fun ShopScreen(items: List<ShopItem> = placeholderShopItems)
             SnackbarHost(hostState = snackbarHostState)
         }
     ) { innerPadding ->
-        LazyVerticalGrid(
+        ScreenBackground {
+            LazyVerticalGrid(
             columns = GridCells.Fixed(2),
             modifier = Modifier
                 .fillMaxSize()
@@ -127,6 +136,7 @@ fun ShopScreen(items: List<ShopItem> = placeholderShopItems)
                     }
                 )
             }
+        }
         }
     }
 
@@ -212,6 +222,9 @@ private fun CartDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
+        containerColor = Color(0xFF111827).copy(alpha = 0.9f),
+        titleContentColor = Color.White,
+        textContentColor = Color(0xFFCBD5E1),
         title = {
             Text(text = stringResource(R.string.cart_title))
         },
@@ -227,16 +240,17 @@ private fun CartDialog(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Column(modifier = Modifier.weight(1f)) {
-                                Text(text = item.title)
+                                Text(text = item.title, color = Color.White)
                                 Text(
                                     text = stringResource(
                                         R.string.cart_item_quantity,
                                         quantity
-                                    )
+                                    ),
+                                    color = Color(0xFFCBD5E1)
                                 )
                             }
                             TextButton(onClick = { onRemove(item.id) }) {
-                                Text(text = stringResource(R.string.remove))
+                                Text(text = stringResource(R.string.remove), color = Color(0xFFFCA5A5))
                             }
                         }
                     }
@@ -245,7 +259,8 @@ private fun CartDialog(
                         text = stringResource(
                             R.string.cart_total,
                             total
-                        )
+                        ),
+                        color = Color.White
                     )
                 }
             }
@@ -253,14 +268,15 @@ private fun CartDialog(
         confirmButton = {
             Button(
                 onClick = onBuy,
-                enabled = cartItems.isNotEmpty()
+                enabled = cartItems.isNotEmpty(),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF7C3AED))
             ) {
-                Text(text = stringResource(R.string.buy))
+                Text(text = stringResource(R.string.buy), color = Color.White)
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text(text = stringResource(R.string.close))
+                Text(text = stringResource(R.string.close), color = Color(0xFF7DD3FC))
             }
         }
     )
@@ -283,7 +299,8 @@ fun ShopItemCard(item: ShopItem, onClick: () -> Unit, modifier: Modifier = Modif
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(
             defaultElevation = 6.dp
-        )
+        ),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFF111827).copy(alpha = 0.9f))
     ) {
         Image(
             painter = painterResource(item.imageResId),
@@ -298,6 +315,9 @@ fun ShopItemCard(item: ShopItem, onClick: () -> Unit, modifier: Modifier = Modif
 fun ShopItemDialog(item: ShopItem, onDismiss: () -> Unit, onAddToCart: () -> Unit) {
     AlertDialog(
         onDismissRequest = onDismiss,
+        containerColor = Color(0xFF111827).copy(alpha = 0.9f),
+        titleContentColor = Color.White,
+        textContentColor = Color(0xFFCBD5E1),
         title = {
             Text(text = item.title)
         },
@@ -309,18 +329,22 @@ fun ShopItemDialog(item: ShopItem, onDismiss: () -> Unit, onAddToCart: () -> Uni
                     text = stringResource(
                         R.string.anime_coin_price,
                         item.animeCoinPrice
-                    )
+                    ),
+                    color = Color.White
                 )
             }
         },
         confirmButton = {
-            Button(onClick = onAddToCart) {
-                Text(text = stringResource(R.string.add_to_cart))
+            Button(
+                onClick = onAddToCart,
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF7C3AED))
+            ) {
+                Text(text = stringResource(R.string.add_to_cart), color = Color.White)
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text(text = stringResource(R.string.cancel))
+                Text(text = stringResource(R.string.cancel), color = Color(0xFF7DD3FC))
             }
         }
     )

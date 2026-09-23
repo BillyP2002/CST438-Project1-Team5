@@ -63,6 +63,8 @@ import com.example.cst438_project1_team5.api.malapi.MalOAuthClient
 import com.example.cst438_project1_team5.api.malapi.MalOAuthManager
 import com.example.cst438_project1_team5.database.AppDatabase
 import com.example.cst438_project1_team5.database.MusicRepository
+import com.example.cst438_project1_team5.ui.components.ScreenBackground
+import com.example.cst438_project1_team5.ui.home.HomeScreen
 import com.example.cst438_project1_team5.ui.theme.CST438Project1Team5Theme
 import kotlinx.coroutines.launch
 import com.example.cst438_project1_team5.ui.mainscreen.MainPageComposable
@@ -88,9 +90,15 @@ enum class AuthMode {
     Shop
 }
 
+enum class AppScreenState {
+    Auth,
+    Home
+}
+
 class MainActivity : ComponentActivity() {
     private lateinit var repository: MusicRepository
 
+    @Suppress("LongMethod")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val database = AppDatabase.getInstance(applicationContext)
@@ -155,15 +163,33 @@ class MainActivity : ComponentActivity() {
 
         enableEdgeToEdge()
         setContent {
+            var currentScreen by rememberSaveable { mutableStateOf(if (getLoggedInUserId(this) != null) AppScreenState.Home else AppScreenState.Auth) }
+            
             CST438Project1Team5Theme {
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
                     containerColor = Color.Transparent
                 ) { innerPadding ->
-                    AuthScreen(
-                        modifier = Modifier.padding(innerPadding),
-                        repository = repository
-                    )
+                    if (currentScreen == AppScreenState.Auth) {
+                        AuthScreen(
+                            modifier = Modifier.padding(innerPadding),
+                            repository = repository,
+                            onSignInSuccess = { currentScreen = AppScreenState.Home }
+                        )
+                    } else {
+                        val userId = getLoggedInUserId(this@MainActivity) ?: -1L
+                        HomeScreen(
+                            repository = repository,
+                            userId = userId,
+                            onSignOut = {
+                                getRememberedUserPrefs(this@MainActivity).edit { 
+                                    remove(PREF_LOGGED_IN_USER_ID)
+                                    remove(PREF_LOGGED_IN_USERNAME)
+                                }
+                                currentScreen = AppScreenState.Auth
+                            }
+                        )
+                    }
                 }
             }
         }
@@ -184,7 +210,11 @@ class MainActivity : ComponentActivity() {
 //}
 
 @Composable
-fun AuthScreen(modifier: Modifier = Modifier, repository: MusicRepository) {
+fun AuthScreen(
+    modifier: Modifier = Modifier, 
+    repository: MusicRepository,
+    onSignInSuccess: () -> Unit
+) {
     var currentMode by rememberSaveable { mutableStateOf(AuthMode.SignIn) }
 
     BackHandler(
@@ -198,15 +228,8 @@ fun AuthScreen(modifier: Modifier = Modifier, repository: MusicRepository) {
         AuthMode.SignIn -> SignInScreen(
             modifier = modifier,
             repository = repository,
-            onCreateAccountClick = {
-                currentMode = AuthMode.SignUp
-            },
-            onSignInSuccess = {
-                currentMode = AuthMode.MainPage
-            },
-//            onBackButton = {
-//                currentMode = AuthMode.MainPage
-//            }
+            onCreateAccountClick = { currentMode = AuthMode.SignUp },
+            onSignInSuccess = onSignInSuccess
         )
 
         AuthMode.SignUp -> SignUpScreen(
@@ -257,17 +280,11 @@ fun SignInScreen(
     modifier: Modifier = Modifier,
     repository: MusicRepository,
     onCreateAccountClick: () -> Unit = {},
-    onSignInSuccess: () -> Unit = {},
-//    onBackButton: () -> Unit = {}
-)
-{
+    onSignInSuccess: () -> Unit = {}
+) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    var email by rememberSaveable {
-        mutableStateOf(
-            getRememberedUserPrefs(context).getString("remembered_email", "") ?: ""
-        )
-    }
+    var email by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
     var rememberMe by remember { mutableStateOf(false) }
     var authError by rememberSaveable { mutableStateOf("") }
@@ -406,13 +423,6 @@ fun SignInScreen(
                                 color = Color(0xFFE2E8F0)
                             )
                         }
-
-                        TextButton(onClick = {}) {
-                            Text(
-                                text = stringResource(R.string.forgot_password),
-                                color = Color(0xFF7DD3FC)
-                            )
-                        }
                     }
 
                     Spacer(modifier = Modifier.height(16.dp))
@@ -465,7 +475,6 @@ fun SignInScreen(
                                                 "Signed in successfully!",
                                                 Toast.LENGTH_SHORT
                                             ).show()
-
                                             onSignInSuccess()
                                     } else {
                                         authError = "Invalid credentials or account is locked."
@@ -520,18 +529,6 @@ fun SignInScreen(
                     ) {
                         Text(
                             text = stringResource(R.string.sign_up_text),
-                            color = Color(0xFF7DD3FC),
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                    TextButton(
-                        onClick = {
-                        },
-
-                        modifier = Modifier.align(Alignment.CenterHorizontally)
-                    ) {
-                        Text(
-                            text = stringResource(R.string.sound_test),
                             color = Color(0xFF7DD3FC),
                             fontWeight = FontWeight.Bold
                         )
@@ -848,24 +845,7 @@ fun SignUpScreen(
     }
 }
 
-@Composable
-private fun ScreenBackground(content: @Composable () -> Unit) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(
-                Brush.verticalGradient(
-                    colors = listOf(
-                        Color(0xFF0F172A),
-                        Color(0xFF111827),
-                        Color(0xFF020617)
-                    )
-                )
-            )
-    ) {
-        content()
-    }
-}
+
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable

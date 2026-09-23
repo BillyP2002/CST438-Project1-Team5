@@ -24,12 +24,14 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -50,7 +52,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-//import com.example.cst438_project1_team5.BackButton
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TextFieldDefaults
+import com.example.cst438_project1_team5.ui.components.ScreenBackground
 import com.example.cst438_project1_team5.database.AppDatabase
 import com.example.cst438_project1_team5.database.MusicRepository
 import com.example.cst438_project1_team5.database.SongListEntry
@@ -106,13 +110,14 @@ private val backgrounds = listOf(
     )
 )
 
+@Suppress("LongMethod")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileScreen(repository: MusicRepository, userId: Long? = null) {
-//    Column {
-//        BackButton(
-//            onClick = onBackButton
-//        )
+fun ProfileScreen(
+    repository: MusicRepository, 
+    userId: Long? = null,
+    onSignOut: () -> Unit = {}
+) {
     var username by rememberSaveable { mutableStateOf(PLAYER_NAME) }
     var selectedAvatarId by rememberSaveable { mutableStateOf("cat") }
     var selectedFrameId by rememberSaveable { mutableStateOf("gold") }
@@ -141,96 +146,142 @@ fun ProfileScreen(repository: MusicRepository, userId: Long? = null) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Customize Profile") }
+                title = { Text("Customize Profile", color = Color.White) },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.Transparent,
+                    titleContentColor = Color.White
+                ),
+                actions = {
+                    TextButton(onClick = onSignOut) {
+                        Text("Sign Out", color = Color(0xFFFCA5A5))
+                    }
+                }
             )
         },
+        containerColor = Color.Transparent,
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .padding(horizontal = 16.dp)
-                .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            ProfilePreview(
-                username = username.ifBlank { "Player" },
-                avatar = avatar,
-                frame = frame,
-                sticker = sticker,
-                background = background
-            )
-
-            OutlinedTextField(
-                value = username,
-                onValueChange = { username = it.take(20) },
-                label = { Text("Player name") },
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            CustomizationRow(
-                title = "Avatar",
-                options = avatars,
-                selectedId = selectedAvatarId,
-                label = { it.emoji },
-                onSelected = { selectedAvatarId = it }
-            )
-
-            CustomizationRow(
-                title = "Frame",
-                options = frames,
-                selectedId = selectedFrameId,
-                label = { it.label },
-                onSelected = { selectedFrameId = it }
-            )
-
-            CustomizationRow(
-                title = "Sticker",
-                options = stickers,
-                selectedId = selectedStickerId,
-                label = { if (it.emoji.isBlank()) "None" else it.emoji },
-                onSelected = { selectedStickerId = it }
-            )
-
-            CustomizationRow(
-                title = "Background",
-                options = backgrounds,
-                selectedId = selectedBackgroundId,
-                label = { it.label },
-                onSelected = { selectedBackgroundId = it }
-            )
-
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp)
+        ScreenBackground {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .padding(horizontal = 16.dp)
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                Column(
-                    modifier = Modifier.padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ProfilePreview(
+                    username = username.ifBlank { "Player" },
+                    avatar = avatar,
+                    frame = frame,
+                    sticker = sticker,
+                    background = background
+                )
+
+                OutlinedTextField(
+                    value = username,
+                    onValueChange = { username = it.take(20) },
+                    label = { Text("Player name") },
+                    singleLine = true,
+                    shape = RoundedCornerShape(16.dp),
+                    colors = TextFieldDefaults.colors(
+                        focusedTextColor = Color.White,
+                        unfocusedTextColor = Color.White,
+                        focusedContainerColor = Color.Transparent,
+                        unfocusedContainerColor = Color.Transparent,
+                        focusedIndicatorColor = Color(0xFF7DD3FC),
+                        unfocusedIndicatorColor = Color(0xFF475569),
+                        focusedLabelColor = Color(0xFF7DD3FC),
+                        unfocusedLabelColor = Color(0xFFCBD5E1)
+                    ),
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                CustomizationRow(
+                    title = "Avatar",
+                    options = avatars,
+                    selectedId = selectedAvatarId,
+                    label = { it.emoji },
+                    onSelected = { selectedAvatarId = it }
+                )
+
+                CustomizationRow(
+                    title = "Frame",
+                    options = frames,
+                    selectedId = selectedFrameId,
+                    label = { it.label },
+                    onSelected = { selectedFrameId = it }
+                )
+
+                CustomizationRow(
+                    title = "Sticker",
+                    options = stickers,
+                    selectedId = selectedStickerId,
+                    label = { if (it.emoji.isBlank()) "None" else it.emoji },
+                    onSelected = { selectedStickerId = it }
+                )
+
+                CustomizationRow(
+                    title = "Background",
+                    options = backgrounds,
+                    selectedId = selectedBackgroundId,
+                    label = { it.label },
+                    onSelected = { selectedBackgroundId = it }
+                )
+
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFF111827).copy(alpha = 0.9f))
                 ) {
-                    Text(
-                        text = "My Song List",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
-                    )
+                    Column(
+                        modifier = Modifier.padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        Text(
+                            text = "My Song List",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White
+                        )
 
-                    OutlinedTextField(
-                        value = songTitle,
-                        onValueChange = { songTitle = it },
-                        label = { Text("Song title") },
-                        singleLine = true,
-                        modifier = Modifier.fillMaxWidth()
-                    )
+                        OutlinedTextField(
+                            value = songTitle,
+                            onValueChange = { songTitle = it },
+                            label = { Text("Song title") },
+                            singleLine = true,
+                            shape = RoundedCornerShape(16.dp),
+                            colors = TextFieldDefaults.colors(
+                                focusedTextColor = Color.White,
+                                unfocusedTextColor = Color.White,
+                                focusedContainerColor = Color.Transparent,
+                                unfocusedContainerColor = Color.Transparent,
+                                focusedIndicatorColor = Color(0xFF7DD3FC),
+                                unfocusedIndicatorColor = Color(0xFF475569),
+                                focusedLabelColor = Color(0xFF7DD3FC),
+                                unfocusedLabelColor = Color(0xFFCBD5E1)
+                            ),
+                            modifier = Modifier.fillMaxWidth()
+                        )
 
-                    OutlinedTextField(
-                        value = songArtist,
-                        onValueChange = { songArtist = it },
-                        label = { Text("Artist") },
-                        singleLine = true,
-                        modifier = Modifier.fillMaxWidth()
-                    )
+                        OutlinedTextField(
+                            value = songArtist,
+                            onValueChange = { songArtist = it },
+                            label = { Text("Artist") },
+                            singleLine = true,
+                            shape = RoundedCornerShape(16.dp),
+                            colors = TextFieldDefaults.colors(
+                                focusedTextColor = Color.White,
+                                unfocusedTextColor = Color.White,
+                                focusedContainerColor = Color.Transparent,
+                                unfocusedContainerColor = Color.Transparent,
+                                focusedIndicatorColor = Color(0xFF7DD3FC),
+                                unfocusedIndicatorColor = Color(0xFF475569),
+                                focusedLabelColor = Color(0xFF7DD3FC),
+                                unfocusedLabelColor = Color(0xFFCBD5E1)
+                            ),
+                            modifier = Modifier.fillMaxWidth()
+                        )
 
                     Button(
                         onClick = {
@@ -300,12 +351,21 @@ fun ProfileScreen(repository: MusicRepository, userId: Long? = null) {
                         snackbarHostState.showSnackbar("Profile saved!")
                     }
                 },
+                shape = RoundedCornerShape(16.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF7C3AED)),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 24.dp)
+                    .height(52.dp)
+                    .padding(bottom = 8.dp)
             ) {
-                Text("Save profile")
+                Text(
+                    "Save profile",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White
+                )
             }
+        }
         }
     }
 
@@ -398,7 +458,8 @@ private fun <T> CustomizationRow(
         Text(
             text = title,
             style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.SemiBold
+            fontWeight = FontWeight.SemiBold,
+            color = Color.White
         )
 
         LazyRow(
@@ -411,7 +472,19 @@ private fun <T> CustomizationRow(
                 FilterChip(
                     selected = selectedId == optionId,
                     onClick = { onSelected(optionId) },
-                    label = { Text(label(option)) }
+                    label = { Text(label(option), color = if (selectedId == optionId) Color(0xFF111827) else Color.White) },
+                    colors = FilterChipDefaults.filterChipColors(
+                        containerColor = Color.Transparent,
+                        labelColor = Color.White,
+                        selectedContainerColor = Color(0xFF7DD3FC),
+                        selectedLabelColor = Color(0xFF111827)
+                    ),
+                    border = FilterChipDefaults.filterChipBorder(
+                        borderColor = Color(0xFF7DD3FC),
+                        selectedBorderColor = Color(0xFF7DD3FC),
+                        enabled = true,
+                        selected = selectedId == optionId
+                    )
                 )
             }
         }
