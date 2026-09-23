@@ -43,7 +43,7 @@ data class PastChallengeSong(
 data class MalWatchlistEntry(
     val id: Long,
     val userId: Long,
-    val malAnimeId: Long,
+    val malAnimeId: Int,
     val title: String,
     val status: String?,
     val score: Int?
@@ -56,13 +56,13 @@ class MusicRepository(private val database: AppDatabase) {
     private val malWatchlistDao = database.malWatchlistDao()
 
     suspend fun syncMalWatchlist(userId: Long, accessToken: String): Result<Int> {
-        val result = MalApiRepository(accessToken).getList("@me")
+        val result = MalApiRepository(accessToken).getList()
         result.getOrNull()?.let { malUser ->
             val now = System.currentTimeMillis()
             val entries = malUser.showsWatched.map { show ->
                 MalWatchlistEntity(
                     userId = userId,
-                    malAnimeId = show.malAnimeId,
+                    malAnimeId = show.id,
                     title = show.title,
                     status = show.completedStatus,
                     score = show.score,

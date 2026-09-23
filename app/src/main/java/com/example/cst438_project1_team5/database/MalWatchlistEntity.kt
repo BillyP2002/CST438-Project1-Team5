@@ -25,7 +25,7 @@ data class MalWatchlistEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
     @ColumnInfo(name = "user_id") val userId: Long,
-    @ColumnInfo(name = "mal_anime_id") val malAnimeId: Long,
+    @ColumnInfo(name = "mal_anime_id") val malAnimeId: Int,
     val title: String,
     val status: String?,
     val score: Int?,

@@ -4,7 +4,6 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.performTextInput
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -97,7 +96,7 @@ class ProfileScreenTest {
                 listOf(
                     MalWatchlistEntity(
                         userId = testUserId,
-                        malAnimeId = 101L,
+                        malAnimeId = 101,
                         title = "Cowboy Bebop",
                         status = "completed",
                         score = 9,
