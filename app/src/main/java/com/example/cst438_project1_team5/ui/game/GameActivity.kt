@@ -3,16 +3,22 @@ package com.example.cst438_project1_team5.ui.game
 import android.net.Uri
 import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
@@ -22,6 +28,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -36,6 +43,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.media3.common.Player
@@ -75,7 +83,7 @@ data class GameResult(
  * No answer or URL is hard-coded into the UI.
  */
 @Composable
-@Suppress("LongMethod", "TooGenericExceptionCaught", "CyclomaticComplexMethod")
+@Suppress("CyclomaticComplexMethod", "LongMethod", "TooGenericExceptionCaught")
 fun GameScreen(
     modifier: Modifier = Modifier,
     /** Called after the player has revealed every hint level. */
@@ -129,10 +137,34 @@ fun GameScreen(
         }
     }
 
+    fun finishGame() {
+        audioClipPlayer.pause()
+        feedback = "Final score: $totalScore"
+        round?.let { completedRound ->
+            onFinish(
+                GameResult(
+                    score = totalScore,
+                    videoUrl = completedRound.videoUrl,
+                    animeTitle = completedRound.correctAnswer
+                )
+            )
+        }
+    }
+
     LaunchedEffect(Unit) { startNewRound() }
 
-    Column(modifier = modifier.fillMaxSize().padding(16.dp)) {
-        when {
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .imePadding()
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 80.dp)
+        ) {
+            when {
             isLoadingRound -> Text("Finding a theme…", color = GameText)
 
             roundError != null -> {
@@ -196,19 +228,26 @@ fun GameScreen(
                         }
                     }
                 },
-                onNewRound = ::startNewRound,
-                onFinish = {
-                    audioClipPlayer.pause()
-                    onFinish(
-                        GameResult(
-                            score = totalScore,
-                            videoUrl = round!!.videoUrl,
-                            animeTitle = round!!.correctAnswer
-                        )
-                    )
-                },
-                canFinish = levelIndex == GameLevels.entries.lastIndex
+                onNewRound = ::startNewRound
             )
+        }
+        }
+
+        if (round != null && !isLoadingRound && roundError == null &&
+            levelIndex == GameLevels.entries.lastIndex
+        ) {
+            GameButton(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth(0.75f)
+                    .padding(bottom = 16.dp)
+                    .height(48.dp),
+                onClick = ::finishGame,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = GameSecondary,
+                    contentColor = GameText
+                )
+            ) { Text("Finish") }
         }
     }
 }
@@ -227,9 +266,7 @@ private fun GameRoundContent(
     onGuessChange: (String) -> Unit,
     feedback: String?,
     onSubmit: () -> Unit,
-    onNewRound: () -> Unit,
-    onFinish: () -> Unit,
-    canFinish: Boolean
+    onNewRound: () -> Unit
 ) {
     val (cachedFile, loadError) = rememberCachedAudioState(round.sourceUrl, cacheAudio)
 
@@ -286,11 +323,14 @@ private fun GameRoundContent(
                 onValueChange = onGuessChange,
                 modifier = Modifier
                     .fillMaxWidth()
+                    .height(64.dp)
                     .padding(top = 10.dp),
                 label = { Text("Your anime guess") },
                 singleLine = true,
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                keyboardActions = KeyboardActions(onDone = { onSubmit() }),
                 trailingIcon = {
-                    androidx.compose.material3.TextButton(
+                    TextButton(
                         onClick = onSubmit,
                         enabled = guessText.isNotBlank()
                     ) { Text("Submit") }
@@ -308,61 +348,81 @@ private fun GameRoundContent(
                 )
             )
 
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                GameButton(
-                    modifier = Modifier.weight(1f).height(48.dp),
-                    onClick = onNewRound
-                ) { Text("New Round") }
-                GameButton(
-                    modifier = Modifier.weight(1f).height(48.dp),
-                    onClick = {
-                        if (isPlaying) {
-                            audioClipPlayer.pause()
-                        } else {
-                            if (player.playbackState == Player.STATE_ENDED) player.seekTo(0)
-                            audioClipPlayer.resume()
-                        }
-                    }
-                ) {
-                    Icon(
-                        imageVector = if (isPlaying) Icons.Filled.Pause else Icons.Filled.PlayArrow,
-                        contentDescription = if (isPlaying) "Pause" else "Play"
-                    )
-                }
-                GameButton(
-                    modifier = Modifier.weight(1f).height(48.dp),
-                    onClick = onNextHint,
-                    enabled = levelIndex < GameLevels.entries.lastIndex
-                ) { Text("Next Hint") }
-            }
-
             feedback?.let {
                 Text(it, color = GameText, modifier = Modifier.padding(top = 10.dp))
             }
 
-                }
-
-                if (canFinish) {
-                GameButton(
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .fillMaxWidth()
-                        .height(52.dp),
-                    onClick = onFinish,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = GameSecondary,
-                        contentColor = GameText
-                    )
-                ) { Text("Finish") }
-                }
-            }
+            GameActions(
+                isPlaying = isPlaying,
+                isLastHint = levelIndex == GameLevels.entries.lastIndex,
+                onPlayPause = {
+                    if (isPlaying) {
+                        audioClipPlayer.pause()
+                    } else {
+                        if (player.playbackState == Player.STATE_ENDED) player.seekTo(0)
+                        audioClipPlayer.resume()
+                    }
+                },
+                onNextHint = onNextHint,
+                onNewRound = onNewRound
+            )
         }
+    }
+}
+
+    }
+}
+
+@Composable
+private fun GameActions(
+    isPlaying: Boolean,
+    isLastHint: Boolean,
+    onPlayPause: () -> Unit,
+    onNextHint: () -> Unit,
+    onNewRound: () -> Unit
+) {
+    Column(
+        modifier = Modifier.fillMaxWidth().padding(top = 10.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            GameButton(
+                modifier = Modifier.weight(1f).height(48.dp),
+                onClick = onNextHint,
+                enabled = !isLastHint,
+                contentPadding = GameActionContentPadding
+            ) { Text("Next Hint") }
+            PlayPauseButton(
+                modifier = Modifier.weight(1f).height(48.dp),
+                isPlaying = isPlaying,
+                onClick = onPlayPause
+            )
+            GameButton(
+                modifier = Modifier.weight(1f).height(48.dp),
+                onClick = onNewRound,
+                contentPadding = GameActionContentPadding
+            ) { Text("New Round") }
+        }
+    }
+}
+
+private val GameActionContentPadding = PaddingValues(horizontal = 8.dp)
+
+@Composable
+private fun PlayPauseButton(modifier: Modifier, isPlaying: Boolean, onClick: () -> Unit) {
+    GameButton(
+        modifier = modifier,
+        onClick = onClick,
+        contentPadding = GameActionContentPadding
+    ) {
+        Icon(
+            imageVector = if (isPlaying) Icons.Filled.Pause else Icons.Filled.PlayArrow,
+            contentDescription = if (isPlaying) "Pause" else "Play"
+        )
     }
 }
 
@@ -377,6 +437,7 @@ private fun GameButton(
         disabledContainerColor = GameInactiveLevel,
         disabledContentColor = GameMutedText
     ),
+    contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
     content: @Composable RowScope.() -> Unit
 ) {
     Button(
@@ -384,6 +445,7 @@ private fun GameButton(
         onClick = onClick,
         enabled = enabled,
         colors = colors,
+        contentPadding = contentPadding,
         content = content
     )
 }
