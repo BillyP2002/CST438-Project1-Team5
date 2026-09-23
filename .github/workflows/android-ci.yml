@@ -64,9 +64,34 @@ jobs:
           api-level: 35
           target: google_apis
           arch: x86_64
-          emulator-options: -no-window -no-snapshot -noaudio -no-boot-anim -gpu swiftshader_indirect
+          emulator-options: >-
+            -no-window
+            -no-snapshot
+            -noaudio
+            -no-boot-anim
+            -gpu swiftshader_indirect
           disable-animations: true
-          script: ./gradlew --no-daemon :app:connectedDebugAndroidTest
+          script: |
+            adb kill-server || true
+            adb start-server
+            adb wait-for-device
+
+            for attempt in {1..30}; do
+              boot_completed="$(adb shell getprop sys.boot_completed 2>/dev/null | tr -d '\r')"
+              device_state="$(adb get-state 2>/dev/null || true)"
+
+              if [ "$boot_completed" = "1" ] && [ "$device_state" = "device" ]; then
+                break
+              fi
+
+              echo "Waiting for emulator: state=$device_state boot_completed=$boot_completed"
+              sleep 2
+            done
+
+            adb get-state
+            adb shell getprop sys.boot_completed
+            
+            ./gradlew --no-daemon :app:connectedDebugAndroidTest
       - name: Upload instrumented-test reports
         if: always()
         uses: actions/upload-artifact@v4
