@@ -54,7 +54,11 @@ import java.util.Locale
  */
 @Composable
 @Suppress("LongMethod", "TooGenericExceptionCaught")
-fun GameScreen(modifier: Modifier = Modifier) {
+fun GameScreen(
+    modifier: Modifier = Modifier,
+    /** Called with the accumulated score; the future score activity can be launched here. */
+    onFinish: (Int) -> Unit = {}
+) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val cacheAudio = remember(context) { CacheAudio(context.cacheDir) }
@@ -69,6 +73,8 @@ fun GameScreen(modifier: Modifier = Modifier) {
     var levelIndex by remember { mutableIntStateOf(0) }
     var guessText by remember { mutableStateOf("") }
     var feedback by remember { mutableStateOf<String?>(null) }
+    var totalScore by remember { mutableIntStateOf(0) }
+    var isRoundSolved by remember { mutableStateOf(false) }
 
     DisposableEffect(audioClipPlayer) {
         onDispose { audioClipPlayer.release() }
@@ -82,6 +88,7 @@ fun GameScreen(modifier: Modifier = Modifier) {
             feedback = null
             guessText = ""
             levelIndex = 0
+            isRoundSolved = false
 
             try {
                 round = GetVideo.randomRound()
@@ -125,6 +132,7 @@ fun GameScreen(modifier: Modifier = Modifier) {
                     feedback = null
                 },
                 feedback = feedback,
+                totalScore = totalScore,
                 onSubmit = {
                     val submittedGuess = guessText
                     if (submittedGuess.isBlank()) {
@@ -136,7 +144,14 @@ fun GameScreen(modifier: Modifier = Modifier) {
                                 val matches = GetVideo.searchAnime(submittedGuess)
                                 feedback = if (isCorrectGuess(submittedGuess, round!!, matches)) {
                                     audioClipPlayer.pause()
-                                    "Correct! The anime was ${round!!.correctAnswer}."
+                                    if (!isRoundSolved) {
+                                        val earnedPoints = GameScore.pointsFor(levelIndex)
+                                        totalScore += earnedPoints
+                                        isRoundSolved = true
+                                        "Correct! ${round!!.correctAnswer}: +$earnedPoints points."
+                                    } else {
+                                        "Correct! The anime was ${round!!.correctAnswer}."
+                                    }
                                 } else {
                                     "Not quite—try another guess or reveal the next hint."
                                 }
@@ -145,7 +160,14 @@ fun GameScreen(modifier: Modifier = Modifier) {
                                 val isLocallyCorrect = normalizeTitle(submittedGuess) ==
                                     normalizeTitle(round!!.correctAnswer)
                                 feedback = if (isLocallyCorrect) {
-                                    "Correct! The anime was ${round!!.correctAnswer}."
+                                    if (!isRoundSolved) {
+                                        val earnedPoints = GameScore.pointsFor(levelIndex)
+                                        totalScore += earnedPoints
+                                        isRoundSolved = true
+                                        "Correct! ${round!!.correctAnswer}: +$earnedPoints points."
+                                    } else {
+                                        "Correct! The anime was ${round!!.correctAnswer}."
+                                    }
                                 } else {
                                     "Couldn't search AnimeThemes. Check your connection and try again."
                                 }
@@ -153,7 +175,12 @@ fun GameScreen(modifier: Modifier = Modifier) {
                         }
                     }
                 },
-                onNewRound = ::startNewRound
+                onNewRound = ::startNewRound,
+                onFinish = {
+                    audioClipPlayer.pause()
+                    feedback = "Final score: $totalScore"
+                    onFinish(totalScore)
+                }
             )
         }
     }
@@ -172,8 +199,10 @@ private fun GameRoundContent(
     guessText: String,
     onGuessChange: (String) -> Unit,
     feedback: String?,
+    totalScore: Int,
     onSubmit: () -> Unit,
-    onNewRound: () -> Unit
+    onNewRound: () -> Unit,
+    onFinish: () -> Unit
 ) {
     val (cachedFile, loadError) = rememberCachedAudioState(round.sourceUrl, cacheAudio)
 
@@ -204,6 +233,7 @@ private fun GameRoundContent(
             ) {
                 Text("Difficulty: $currentLevelName", fontSize = 25.sp)
                 Text("Clip length: ${currentLevel.ms / 1_000.0}s")
+                Text("Score: $totalScore")
             }
 
             Column(
@@ -217,7 +247,7 @@ private fun GameRoundContent(
                     Box(
                         modifier = Modifier
                             .size(width = 80.dp, height = (40 + index * 20).dp)
-                            .background(if (index < levelIndex) Color.Green else Color.LightGray)
+                            .background(if (index <= levelIndex) Color.Green else Color.LightGray)
                     )
                 }
             }
@@ -263,9 +293,10 @@ private fun GameRoundContent(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 8.dp),
-                horizontalArrangement = Arrangement.Center
+                horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally)
             ) {
                 Button(onClick = onNewRound) { Text("New Round") }
+                Button(onClick = onFinish) { Text("Finish") }
             }
 
             feedback?.let { Text(it, modifier = Modifier.padding(top = 10.dp)) }
