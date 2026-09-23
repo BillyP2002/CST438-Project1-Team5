@@ -214,6 +214,12 @@ class MainActivity : ComponentActivity() {
         val token = prefs.getString("access_token", null)
         if (linkedUserId == userId && !token.isNullOrBlank()) {
             repository.syncMalWatchlist(userId, token)
+                .onSuccess { count ->
+                    Log.d("MAL_SYNC", "Loaded $count MAL list entries into Room for user $userId")
+                }
+                .onFailure { error ->
+                    Log.w("MAL_SYNC", "Could not refresh the MAL list on launch", error)
+                }
         }
     }
 }

@@ -68,6 +68,15 @@ private val GameActiveLevel = Color(0xFF22D3EE)
 private val GameInactiveLevel = Color(0xFF334155)
 private val GameError = Color(0xFFFCA5A5)
 
+/** Data retained for the success screen after the player completes every hint level. */
+data class GameResult(
+    val score: Int,
+    val videoUrl: String,
+    val animeTitle: String
+) {
+    val animeCoins: Int get() = score * 10
+}
+
 /**
  * A round starts from a random AnimeThemes video. Its related audio supplies
  * [GameRound.sourceUrl] and its related anime supplies [GameRound.correctAnswer].
@@ -77,8 +86,8 @@ private val GameError = Color(0xFFFCA5A5)
 @Suppress("CyclomaticComplexMethod", "LongMethod", "TooGenericExceptionCaught")
 fun GameScreen(
     modifier: Modifier = Modifier,
-    /** Called with the accumulated score; the future score activity can be launched here. */
-    onFinish: (Int) -> Unit = {}
+    /** Called after the player has revealed every hint level. */
+    onFinish: (GameResult) -> Unit = {}
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -131,7 +140,15 @@ fun GameScreen(
     fun finishGame() {
         audioClipPlayer.pause()
         feedback = "Final score: $totalScore"
-        onFinish(totalScore)
+        round?.let { completedRound ->
+            onFinish(
+                GameResult(
+                    score = totalScore,
+                    videoUrl = completedRound.videoUrl,
+                    animeTitle = completedRound.correctAnswer
+                )
+            )
+        }
     }
 
     LaunchedEffect(Unit) { startNewRound() }
@@ -169,7 +186,6 @@ fun GameScreen(
                     feedback = null
                 },
                 feedback = feedback,
-                totalScore = totalScore,
                 onSubmit = {
                     val submittedGuess = guessText
                     if (submittedGuess.isBlank()) {
@@ -217,7 +233,9 @@ fun GameScreen(
         }
         }
 
-        if (round != null && !isLoadingRound && roundError == null) {
+        if (round != null && !isLoadingRound && roundError == null &&
+            levelIndex == GameLevels.entries.lastIndex
+        ) {
             GameButton(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
@@ -247,7 +265,6 @@ private fun GameRoundContent(
     guessText: String,
     onGuessChange: (String) -> Unit,
     feedback: String?,
-    totalScore: Int,
     onSubmit: () -> Unit,
     onNewRound: () -> Unit
 ) {
@@ -274,14 +291,14 @@ private fun GameRoundContent(
                 audioClipPlayer.play(clipBuilder.generateMediaItemFromGameLevel(currentLevel))
             }
 
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text("Difficulty: $currentLevelName", color = GameText, fontSize = 25.sp)
-                Text("Clip length: ${currentLevel.ms / 1_000.0}s", color = GameMutedText)
-                Text("Score: $totalScore", color = Color(0xFFFDE68A))
-            }
+            Box(modifier = Modifier.fillMaxSize()) {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text("Difficulty: $currentLevelName", color = GameText, fontSize = 25.sp)
+                    Text("Clip length: ${currentLevel.ms / 1_000.0}s", color = GameMutedText)
+                    Text("Reveal every level to unlock Finish", color = Color(0xFFFDE68A))
 
             Column(
                 modifier = Modifier
@@ -304,15 +321,19 @@ private fun GameRoundContent(
             OutlinedTextField(
                 value = guessText,
                 onValueChange = onGuessChange,
-                modifier = Modifier.fillMaxWidth().height(64.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(64.dp)
+                    .padding(top = 10.dp),
                 label = { Text("Your anime guess") },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                 keyboardActions = KeyboardActions(onDone = { onSubmit() }),
                 trailingIcon = {
-                    TextButton(onClick = onSubmit) {
-                        Text("Submit")
-                    }
+                    TextButton(
+                        onClick = onSubmit,
+                        enabled = guessText.isNotBlank()
+                    ) { Text("Submit") }
                 },
                 colors = TextFieldDefaults.colors(
                     focusedTextColor = GameText,
@@ -346,6 +367,9 @@ private fun GameRoundContent(
                 onNewRound = onNewRound
             )
         }
+    }
+}
+
     }
 }
 
