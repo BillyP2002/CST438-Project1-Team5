@@ -55,7 +55,9 @@ private const val STARTING_ANIME_COIN_BALANCE = 100
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ShopScreen(items: List<ShopItem> = placeholderShopItems) {
+fun ShopScreen(items: List<ShopItem> = placeholderShopItems)
+{
+    //Column { onBackButton(onClick = onBackButton)
     var selectedItem by remember { mutableStateOf<ShopItem?>(null) }
     var showCartDialog by remember { mutableStateOf(false) }
     var animeCoinBalance by remember { mutableIntStateOf(STARTING_ANIME_COIN_BALANCE) }
@@ -99,6 +101,13 @@ fun ShopScreen(items: List<ShopItem> = placeholderShopItems) {
                             color = Color(0xFF7DD3FC)
                         )
                     }
+//                    TextButton(onClick = onBackButton) {
+//                        Text(
+//                            text = stringResource(
+//                                R.string.back_button
+//                            )
+//                        )
+//                    }
                 }
             )
         },

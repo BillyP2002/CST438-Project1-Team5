@@ -71,6 +71,7 @@ private data class StickerOption(val id: String, val emoji: String)
 private data class BackgroundOption(val id: String, val label: String, val colors: List<Color>)
 
 private val avatars = listOf(
+    //defaults
     AvatarOption("cat", "🐱"),
     AvatarOption("fox", "🦊"),
     AvatarOption("ghost", "👻"),
@@ -342,6 +343,7 @@ fun ProfileScreen(
                     }
                 }
             }
+        }
 
             Button(
                 onClick = {
@@ -366,7 +368,6 @@ fun ProfileScreen(
         }
         }
     }
-}
 
 @Preview(showBackground = true)
 @Composable
