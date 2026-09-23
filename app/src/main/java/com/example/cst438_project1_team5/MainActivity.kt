@@ -416,13 +416,6 @@ fun SignInScreen(
                                 color = Color(0xFFE2E8F0)
                             )
                         }
-
-                        TextButton(onClick = {}) {
-                            Text(
-                                text = stringResource(R.string.forgot_password),
-                                color = Color(0xFF7DD3FC)
-                            )
-                        }
                     }
 
                     Spacer(modifier = Modifier.height(16.dp))
