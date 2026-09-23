@@ -32,6 +32,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -58,6 +59,7 @@ import com.example.cst438_project1_team5.ui.components.ScreenBackground
 import com.example.cst438_project1_team5.database.AppDatabase
 import com.example.cst438_project1_team5.database.MusicRepository
 import com.example.cst438_project1_team5.database.SongListEntry
+import com.example.cst438_project1_team5.database.MalWatchlistEntry
 import kotlinx.coroutines.launch
 
 private const val PLAYER_NAME = "player"
@@ -128,6 +130,10 @@ fun ProfileScreen(
     var songList by remember {
         mutableStateOf<List<SongListEntry>>(emptyList())
     }
+    var malWatchlist by remember {
+        mutableStateOf<List<MalWatchlistEntry>>(emptyList())
+    }
+    var isMalWatchlistExpanded by rememberSaveable { mutableStateOf(false) }
 
     val avatar = avatars.first { it.id == selectedAvatarId }
     val frame = frames.first { it.id == selectedFrameId }
@@ -140,6 +146,7 @@ fun ProfileScreen(
     LaunchedEffect(userId) {
         if (userId != null) {
             songList = repository.getUserSongList(userId)
+            malWatchlist = repository.getMalWatchlist(userId)
         }
     }
 
@@ -177,6 +184,66 @@ fun ProfileScreen(
                     sticker = sticker,
                     background = background
                 )
+
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = Color(0xFF111827).copy(alpha = 0.9f)
+                    )
+                ) {
+                    Column(modifier = Modifier.fillMaxWidth()) {
+                        TextButton(
+                            onClick = { isMalWatchlistExpanded = !isMalWatchlistExpanded },
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = "MAL Watchlist (${malWatchlist.size})",
+                                    color = Color.White,
+                                    fontWeight = FontWeight.Bold
+                                )
+                                Text(
+                                    text = if (isMalWatchlistExpanded) "▲" else "▼",
+                                    color = Color(0xFF7DD3FC)
+                                )
+                            }
+                        }
+
+                        if (isMalWatchlistExpanded) {
+                            HorizontalDivider(color = Color(0xFF334155))
+                            if (malWatchlist.isEmpty()) {
+                                Text(
+                                    text = "No MAL watchlist loaded. Link MAL and sign in to sync it.",
+                                    color = Color(0xFFCBD5E1),
+                                    modifier = Modifier.padding(16.dp)
+                                )
+                            } else {
+                                Column(
+                                    modifier = Modifier.padding(16.dp),
+                                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    malWatchlist.forEach { show ->
+                                        Column {
+                                            Text(show.title, color = Color.White, fontWeight = FontWeight.Bold)
+                                            Text(
+                                                text = listOfNotNull(
+                                                    show.status?.replace('_', ' '),
+                                                    show.score?.let { "Score: $it" }
+                                                ).joinToString(" • ").ifBlank { "No status or score" },
+                                                color = Color(0xFFCBD5E1)
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
 
                 OutlinedTextField(
                     value = username,
