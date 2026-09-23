@@ -65,11 +65,14 @@ data class AnimeVideo(
     val updated_at: Date,
     val deleted_at: Date,
     val audio: AnimeThemeSong? = null,
+    val animethemeentries: List<AnimeThemeEntry> = emptyList(),
 )
 
 data class AnimeVideosResponse (
-    @SerializedName("video")
-    val videos: List<AnimeVideo>
+    // The production API uses "videos" while an older response/test fixture
+    // uses "video". Accept both so a valid live round is not parsed as empty.
+    @SerializedName(value = "videos", alternate = ["video"])
+    val videos: List<AnimeVideo> = emptyList()
 )
 
 data class AnimeVideoResponse (
@@ -92,5 +95,25 @@ data class Anime(
     val id: Int,
 
     @SerializedName("name")
-    val name: String
+    val name: String,
+
+    @SerializedName("slug")
+    val slug: String
+)
+
+/** The small part of the AnimeThemes relationship graph needed by the game. */
+data class AnimeThemeEntry(
+    val animetheme: AnimeTheme? = null
+)
+
+data class AnimeTheme(
+    val anime: Anime? = null
+)
+
+data class AnimeSearchResponse(
+    val search: AnimeSearchResults
+)
+
+data class AnimeSearchResults(
+    val anime: List<Anime> = emptyList()
 )
