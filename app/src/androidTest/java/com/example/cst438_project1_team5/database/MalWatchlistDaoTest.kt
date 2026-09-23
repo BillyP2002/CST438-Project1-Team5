@@ -39,7 +39,7 @@ class MalWatchlistDaoTest {
             listOf(
                 MalWatchlistEntity(
                     userId = 1L,
-                    malAnimeId = 101L,
+                    malAnimeId = 101,
                     title = "First User Show",
                     status = "completed",
                     score = 8,
@@ -47,7 +47,7 @@ class MalWatchlistDaoTest {
                 ),
                 MalWatchlistEntity(
                     userId = 2L,
-                    malAnimeId = 202L,
+                    malAnimeId = 202,
                     title = "Second User Show",
                     status = "watching",
                     score = null,
@@ -70,8 +70,8 @@ class MalWatchlistDaoTest {
     fun deleteForUserDoesNotDeleteAnotherUsersList() = runBlocking {
         dao.insertAll(
             listOf(
-                MalWatchlistEntity(1L, 1L, 101L, "First", "completed", 8, 1L),
-                MalWatchlistEntity(2L, 2L, 202L, "Second", "watching", null, 1L)
+                MalWatchlistEntity(1L, 1L, 101, "First", "completed", 8, 1L),
+                MalWatchlistEntity(2L, 2L, 202, "Second", "watching", null, 1L)
             )
         )
 

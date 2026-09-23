@@ -284,7 +284,7 @@ fun AuthScreen(
             }
         )
 
-        AuthMode.Play -> GameScreen()
+        AuthMode.Play -> GameScreen(requireNotNull(getLoggedInUserId(LocalContext.current)))
 
         AuthMode.Profile -> ProfileScreen(
             repository = repository

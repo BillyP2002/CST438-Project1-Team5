@@ -26,6 +26,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TextButton
@@ -55,6 +56,7 @@ import com.example.cst438_project1_team5.audio.AudioClipPlayer
 import com.example.cst438_project1_team5.audio.ClipPlayback
 import com.example.cst438_project1_team5.audio.MediaItemClipBuilder
 import com.example.cst438_project1_team5.audio.cache.CacheAudio
+import com.example.cst438_project1_team5.database.AppDatabase
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.IOException
@@ -85,11 +87,16 @@ data class GameResult(
 @Composable
 @Suppress("CyclomaticComplexMethod", "LongMethod", "TooGenericExceptionCaught")
 fun GameScreen(
+    userId: Long,
     modifier: Modifier = Modifier,
     /** Called after the player has revealed every hint level. */
     onFinish: (GameResult) -> Unit = {}
 ) {
     val context = LocalContext.current
+    val database = remember(context) {
+        AppDatabase.getInstance(context)
+    }
+
     val scope = rememberCoroutineScope()
     val cacheAudio = remember(context) { CacheAudio(context.cacheDir) }
     val player = remember(context) { ExoPlayer.Builder(context).build() }
@@ -105,6 +112,7 @@ fun GameScreen(
     var feedback by remember { mutableStateOf<String?>(null) }
     var totalScore by remember { mutableIntStateOf(0) }
     var isRoundSolved by remember { mutableStateOf(false) }
+    var malMode by remember { mutableStateOf(false) }
 
     DisposableEffect(audioClipPlayer) {
         onDispose { audioClipPlayer.release() }
@@ -121,7 +129,14 @@ fun GameScreen(
             isRoundSolved = false
 
             try {
-                round = GetVideo.randomRound()
+                round = if (malMode) {
+                    GetVideo.randomMalRound(
+                        database = database,
+                        userId = userId
+                    )
+                } else {
+                    GetVideo.randomRound()
+                }
                 if (round == null) {
                     roundError = "AnimeThemes could not provide a playable round. Try again."
                 }
@@ -158,12 +173,45 @@ fun GameScreen(
             .fillMaxSize()
             .imePadding()
     ) {
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
                 .padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 80.dp)
         ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 12.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Column {
+                    Text(
+                        text = "MAL Mode",
+                        color = GameText,
+                        fontSize = 18.sp
+                    )
+
+                    Text(
+                        text = if (malMode)
+                            "Only anime from your list"
+                        else
+                            "Any anime",
+                        color = GameMutedText,
+                        fontSize = 13.sp
+                    )
+                }
+
+                Switch(
+                    checked = malMode,
+                    onCheckedChange = { enabled ->
+                        malMode = enabled
+                        startNewRound()
+                    }
+                )
+            }
             when {
             isLoadingRound -> Text("Finding a theme…", color = GameText)
 
@@ -228,7 +276,7 @@ fun GameScreen(
                         }
                     }
                 },
-                onNewRound = ::startNewRound
+                onNewRound = ::startNewRound,
             )
         }
         }
@@ -266,7 +314,7 @@ private fun GameRoundContent(
     onGuessChange: (String) -> Unit,
     feedback: String?,
     onSubmit: () -> Unit,
-    onNewRound: () -> Unit
+    onNewRound: () -> Unit,
 ) {
     val (cachedFile, loadError) = rememberCachedAudioState(round.sourceUrl, cacheAudio)
 
