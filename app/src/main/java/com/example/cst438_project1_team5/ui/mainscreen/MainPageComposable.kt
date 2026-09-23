@@ -48,7 +48,8 @@ fun MainPageComposable(
     onProfile: () -> Unit = {},
     onShop: () -> Unit = {},
     onConnectToMal: () -> Unit = {},
-    onLogout: () -> Unit = {}
+    onLogout: () -> Unit = {},
+    onBack: () -> Unit = {}
 ) {
     Box(
         modifier = modifier
