@@ -79,6 +79,7 @@ import com.example.cst438_project1_team5.ui.game.SuccessScreen
 private const val AUTH_PREFS_NAME = "music_auth_prefs"
 private const val PREF_LOGGED_IN_USER_ID = "logged_in_user_id"
 private const val PREF_LOGGED_IN_USERNAME = "logged_in_username"
+private const val PREF_MAL_LINKED_USER_ID = "mal_linked_user_id"
 private const val MAL_LINK_BUTTON_COLOR = 0xFF2196F3
 
 enum class AuthMode {
@@ -130,7 +131,12 @@ class MainActivity : ComponentActivity() {
                         prefs.edit {
                             putString("access_token", response.access_token)
                             putString("refresh_token", response.refresh_token)
+                            getLoggedInUserId(this@MainActivity)?.let {
+                                putLong(PREF_MAL_LINKED_USER_ID, it)
+                            }
                         }
+
+                        syncMalWatchlistIfLinked()
 
                         Log.d("MAL_OAUTH", "Access token obtained!")
 
@@ -151,6 +157,12 @@ class MainActivity : ComponentActivity() {
             } else {
                 Log.e("MAL_OAUTH", "No code verifier found")
             }
+        }
+
+        // Refresh only the currently signed-in account's MAL list. A missing
+        // token or a token linked to another local account performs no request.
+        lifecycleScope.launch {
+            syncMalWatchlistIfLinked()
         }
 
 
@@ -192,6 +204,16 @@ class MainActivity : ComponentActivity() {
                     }
                 }
             }
+        }
+    }
+
+    private suspend fun syncMalWatchlistIfLinked() {
+        val userId = getLoggedInUserId(this) ?: return
+        val prefs = getSharedPreferences("mal_oauth_prefs", MODE_PRIVATE)
+        val linkedUserId = prefs.getLong(PREF_MAL_LINKED_USER_ID, -1L)
+        val token = prefs.getString("access_token", null)
+        if (linkedUserId == userId && !token.isNullOrBlank()) {
+            repository.syncMalWatchlist(userId, token)
         }
     }
 }
@@ -450,6 +472,18 @@ fun SignInScreen(
                                 try {
                                     val account = repository.authenticateUser(email, password)
                                     if (account != null) {
+                                        val malPrefs = context.getSharedPreferences(
+                                            "mal_oauth_prefs",
+                                            Context.MODE_PRIVATE
+                                        )
+                                        val malToken = malPrefs.getString("access_token", null)
+                                        if (!malToken.isNullOrBlank() &&
+                                            malPrefs.getLong(PREF_MAL_LINKED_USER_ID, -1L) == -1L
+                                        ) {
+                                            malPrefs.edit {
+                                                putLong(PREF_MAL_LINKED_USER_ID, account.id)
+                                            }
+                                        }
                                         getRememberedUserPrefs(context).edit {
                                             putLong(
                                                 PREF_LOGGED_IN_USER_ID,
@@ -459,6 +493,10 @@ fun SignInScreen(
                                                     PREF_LOGGED_IN_USERNAME,
                                                     account.username
                                                 )
+                                        }
+
+                                        if (!malToken.isNullOrBlank()) {
+                                            repository.syncMalWatchlist(account.id, malToken)
                                         }
 
                                         if (rememberMe) {

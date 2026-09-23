@@ -1,6 +1,8 @@
 package com.example.cst438_project1_team5.database
 
 import android.util.Base64
+import androidx.room.withTransaction
+import com.example.cst438_project1_team5.api.malapi.MalApiRepository
 import java.util.Locale
 
 data class UserAccount(
@@ -38,10 +40,55 @@ data class PastChallengeSong(
     val playedAt: Long
 )
 
+data class MalWatchlistEntry(
+    val id: Long,
+    val userId: Long,
+    val malAnimeId: Long,
+    val title: String,
+    val status: String?,
+    val score: Int?
+)
+
 class MusicRepository(private val database: AppDatabase) {
     private val userDao = database.userDao()
     private val songListDao = database.songListDao()
     private val dailyChallengeDao = database.dailyChallengeDao()
+    private val malWatchlistDao = database.malWatchlistDao()
+
+    suspend fun syncMalWatchlist(userId: Long, accessToken: String): Result<Int> {
+        val result = MalApiRepository(accessToken).getList("@me")
+        result.getOrNull()?.let { malUser ->
+            val now = System.currentTimeMillis()
+            val entries = malUser.showsWatched.map { show ->
+                MalWatchlistEntity(
+                    userId = userId,
+                    malAnimeId = show.malAnimeId,
+                    title = show.title,
+                    status = show.completedStatus,
+                    score = show.score,
+                    updatedAt = now
+                )
+            }
+            database.withTransaction {
+                malWatchlistDao.deleteForUser(userId)
+                malWatchlistDao.insertAll(entries)
+            }
+            return Result.success(entries.size)
+        }
+        return Result.failure(result.exceptionOrNull() ?: IllegalStateException("MAL list was empty"))
+    }
+
+    suspend fun getMalWatchlist(userId: Long): List<MalWatchlistEntry> =
+        malWatchlistDao.getForUser(userId).map {
+            MalWatchlistEntry(
+                id = it.id,
+                userId = it.userId,
+                malAnimeId = it.malAnimeId,
+                title = it.title,
+                status = it.status,
+                score = it.score
+            )
+        }
 
     suspend fun registerUser(username: String, email: String, password: String): Long {
         val cleanUsername = username.trim()

@@ -6,4 +6,9 @@ data class MalUser(
 )
 
 // Didn't use anime_id as that is under development; title should be a unique identifier.
-data class Show(val title: String, val completedStatus: String? = null, val score: Int? = null)
+data class Show(
+    val malAnimeId: Long,
+    val title: String,
+    val completedStatus: String? = null,
+    val score: Int? = null
+)

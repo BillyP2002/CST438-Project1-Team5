@@ -10,6 +10,7 @@ class MalApiRepository(private val accessToken: String) {
             name = name,
             showsWatched = response.data.map { entry ->
                 Show(
+                    malAnimeId = entry.node.animeId,
                     title = entry.node.animeTitle,
                     completedStatus = entry.node.status,
                     score = entry.node.listScore
