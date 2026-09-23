@@ -60,6 +60,7 @@ import com.example.cst438_project1_team5.database.AppDatabase
 import com.example.cst438_project1_team5.database.MusicRepository
 import com.example.cst438_project1_team5.database.SongListEntry
 import com.example.cst438_project1_team5.database.MalWatchlistEntry
+import com.example.cst438_project1_team5.ui.shop.ProfileEffect
 import kotlinx.coroutines.launch
 
 private const val PLAYER_NAME = "player"
@@ -112,12 +113,26 @@ private val backgrounds = listOf(
     )
 )
 
+private fun shopEffectBackground(effects: Set<ProfileEffect>): BackgroundOption? = when {
+    ProfileEffect.FIRE in effects -> BackgroundOption(
+        "fire", "Fire", listOf(Color(0xFF7F1D1D), Color(0xFFFF6B00), Color(0xFFFFD166))
+    )
+    ProfileEffect.SAKURA in effects -> BackgroundOption(
+        "sakura", "Sakura", listOf(Color(0xFF831843), Color(0xFFF9A8D4), Color(0xFFFCE7F3))
+    )
+    ProfileEffect.OCEAN in effects -> BackgroundOption(
+        "ocean", "Ocean", listOf(Color(0xFF082F49), Color(0xFF0369A1), Color(0xFF67E8F9))
+    )
+    else -> null
+}
+
 @Suppress("LongMethod")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
     repository: MusicRepository, 
     userId: Long? = null,
+    purchasedEffects: Set<ProfileEffect> = emptySet(),
     onSignOut: () -> Unit = {}
 ) {
     var username by rememberSaveable { mutableStateOf(PLAYER_NAME) }
@@ -136,9 +151,14 @@ fun ProfileScreen(
     var isMalWatchlistExpanded by rememberSaveable { mutableStateOf(false) }
 
     val avatar = avatars.first { it.id == selectedAvatarId }
-    val frame = frames.first { it.id == selectedFrameId }
+    val frame = if (ProfileEffect.GOLD in purchasedEffects) {
+        frames.first { it.id == "gold" }
+    } else {
+        frames.first { it.id == selectedFrameId }
+    }
     val sticker = stickers.first { it.id == selectedStickerId }
-    val background = backgrounds.first { it.id == selectedBackgroundId }
+    val background = shopEffectBackground(purchasedEffects)
+        ?: backgrounds.first { it.id == selectedBackgroundId }
 
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
@@ -184,6 +204,14 @@ fun ProfileScreen(
                     sticker = sticker,
                     background = background
                 )
+
+                if (purchasedEffects.isNotEmpty()) {
+                    Text(
+                        text = "Shop effects: ${purchasedEffects.joinToString { it.label }}",
+                        color = Color(0xFFFDE68A),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
 
                 Card(
                     modifier = Modifier.fillMaxWidth(),

@@ -1,6 +1,8 @@
 package com.example.cst438_project1_team5.ui.shop
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -55,12 +57,18 @@ private const val STARTING_ANIME_COIN_BALANCE = 100
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ShopScreen(items: List<ShopItem> = placeholderShopItems)
-{
+fun ShopScreen(
+    items: List<ShopItem> = placeholderShopItems,
+    animeCoinBalance: Int? = null,
+    ownedItemIds: Set<Int> = emptySet(),
+    onPurchase: ((ShopItem) -> Boolean)? = null
+) {
     //Column { onBackButton(onClick = onBackButton)
     var selectedItem by remember { mutableStateOf<ShopItem?>(null) }
     var showCartDialog by remember { mutableStateOf(false) }
-    var animeCoinBalance by remember { mutableIntStateOf(STARTING_ANIME_COIN_BALANCE) }
+    var localAnimeCoinBalance by remember { mutableIntStateOf(STARTING_ANIME_COIN_BALANCE) }
+    val displayedCoinBalance = animeCoinBalance ?: localAnimeCoinBalance
+    val availableItems = items.filterNot { it.id in ownedItemIds }
     val cartQuantities = remember { mutableStateMapOf<Int, Int>() }
     val cartItemCount = cartQuantities.values.sum()
     val cartTotal = cartQuantities.entries.sumOf { (itemId, quantity) ->
@@ -88,7 +96,7 @@ fun ShopScreen(items: List<ShopItem> = placeholderShopItems)
                     Text(
                         text = stringResource(
                             R.string.anime_coin_balance,
-                            animeCoinBalance
+                            displayedCoinBalance
                         ),
                         color = Color(0xFF7DD3FC)
                     )
@@ -126,7 +134,7 @@ fun ShopScreen(items: List<ShopItem> = placeholderShopItems)
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             items(
-                items = items,
+                items = availableItems,
                 key = { item -> item.id }
             ) { item ->
                 ShopItemCard(
@@ -151,7 +159,12 @@ fun ShopScreen(items: List<ShopItem> = placeholderShopItems)
                 selectedItem = null
             },
             onAddToCart = {
-                cartQuantities[item.id] = (cartQuantities[item.id] ?: 0) + 1
+                // Game-backed inventory contains one of each cosmetic item.
+                cartQuantities[item.id] = if (onPurchase == null) {
+                    (cartQuantities[item.id] ?: 0) + 1
+                } else {
+                    1
+                }
                 selectedItem = null
 
                 coroutineScope.launch {
@@ -176,8 +189,20 @@ fun ShopScreen(items: List<ShopItem> = placeholderShopItems)
             total = cartTotal,
             onDismiss = { showCartDialog = false },
             onBuy = {
-                val message = if (animeCoinBalance >= cartTotal) {
-                    animeCoinBalance -= cartTotal
+                val purchased = if (displayedCoinBalance >= cartTotal) {
+                    if (onPurchase == null) {
+                        localAnimeCoinBalance -= cartTotal
+                        true
+                    } else {
+                        cartQuantities.all { (itemId, quantity) ->
+                            val item = items.firstOrNull { it.id == itemId } ?: return@all false
+                            (1..quantity).all { onPurchase(item) }
+                        }
+                    }
+                } else {
+                    false
+                }
+                val message = if (purchased) {
                     cartQuantities.clear()
                     purchaseMessage
                 } else {
@@ -302,12 +327,27 @@ fun ShopItemCard(item: ShopItem, onClick: () -> Unit, modifier: Modifier = Modif
         ),
         colors = CardDefaults.cardColors(containerColor = Color(0xFF111827).copy(alpha = 0.9f))
     ) {
-        Image(
-            painter = painterResource(item.imageResId),
-            contentDescription = null,
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Crop
-        )
+        Box(modifier = Modifier.fillMaxSize()) {
+            Image(
+                painter = painterResource(item.imageResId),
+                contentDescription = null,
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop
+            )
+            Column(
+                modifier = Modifier
+                    .align(Alignment.BottomStart)
+                    .fillMaxWidth()
+                    .background(Color(0xCC111827))
+                    .padding(10.dp)
+            ) {
+                Text(text = item.title, color = Color.White)
+                Text(
+                    text = "${item.animeCoinPrice} Anime Coins",
+                    color = Color(0xFFFDE68A)
+                )
+            }
+        }
     }
 }
 
@@ -331,6 +371,10 @@ fun ShopItemDialog(item: ShopItem, onDismiss: () -> Unit, onAddToCart: () -> Uni
                         item.animeCoinPrice
                     ),
                     color = Color.White
+                )
+                Text(
+                    text = "Effect: ${item.profileEffect.label}",
+                    color = Color(0xFF7DD3FC)
                 )
             }
         },
