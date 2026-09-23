@@ -37,6 +37,8 @@ android {
 }
 
 dependencies {
+    implementation(libs.androidx.material3)
+    implementation(libs.compose.material3)
     detektPlugins(libs.detekt.ktlint.rules)
 
     implementation(platform(libs.androidx.compose.bom))
