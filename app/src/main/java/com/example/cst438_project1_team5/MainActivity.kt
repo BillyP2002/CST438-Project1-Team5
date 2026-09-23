@@ -73,6 +73,7 @@ import com.example.cst438_project1_team5.ui.shop.ShopScreen
 import retrofit2.HttpException
 import java.io.IOException
 import androidx.activity.compose.BackHandler
+import com.example.cst438_project1_team5.ui.game.SuccessScreen
 
 private const val AUTH_PREFS_NAME = "music_auth_prefs"
 private const val PREF_LOGGED_IN_USER_ID = "logged_in_user_id"
@@ -255,6 +256,7 @@ fun AuthScreen(
         )
 
         AuthMode.Shop -> ShopScreen()
+
     }
 }
 
