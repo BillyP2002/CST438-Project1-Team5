@@ -7,16 +7,20 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -46,6 +50,14 @@ import kotlinx.coroutines.launch
 import java.io.File
 import java.io.IOException
 import java.util.Locale
+
+private val GameText = Color(0xFFF8FAFC)
+private val GameMutedText = Color(0xFFBAE6FD)
+private val GamePrimary = Color(0xFF06B6D4)
+private val GameSecondary = Color(0xFF7C3AED)
+private val GameActiveLevel = Color(0xFF22D3EE)
+private val GameInactiveLevel = Color(0xFF334155)
+private val GameError = Color(0xFFFCA5A5)
 
 /**
  * A round starts from a random AnimeThemes video. Its related audio supplies
@@ -111,11 +123,11 @@ fun GameScreen(
 
     Column(modifier = modifier.padding(16.dp)) {
         when {
-            isLoadingRound -> Text("Finding a theme…")
+            isLoadingRound -> Text("Finding a theme…", color = GameText)
 
             roundError != null -> {
-                Text(roundError!!, color = Color.Red)
-                Button(onClick = ::startNewRound) { Text("Try Again") }
+                Text(roundError!!, color = GameError)
+                GameButton(onClick = ::startNewRound) { Text("Try Again") }
             }
 
             round != null -> GameRoundContent(
@@ -208,11 +220,11 @@ private fun GameRoundContent(
 
     when {
         loadError != null -> {
-            Text(loadError, color = Color.Red)
-            Button(onClick = onNewRound) { Text("Skip Theme") }
+            Text(loadError, color = GameError)
+            GameButton(onClick = onNewRound) { Text("Skip Theme") }
         }
 
-        cachedFile == null -> Text("Downloading the round audio…")
+            cachedFile == null -> Text("Downloading the round audio…", color = GameText)
 
         else -> {
             val clipBuilder = remember(cachedFile) {
@@ -231,9 +243,9 @@ private fun GameRoundContent(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text("Difficulty: $currentLevelName", fontSize = 25.sp)
-                Text("Clip length: ${currentLevel.ms / 1_000.0}s")
-                Text("Score: $totalScore")
+                Text("Difficulty: $currentLevelName", color = GameText, fontSize = 25.sp)
+                Text("Clip length: ${currentLevel.ms / 1_000.0}s", color = GameMutedText)
+                Text("Score: $totalScore", color = Color(0xFFFDE68A))
             }
 
             Column(
@@ -247,7 +259,9 @@ private fun GameRoundContent(
                     Box(
                         modifier = Modifier
                             .size(width = 80.dp, height = (40 + index * 20).dp)
-                            .background(if (index <= levelIndex) Color.Green else Color.LightGray)
+                            .background(
+                                if (index <= levelIndex) GameActiveLevel else GameInactiveLevel
+                            )
                     )
                 }
             }
@@ -257,18 +271,33 @@ private fun GameRoundContent(
                 onValueChange = onGuessChange,
                 modifier = Modifier.fillMaxWidth(),
                 label = { Text("Your anime guess") },
-                singleLine = true
+                singleLine = true,
+                colors = TextFieldDefaults.colors(
+                    focusedTextColor = GameText,
+                    unfocusedTextColor = GameText,
+                    focusedLabelColor = GamePrimary,
+                    unfocusedLabelColor = GameMutedText,
+                    focusedIndicatorColor = GamePrimary,
+                    unfocusedIndicatorColor = GameMutedText,
+                    focusedContainerColor = Color.Transparent,
+                    unfocusedContainerColor = Color.Transparent,
+                    cursorColor = GamePrimary
+                )
             )
 
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 10.dp),
-                horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterHorizontally),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Button(onClick = onSubmit) { Text("Submit") }
-                Button(
+                GameButton(
+                    modifier = Modifier.weight(1f).height(48.dp),
+                    onClick = onSubmit
+                ) { Text("Submit") }
+                GameButton(
+                    modifier = Modifier.weight(1f).height(48.dp),
                     onClick = {
                         if (isPlaying) {
                             audioClipPlayer.pause()
@@ -283,7 +312,8 @@ private fun GameRoundContent(
                         contentDescription = if (isPlaying) "Pause" else "Play"
                     )
                 }
-                Button(
+                GameButton(
+                    modifier = Modifier.weight(1f).height(48.dp),
                     onClick = onNextHint,
                     enabled = levelIndex < GameLevels.entries.lastIndex
                 ) { Text("Next Hint") }
@@ -293,15 +323,49 @@ private fun GameRoundContent(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 8.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally)
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Button(onClick = onNewRound) { Text("New Round") }
-                Button(onClick = onFinish) { Text("Finish") }
+                GameButton(
+                    modifier = Modifier.weight(1f).height(48.dp),
+                    onClick = onNewRound
+                ) { Text("New Round") }
+                GameButton(
+                    modifier = Modifier.weight(1f).height(48.dp),
+                    onClick = onFinish,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = GameSecondary,
+                        contentColor = GameText
+                    )
+                ) { Text("Finish") }
             }
 
-            feedback?.let { Text(it, modifier = Modifier.padding(top = 10.dp)) }
+            feedback?.let {
+                Text(it, color = GameText, modifier = Modifier.padding(top = 10.dp))
+            }
         }
     }
+}
+
+@Composable
+private fun GameButton(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+    enabled: Boolean = true,
+    colors: androidx.compose.material3.ButtonColors = ButtonDefaults.buttonColors(
+        containerColor = GamePrimary,
+        contentColor = Color(0xFF082F49),
+        disabledContainerColor = GameInactiveLevel,
+        disabledContentColor = GameMutedText
+    ),
+    content: @Composable RowScope.() -> Unit
+) {
+    Button(
+        modifier = modifier,
+        onClick = onClick,
+        enabled = enabled,
+        colors = colors,
+        content = content
+    )
 }
 
 private fun isCorrectGuess(guess: String, round: GameRound, searchResults: List<Anime>): Boolean {
