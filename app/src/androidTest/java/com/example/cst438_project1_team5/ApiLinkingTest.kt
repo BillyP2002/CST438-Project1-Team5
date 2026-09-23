@@ -23,7 +23,7 @@ class ApiLinkingTest {
         val show = user.showsWatched[0];
         System.out.println("Show title and ID according to MAL: " + show.title + ", " + show.id);
 
-        val response = RetrofitClient.animeSongApi.getAnimeByMalId(show.id)
+        val response = RetrofitClient.animeSongApi.getAnimeResourceByMalId(show.id)
         val anime = response.resources[0].anime[0]
 
         System.out.println("Show title according to AnimeThemes: " + anime.name)
