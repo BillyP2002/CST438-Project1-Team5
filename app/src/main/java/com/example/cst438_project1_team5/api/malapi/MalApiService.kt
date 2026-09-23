@@ -8,9 +8,9 @@ import retrofit2.http.Query
 
 interface MalAPIService {
     // Fetch MAL user's list by their username.
-    @GET("users/{user_name}/animelist")
+    @GET("users/@me/animelist")
     suspend fun getUser(
-        @Path("user_name") username: String,
+        @Query("fields") fields: String = "list_status",
         @Query("limit") limit: Int = 700,
         @Query("offset") offset: Int = 0,
         @Header("Authorization") authorization : String
@@ -21,11 +21,20 @@ data class MalAnimeListResponse(
     @SerializedName("data") val data: List<MalAnimeListEntry> = emptyList()
 )
 
-data class MalAnimeListEntry(@SerializedName("node") val node: MalAnimeNode)
+data class MalAnimeListEntry(
+    @SerializedName("node")
+    val node: MalAnimeNode,
+
+    @SerializedName("list_status")
+    val listStatus: MalListStatus?
+)
 
 data class MalAnimeNode(
-    @SerializedName("id") val animeId: Long = 0,
+    @SerializedName("id") val animeId: Int,
     @SerializedName("title") val animeTitle: String,
-    @SerializedName("status") val status: String? = null,
-    @SerializedName("list_score") val listScore: Int? = null
+)
+
+data class MalListStatus(
+    @SerializedName("status") val status: String?,
+    @SerializedName("score") val score: Int? = null
 )

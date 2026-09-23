@@ -7,7 +7,7 @@ import java.util.Locale
 
 data class UserAccount(
     val id: Long,
-    val username: String,
+    val playerName: String,
     val email: String,
     val passwordHash: String,
     val passwordSalt: String,
@@ -43,12 +43,13 @@ data class PastChallengeSong(
 data class MalWatchlistEntry(
     val id: Long,
     val userId: Long,
-    val malAnimeId: Long,
+    val malAnimeId: Int,
     val title: String,
     val status: String?,
     val score: Int?
 )
 
+@Suppress("TooManyFunctions")
 class MusicRepository(private val database: AppDatabase) {
     private val userDao = database.userDao()
     private val songListDao = database.songListDao()
@@ -56,13 +57,13 @@ class MusicRepository(private val database: AppDatabase) {
     private val malWatchlistDao = database.malWatchlistDao()
 
     suspend fun syncMalWatchlist(userId: Long, accessToken: String): Result<Int> {
-        val result = MalApiRepository(accessToken).getList("@me")
+        val result = MalApiRepository(accessToken).getList()
         result.getOrNull()?.let { malUser ->
             val now = System.currentTimeMillis()
             val entries = malUser.showsWatched.map { show ->
                 MalWatchlistEntity(
                     userId = userId,
-                    malAnimeId = show.malAnimeId,
+                    malAnimeId = show.id,
                     title = show.title,
                     status = show.completedStatus,
                     score = show.score,
@@ -90,30 +91,30 @@ class MusicRepository(private val database: AppDatabase) {
             )
         }
 
-    suspend fun registerUser(username: String, email: String, password: String): Long {
-        val cleanUsername = username.trim()
+    suspend fun registerUser(playerName: String, email: String, password: String): Long {
+        val cleanPlayerName = playerName.trim()
         val cleanEmail = email.trim()
 
-        require(cleanUsername.isNotEmpty()) { "Username cannot be empty." }
+        require(cleanPlayerName.isNotEmpty()) { "Player name cannot be empty." }
         require(cleanEmail.isNotEmpty()) { "Email cannot be empty." }
         require(isValidEmail(cleanEmail)) { "Email format is invalid." }
         require(password.length >= 12) { "Password must be at least 12 characters long." }
 
-        val normalizedUser = cleanUsername.lowercase(Locale.US)
+        val normalizedUser = cleanPlayerName.lowercase(Locale.US)
         val normalizedEmail = cleanEmail.lowercase(Locale.US)
 
         if (userDao.findByEmail(normalizedEmail) != null) {
             throw IllegalArgumentException("An account with that email already exists.")
         }
-        if (userDao.findByUsername(normalizedUser) != null) {
-            throw IllegalArgumentException("That username is already taken.")
+        if (userDao.findByPlayerName(normalizedUser) != null) {
+            throw IllegalArgumentException("That player name is already taken.")
         }
 
         val salt = PasswordSecurity.generateSalt()
         val hash = PasswordSecurity.hashPassword(password, salt)
 
         val userEntity = UserEntity(
-            username = normalizedUser,
+            playerName = normalizedUser,
             email = normalizedEmail,
             passwordHash = hash,
             passwordSalt = Base64.encodeToString(salt, Base64.NO_WRAP),
@@ -126,7 +127,7 @@ class MusicRepository(private val database: AppDatabase) {
 
     suspend fun authenticateUser(identifier: String, password: String): UserAccount? {
         val normalizedIdentifier = identifier.trim().lowercase(Locale.US)
-        val user = userDao.findByUsernameOrEmail(normalizedIdentifier) ?: return null
+        val user = userDao.findByPlayerNameOrEmail(normalizedIdentifier) ?: return null
 
         if (System.currentTimeMillis() < user.lockedUntil) {
             return null
@@ -256,7 +257,7 @@ class MusicRepository(private val database: AppDatabase) {
 
     private fun mapUserEntityToAccount(entity: UserEntity): UserAccount = UserAccount(
         id = entity.id,
-        username = entity.username,
+        playerName = entity.playerName,
         email = entity.email,
         passwordHash = entity.passwordHash,
         passwordSalt = entity.passwordSalt,

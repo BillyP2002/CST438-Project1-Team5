@@ -78,7 +78,7 @@ import com.example.cst438_project1_team5.ui.game.SuccessScreen
 
 private const val AUTH_PREFS_NAME = "music_auth_prefs"
 private const val PREF_LOGGED_IN_USER_ID = "logged_in_user_id"
-private const val PREF_LOGGED_IN_USERNAME = "logged_in_username"
+private const val PREF_LOGGED_IN_PLAYER_NAME = "logged_in_player_name"
 private const val PREF_MAL_LINKED_USER_ID = "mal_linked_user_id"
 private const val MAL_LINK_BUTTON_COLOR = 0xFF2196F3
 
@@ -196,7 +196,7 @@ class MainActivity : ComponentActivity() {
                             onSignOut = {
                                 getRememberedUserPrefs(this@MainActivity).edit { 
                                     remove(PREF_LOGGED_IN_USER_ID)
-                                    remove(PREF_LOGGED_IN_USERNAME)
+                                    remove(PREF_LOGGED_IN_PLAYER_NAME)
                                 }
                                 currentScreen = AppScreenState.Auth
                             }
@@ -490,8 +490,8 @@ fun SignInScreen(
                                                 account.id
                                             )
                                                 .putString(
-                                                    PREF_LOGGED_IN_USERNAME,
-                                                    account.username
+                                                    PREF_LOGGED_IN_PLAYER_NAME,
+                                                    account.playerName
                                                 )
                                         }
 

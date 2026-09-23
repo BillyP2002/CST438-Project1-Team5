@@ -36,7 +36,7 @@ class UserDaoTest {
     @Test
     fun insertAndGetUser() = runBlocking {
         val user = UserEntity(
-            username = "testuser",
+            playerName = "testplayer",
             email = "test@example.com",
             passwordHash = "hash",
             passwordSalt = "salt",
@@ -47,14 +47,14 @@ class UserDaoTest {
         
         val loadedUser = userDao.findById(id)
         assertNotNull(loadedUser)
-        assertEquals("testuser", loadedUser?.username)
+        assertEquals("testplayer", loadedUser?.playerName)
         assertEquals("test@example.com", loadedUser?.email)
     }
 
     @Test
-    fun findByUsernameOrEmail() = runBlocking {
+    fun findByPlayerNameOrEmail() = runBlocking {
         val user = UserEntity(
-            username = "TestUser",
+            playerName = "TestPlayer",
             email = "email@Test.com",
             passwordHash = "hash",
             passwordSalt = "salt",
@@ -63,24 +63,24 @@ class UserDaoTest {
         )
         userDao.insert(user)
 
-        // Test finding by exact username
-        var foundUser = userDao.findByUsernameOrEmail("TestUser")
+        // Test finding by exact playerName
+        var foundUser = userDao.findByPlayerNameOrEmail("TestPlayer")
         assertNotNull(foundUser)
 
-        // Test finding by lowercase username (should be case-insensitive in SQLite usually, but test logic in repo enforces lowercase)
-        foundUser = userDao.findByUsernameOrEmail("testuser")
+        // Test finding by lowercase playerName (should be case-insensitive in SQLite usually, but test logic in repo enforces lowercase)
+        foundUser = userDao.findByPlayerNameOrEmail("testplayer")
         assertNotNull(foundUser)
 
         // Test finding by exact email
-        foundUser = userDao.findByUsernameOrEmail("email@Test.com")
+        foundUser = userDao.findByPlayerNameOrEmail("email@Test.com")
         assertNotNull(foundUser)
 
         // Test finding by lowercase email
-        foundUser = userDao.findByUsernameOrEmail("email@test.com")
+        foundUser = userDao.findByPlayerNameOrEmail("email@test.com")
         assertNotNull(foundUser)
 
         // Test finding non-existent user
-        foundUser = userDao.findByUsernameOrEmail("nonexistent")
+        foundUser = userDao.findByPlayerNameOrEmail("nonexistent")
         assertNull(foundUser)
     }
 }

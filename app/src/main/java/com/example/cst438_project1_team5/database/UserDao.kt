@@ -8,13 +8,13 @@ import androidx.room.Update
 @Dao
 interface UserDao {
     @Query(
-        "SELECT * FROM users WHERE LOWER(username) = LOWER(:identifier) " +
+        "SELECT * FROM users WHERE LOWER(player_name) = LOWER(:identifier) " +
             "OR LOWER(email) = LOWER(:identifier) LIMIT 1"
     )
-    suspend fun findByUsernameOrEmail(identifier: String): UserEntity?
+    suspend fun findByPlayerNameOrEmail(identifier: String): UserEntity?
 
-    @Query("SELECT * FROM users WHERE LOWER(username) = LOWER(:username) LIMIT 1")
-    suspend fun findByUsername(username: String): UserEntity?
+    @Query("SELECT * FROM users WHERE LOWER(player_name) = LOWER(:playerName) LIMIT 1")
+    suspend fun findByPlayerName(playerName: String): UserEntity?
 
     @Query("SELECT * FROM users WHERE LOWER(email) = LOWER(:email) LIMIT 1")
     suspend fun findByEmail(email: String): UserEntity?
