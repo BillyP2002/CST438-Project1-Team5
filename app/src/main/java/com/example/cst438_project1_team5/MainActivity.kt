@@ -228,7 +228,6 @@ fun AuthScreen(
             onCreateAccountClick = { currentMode = AuthMode.SignUp },
             onSignInSuccess = onSignInSuccess
         )
-        )
 
         AuthMode.SignUp -> SignUpScreen(
             modifier = modifier,
