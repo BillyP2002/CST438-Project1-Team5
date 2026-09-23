@@ -83,7 +83,7 @@ class MalWatchlistDaoTest {
 
     private fun testUser(id: Long, name: String) = UserEntity(
         id = id,
-        username = name,
+        playerName = name,
         email = "$name@example.com",
         passwordHash = "hash",
         passwordSalt = "salt",

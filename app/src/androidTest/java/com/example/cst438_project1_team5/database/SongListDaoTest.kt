@@ -33,7 +33,7 @@ class SongListDaoTest {
         // Insert a dummy user to satisfy foreign key constraints
         val user = UserEntity(
             id = testUserId,
-            username = "testuser",
+            playerName = "testplayer",
             email = "test@example.com",
             passwordHash = "hash",
             passwordSalt = "salt",

@@ -65,7 +65,7 @@ private val GameError = Color(0xFFFCA5A5)
  * No answer or URL is hard-coded into the UI.
  */
 @Composable
-@Suppress("LongMethod", "TooGenericExceptionCaught")
+@Suppress("LongMethod", "TooGenericExceptionCaught", "CyclomaticComplexMethod")
 fun GameScreen(
     modifier: Modifier = Modifier,
     /** Called with the accumulated score; the future score activity can be launched here. */
