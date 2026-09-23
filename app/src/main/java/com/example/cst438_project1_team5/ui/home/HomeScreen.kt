@@ -6,6 +6,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.filled.SportsEsports
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -21,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import com.example.cst438_project1_team5.database.MusicRepository
 import com.example.cst438_project1_team5.ui.components.ScreenBackground
+import com.example.cst438_project1_team5.ui.game.GameScreen
 import com.example.cst438_project1_team5.ui.profile.ProfileScreen
 import com.example.cst438_project1_team5.ui.shop.ShopScreen
 import com.example.cst438_project1_team5.ui.soundTest.GameRound
@@ -28,6 +30,7 @@ import com.example.cst438_project1_team5.ui.soundTest.SoundTestScreen
 
 enum class HomeTab {
     SoundTest,
+    Game,
     Shop,
     Profile
 }
@@ -74,6 +77,24 @@ fun HomeScreen(
                     )
                 )
                 NavigationBarItem(
+                    selected = selectedTab == HomeTab.Game,
+                    onClick = { selectedTab = HomeTab.Game },
+                    icon = {
+                        Icon(
+                            Icons.Default.SportsEsports,
+                            contentDescription = "Game"
+                        )
+                    },
+                    label = { Text("Game") },
+                    colors = NavigationBarItemDefaults.colors(
+                        selectedIconColor = Color(0xFF111827),
+                        unselectedIconColor = Color(0xFFCBD5E1),
+                        selectedTextColor = Color(0xFF7DD3FC),
+                        unselectedTextColor = Color(0xFFCBD5E1),
+                        indicatorColor = Color(0xFF7DD3FC)
+                    )
+                )
+                NavigationBarItem(
                     selected = selectedTab == HomeTab.Profile,
                     onClick = { selectedTab = HomeTab.Profile },
                     icon = { Icon(Icons.Default.Person, contentDescription = "Profile") },
@@ -106,6 +127,7 @@ fun HomeScreen(
                             userId = userId
                         )
                     }
+                    HomeTab.Game -> GameScreen()
                     HomeTab.Shop -> ShopScreen()
                     HomeTab.Profile -> {
                         ProfileScreen(
