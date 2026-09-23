@@ -4,16 +4,16 @@ import java.io.IOException
 import retrofit2.HttpException
 
 class MalApiRepository(private val accessToken: String) {
-    suspend fun getList(name: String): Result<MalUser> = try {
-        val response = MalRetrofitClient.api.getUser(name, authorization = "Bearer $accessToken")
+    suspend fun getList(): Result<MalUser> = try {
+        val response = MalRetrofitClient.api.getUser(authorization = "Bearer $accessToken")
         val user = MalUser(
-            name = name,
+            name = "Me",
             showsWatched = response.data.map { entry ->
                 Show(
-                    malAnimeId = entry.node.animeId,
+                    id = entry.node.animeId,
                     title = entry.node.animeTitle,
-                    completedStatus = entry.node.status,
-                    score = entry.node.listScore
+                    completedStatus = entry.listStatus?.status,
+                    score = entry.listStatus?.score
                 )
             }
         )

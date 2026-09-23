@@ -79,6 +79,28 @@ data class AnimeVideoResponse (
     val video: AnimeVideo
 )
 
+//ResourceResponse, Resource, and Anime are involved in getting an anime by the MAL id
+data class ResourceResponse(
+    @SerializedName("resources")
+    val resources: List<Resource>
+)
+
+data class Resource(
+    @SerializedName("anime")
+    val anime: List<Anime>
+)
+
+data class Anime(
+    @SerializedName("id")
+    val id: Int,
+
+    @SerializedName("name")
+    val name: String,
+
+    @SerializedName("slug")
+    val slug: String
+)
+
 /** The small part of the AnimeThemes relationship graph needed by the game. */
 data class AnimeThemeEntry(
     val animetheme: AnimeTheme? = null
@@ -86,12 +108,6 @@ data class AnimeThemeEntry(
 
 data class AnimeTheme(
     val anime: Anime? = null
-)
-
-data class Anime(
-    val id: Int,
-    val name: String,
-    val slug: String
 )
 
 data class AnimeSearchResponse(
