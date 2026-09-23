@@ -28,4 +28,18 @@ class AudioClipPlayer(private val player: ExoPlayer) {
     fun release() {
         player.release()
     }
+
+    /**
+     * Function to pause the player.
+     */
+    fun pause() {
+        player.pause()
+    }
+
+    /**
+     * Function to resume the player.
+     */
+    fun resume() {
+        player.play()
+    }
 }
