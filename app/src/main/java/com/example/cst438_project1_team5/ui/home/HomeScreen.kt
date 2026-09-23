@@ -3,7 +3,6 @@ package com.example.cst438_project1_team5.ui.home
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.SportsEsports
@@ -25,11 +24,8 @@ import com.example.cst438_project1_team5.ui.components.ScreenBackground
 import com.example.cst438_project1_team5.ui.game.GameScreen
 import com.example.cst438_project1_team5.ui.profile.ProfileScreen
 import com.example.cst438_project1_team5.ui.shop.ShopScreen
-import com.example.cst438_project1_team5.ui.soundTest.GameRound
-import com.example.cst438_project1_team5.ui.soundTest.SoundTestScreen
 
 enum class HomeTab {
-    SoundTest,
     Game,
     Shop,
     Profile
@@ -42,7 +38,8 @@ fun HomeScreen(
     userId: Long,
     onSignOut: () -> Unit
 ) {
-    var selectedTab by rememberSaveable { mutableStateOf(HomeTab.SoundTest) }
+    // The game is the landing screen and occupies the first navigation position.
+    var selectedTab by rememberSaveable { mutableStateOf(HomeTab.Game) }
 
     Scaffold(
         containerColor = Color.Transparent,
@@ -51,10 +48,15 @@ fun HomeScreen(
                 containerColor = Color(0xFF111827).copy(alpha = 0.9f)
             ) {
                 NavigationBarItem(
-                    selected = selectedTab == HomeTab.SoundTest,
-                    onClick = { selectedTab = HomeTab.SoundTest },
-                    icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
-                    label = { Text("Home") },
+                    selected = selectedTab == HomeTab.Game,
+                    onClick = { selectedTab = HomeTab.Game },
+                    icon = {
+                        Icon(
+                            Icons.Default.SportsEsports,
+                            contentDescription = "Game"
+                        )
+                    },
+                    label = { Text("Game") },
                     colors = NavigationBarItemDefaults.colors(
                         selectedIconColor = Color(0xFF111827),
                         unselectedIconColor = Color(0xFFCBD5E1),
@@ -68,24 +70,6 @@ fun HomeScreen(
                     onClick = { selectedTab = HomeTab.Shop },
                     icon = { Icon(Icons.Default.ShoppingCart, contentDescription = "Shop") },
                     label = { Text("Shop") },
-                    colors = NavigationBarItemDefaults.colors(
-                        selectedIconColor = Color(0xFF111827),
-                        unselectedIconColor = Color(0xFFCBD5E1),
-                        selectedTextColor = Color(0xFF7DD3FC),
-                        unselectedTextColor = Color(0xFFCBD5E1),
-                        indicatorColor = Color(0xFF7DD3FC)
-                    )
-                )
-                NavigationBarItem(
-                    selected = selectedTab == HomeTab.Game,
-                    onClick = { selectedTab = HomeTab.Game },
-                    icon = {
-                        Icon(
-                            Icons.Default.SportsEsports,
-                            contentDescription = "Game"
-                        )
-                    },
-                    label = { Text("Game") },
                     colors = NavigationBarItemDefaults.colors(
                         selectedIconColor = Color(0xFF111827),
                         unselectedIconColor = Color(0xFFCBD5E1),
@@ -113,20 +97,6 @@ fun HomeScreen(
         ScreenBackground {
             Box(modifier = Modifier.padding(innerPadding)) {
                 when (selectedTab) {
-                    HomeTab.SoundTest -> {
-                        // Using a dummy GameRound for now, this can be hooked up properly later
-                        val dummyRound = GameRound(
-                            animeTitle = "Naruto",
-                            songTitle = "Blue Bird",
-                            themeType = "OP",
-                            videoUrl = "https://example.com/video.mp4"
-                        )
-                        SoundTestScreen(
-                            round = dummyRound,
-                            repository = repository,
-                            userId = userId
-                        )
-                    }
                     HomeTab.Game -> GameScreen()
                     HomeTab.Shop -> ShopScreen()
                     HomeTab.Profile -> {
