@@ -38,7 +38,7 @@ class ProfileScreenTest {
             database.userDao().insert(
                 UserEntity(
                     id = testUserId,
-                    username = "profileuser",
+                    playerName = "profileuser",
                     email = "profile@example.com",
                     passwordHash = "hash",
                     passwordSalt = "salt",
