@@ -168,8 +168,14 @@ class MainActivity : ComponentActivity() {
 
         // theme song api random song loading
         lifecycleScope.launch {
-            GetAudioAndVideo.randomAudio()?.let { (audio, _) ->
-                Log.d("Audio", audio.link)
+            try {
+                GetAudioAndVideo.randomAudio()?.let { (audio, _) ->
+                    Log.d("Audio", audio.link)
+                }
+            } catch (e: IOException) {
+                Log.w("Audio", "Could not load startup audio preview", e)
+            } catch (e: HttpException) {
+                Log.w("Audio", "Startup audio preview request failed: ${e.code()}", e)
             }
         }
 
