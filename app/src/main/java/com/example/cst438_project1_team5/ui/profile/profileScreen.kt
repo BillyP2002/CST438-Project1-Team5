@@ -1,5 +1,7 @@
 package com.example.cst438_project1_team5.ui.profile
 
+import android.content.Context
+import android.content.SharedPreferences
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -53,6 +55,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.edit
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TextFieldDefaults
 import com.example.cst438_project1_team5.ui.components.ScreenBackground
@@ -64,6 +67,12 @@ import com.example.cst438_project1_team5.ui.shop.ProfileEffect
 import kotlinx.coroutines.launch
 
 private const val PLAYER_NAME = "player"
+private const val PROFILE_PREFS_PREFIX = "profile_prefs_"
+private const val PREF_PROFILE_USERNAME = "profile_username"
+private const val PREF_PROFILE_AVATAR_ID = "profile_avatar_id"
+private const val PREF_PROFILE_FRAME_ID = "profile_frame_id"
+private const val PREF_PROFILE_STICKER_ID = "profile_sticker_id"
+private const val PREF_PROFILE_BACKGROUND_ID = "profile_background_id"
 
 private data class AvatarOption(val id: String, val emoji: String)
 
@@ -113,6 +122,16 @@ private val backgrounds = listOf(
     )
 )
 
+private fun profilePrefsName(userId: Long?): String =
+    "$PROFILE_PREFS_PREFIX${userId ?: "preview"}"
+
+private fun savedProfileOption(
+    preferences: SharedPreferences,
+    key: String,
+    validIds: Set<String>,
+    defaultId: String
+): String = preferences.getString(key, defaultId)?.takeIf(validIds::contains) ?: defaultId
+
 private fun shopEffectBackground(effects: Set<ProfileEffect>): BackgroundOption? = when {
     ProfileEffect.FIRE in effects -> BackgroundOption(
         "fire", "Fire", listOf(Color(0xFF7F1D1D), Color(0xFFFF6B00), Color(0xFFFFD166))
@@ -135,11 +154,56 @@ fun ProfileScreen(
     purchasedEffects: Set<ProfileEffect> = emptySet(),
     onSignOut: () -> Unit = {}
 ) {
-    var username by rememberSaveable { mutableStateOf(PLAYER_NAME) }
-    var selectedAvatarId by rememberSaveable { mutableStateOf("cat") }
-    var selectedFrameId by rememberSaveable { mutableStateOf("gold") }
-    var selectedStickerId by rememberSaveable { mutableStateOf("sparkles") }
-    var selectedBackgroundId by rememberSaveable { mutableStateOf("night") }
+    val context = LocalContext.current
+    val profilePrefs = remember(context, userId) {
+        context.getSharedPreferences(profilePrefsName(userId), Context.MODE_PRIVATE)
+    }
+    var username by rememberSaveable(userId) {
+        mutableStateOf(
+            profilePrefs.getString(PREF_PROFILE_USERNAME, PLAYER_NAME)?.take(20) ?: PLAYER_NAME
+        )
+    }
+    var selectedAvatarId by rememberSaveable(userId) {
+        mutableStateOf(
+            savedProfileOption(
+                profilePrefs,
+                PREF_PROFILE_AVATAR_ID,
+                avatars.map { it.id }.toSet(),
+                "cat"
+            )
+        )
+    }
+    var selectedFrameId by rememberSaveable(userId) {
+        mutableStateOf(
+            savedProfileOption(
+                profilePrefs,
+                PREF_PROFILE_FRAME_ID,
+                frames.map { it.id }.toSet(),
+                "gold"
+            )
+        )
+    }
+    var selectedStickerId by rememberSaveable(userId) {
+        mutableStateOf(
+            savedProfileOption(
+                profilePrefs,
+                PREF_PROFILE_STICKER_ID,
+                stickers.map { it.id }.toSet(),
+                "sparkles"
+            )
+        )
+    }
+    var selectedBackgroundId by rememberSaveable(userId) {
+        mutableStateOf(
+            savedProfileOption(
+                profilePrefs,
+                PREF_PROFILE_BACKGROUND_ID,
+                backgrounds.map { it.id }.toSet(),
+                "night"
+            )
+        )
+    }
+    var saveStatus by rememberSaveable(userId) { mutableStateOf<String?>(null) }
     var songTitle by rememberSaveable { mutableStateOf("") }
     var songArtist by rememberSaveable { mutableStateOf("") }
     var songList by remember {
@@ -162,6 +226,10 @@ fun ProfileScreen(
 
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
+
+    fun markProfileChanged() {
+        saveStatus = null
+    }
 
     LaunchedEffect(userId) {
         if (userId != null) {
@@ -275,7 +343,10 @@ fun ProfileScreen(
 
                 OutlinedTextField(
                     value = username,
-                    onValueChange = { username = it.take(20) },
+                    onValueChange = {
+                        username = it.take(20)
+                        markProfileChanged()
+                    },
                     label = { Text("Player name") },
                     singleLine = true,
                     shape = RoundedCornerShape(16.dp),
@@ -297,7 +368,10 @@ fun ProfileScreen(
                     options = avatars,
                     selectedId = selectedAvatarId,
                     label = { it.emoji },
-                    onSelected = { selectedAvatarId = it }
+                    onSelected = {
+                        selectedAvatarId = it
+                        markProfileChanged()
+                    }
                 )
 
                 CustomizationRow(
@@ -305,7 +379,10 @@ fun ProfileScreen(
                     options = frames,
                     selectedId = selectedFrameId,
                     label = { it.label },
-                    onSelected = { selectedFrameId = it }
+                    onSelected = {
+                        selectedFrameId = it
+                        markProfileChanged()
+                    }
                 )
 
                 CustomizationRow(
@@ -313,7 +390,10 @@ fun ProfileScreen(
                     options = stickers,
                     selectedId = selectedStickerId,
                     label = { if (it.emoji.isBlank()) "None" else it.emoji },
-                    onSelected = { selectedStickerId = it }
+                    onSelected = {
+                        selectedStickerId = it
+                        markProfileChanged()
+                    }
                 )
 
                 CustomizationRow(
@@ -321,7 +401,10 @@ fun ProfileScreen(
                     options = backgrounds,
                     selectedId = selectedBackgroundId,
                     label = { it.label },
-                    onSelected = { selectedBackgroundId = it }
+                    onSelected = {
+                        selectedBackgroundId = it
+                        markProfileChanged()
+                    }
                 )
 
                 Card(
@@ -442,8 +525,18 @@ fun ProfileScreen(
 
             Button(
                 onClick = {
+                    val savedUsername = username.trim().ifBlank { PLAYER_NAME }.take(20)
+                    username = savedUsername
+                    profilePrefs.edit {
+                        putString(PREF_PROFILE_USERNAME, savedUsername)
+                        putString(PREF_PROFILE_AVATAR_ID, selectedAvatarId)
+                        putString(PREF_PROFILE_FRAME_ID, selectedFrameId)
+                        putString(PREF_PROFILE_STICKER_ID, selectedStickerId)
+                        putString(PREF_PROFILE_BACKGROUND_ID, selectedBackgroundId)
+                    }
+                    saveStatus = "Profile saved"
                     scope.launch {
-                        snackbarHostState.showSnackbar("Profile saved!")
+                        snackbarHostState.showSnackbar("Profile saved")
                     }
                 },
                 shape = RoundedCornerShape(16.dp),
@@ -454,7 +547,7 @@ fun ProfileScreen(
                     .padding(bottom = 8.dp)
             ) {
                 Text(
-                    "Save profile",
+                    saveStatus ?: "Save profile",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = Color.White

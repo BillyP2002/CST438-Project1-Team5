@@ -1,8 +1,8 @@
 package com.example.cst438_project1_team5.api.anime_themes
-import android.content.Context
-import com.example.cst438_project1_team5.api.malapi.MalApiRepository
-import com.example.cst438_project1_team5.api.malapi.MalOAuthManager
+
 import com.example.cst438_project1_team5.database.AppDatabase
+import retrofit2.HttpException
+import retrofit2.Response
 
 /** A playable game round assembled entirely from AnimeThemes API values. */
 data class GameRound(
@@ -19,11 +19,11 @@ object GetVideo {
      */
     suspend fun randomRound(): GameRound? {
         val response = RetrofitClient.animeSongApi.getRandomVideo()
-        if (!response.isSuccessful) return null
+        val body = response.successfulBodyOrThrow()
 
         // Keep this check even though the API request filters `uncen=false` so a
         // malformed response can never reach the success playback screen.
-        val video = response.body()?.videos?.firstOrNull { !it.uncen } ?: return null
+        val video = body?.videos?.firstOrNull { !it.uncen } ?: return null
         val audio = video.audio ?: return null
         val anime = video.animethemeentries.firstNotNullOfOrNull {
             it.animetheme?.anime
@@ -38,9 +38,9 @@ object GetVideo {
 
     suspend fun malRound(anime: Anime): GameRound? {
         val response = RetrofitClient.animeSongApi.getVideosByAnimeId(anime.id)
-        if (!response.isSuccessful) return null
+        val body = response.successfulBodyOrThrow()
 
-        val videoList = response.body()?.videos
+        val videoList = body?.videos
         val video = videoList?.randomOrNull() ?: return null
         val audio = video.audio ?: return null
 
@@ -54,7 +54,7 @@ object GetVideo {
         )
     }
 
-    //Creates a random malRound
+    // Creates a random round from the signed-in user's MAL watchlist.
     suspend fun randomMalRound(
         database: AppDatabase,
         userId: Long
@@ -80,5 +80,10 @@ object GetVideo {
         } else {
             emptyList()
         }
+    }
+
+    private fun <T> Response<T>.successfulBodyOrThrow(): T? {
+        if (!isSuccessful) throw HttpException(this)
+        return body()
     }
 }

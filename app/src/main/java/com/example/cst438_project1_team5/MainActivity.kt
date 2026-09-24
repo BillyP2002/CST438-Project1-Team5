@@ -58,7 +58,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.edit
 import androidx.lifecycle.lifecycleScope
-import com.example.cst438_project1_team5.api.anime_themes.GetAudioAndVideo
 import com.example.cst438_project1_team5.api.malapi.MalOAuthClient
 import com.example.cst438_project1_team5.api.malapi.MalOAuthManager
 import com.example.cst438_project1_team5.database.AppDatabase
@@ -163,20 +162,6 @@ class MainActivity : ComponentActivity() {
         // token or a token linked to another local account performs no request.
         lifecycleScope.launch {
             syncMalWatchlistIfLinked()
-        }
-
-
-        // theme song api random song loading
-        lifecycleScope.launch {
-            try {
-                GetAudioAndVideo.randomAudio()?.let { (audio, _) ->
-                    Log.d("Audio", audio.link)
-                }
-            } catch (e: IOException) {
-                Log.w("Audio", "Could not load startup audio preview", e)
-            } catch (e: HttpException) {
-                Log.w("Audio", "Startup audio preview request failed: ${e.code()}", e)
-            }
         }
 
         enableEdgeToEdge()
