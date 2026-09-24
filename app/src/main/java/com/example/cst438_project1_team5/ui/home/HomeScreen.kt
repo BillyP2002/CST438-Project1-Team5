@@ -129,6 +129,7 @@ fun HomeScreen(
             Box(modifier = Modifier.padding(innerPadding)) {
                 when (selectedTab) {
                     HomeTab.Game -> GameScreen(
+                        userId = userId,
                         onFinish = { result ->
                             animeCoinBalance += result.animeCoins
                             economyPrefs.edit {
