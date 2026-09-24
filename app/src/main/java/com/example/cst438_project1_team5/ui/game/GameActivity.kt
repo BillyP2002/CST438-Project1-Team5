@@ -58,6 +58,7 @@ import com.example.cst438_project1_team5.audio.MediaItemClipBuilder
 import com.example.cst438_project1_team5.audio.cache.CacheAudio
 import com.example.cst438_project1_team5.database.AppDatabase
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
 import java.io.File
 import java.io.IOException
 import java.util.Locale
@@ -69,6 +70,7 @@ private val GameSecondary = Color(0xFF7C3AED)
 private val GameActiveLevel = Color(0xFF22D3EE)
 private val GameInactiveLevel = Color(0xFF334155)
 private val GameError = Color(0xFFFCA5A5)
+private const val ANIMETHEMES_CLOUDFLARE_TIMEOUT = 522
 
 /** Data retained for the success screen after the player completes every hint level. */
 data class GameResult(
@@ -143,6 +145,13 @@ fun GameScreen(
             } catch (error: IOException) {
                 Log.w("GameScreen", "Unable to load an AnimeThemes round", error)
                 roundError = "Couldn't reach AnimeThemes. Check your connection and try again."
+            } catch (error: HttpException) {
+                Log.w("GameScreen", "AnimeThemes request failed with HTTP ${error.code()}", error)
+                roundError = if (error.code() == ANIMETHEMES_CLOUDFLARE_TIMEOUT) {
+                    "AnimeThemes is unavailable right now (HTTP 522). Try again in a bit."
+                } else {
+                    "AnimeThemes request failed (${error.code()}). Try again."
+                }
             } catch (error: RuntimeException) {
                 Log.e("GameScreen", "Unexpected game-round response", error)
                 roundError = "Couldn't start a round: ${error.message ?: "unknown error"}"

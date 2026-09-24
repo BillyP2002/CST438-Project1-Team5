@@ -1,5 +1,7 @@
 package com.example.cst438_project1_team5.ui.profile
 
+import android.content.Context
+import android.content.SharedPreferences
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -53,6 +55,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.edit
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TextFieldDefaults
 import com.example.cst438_project1_team5.ui.components.ScreenBackground
@@ -64,6 +67,12 @@ import com.example.cst438_project1_team5.ui.shop.ProfileEffect
 import kotlinx.coroutines.launch
 
 private const val PLAYER_NAME = "player"
+private const val PROFILE_PREFS_PREFIX = "profile_prefs_"
+private const val PREF_PROFILE_USERNAME = "profile_username"
+private const val PREF_PROFILE_AVATAR_ID = "profile_avatar_id"
+private const val PREF_PROFILE_FRAME_ID = "profile_frame_id"
+private const val PREF_PROFILE_STICKER_ID = "profile_sticker_id"
+private const val PREF_PROFILE_BACKGROUND_ID = "profile_background_id"
 
 private data class AvatarOption(val id: String, val emoji: String)
 
@@ -71,10 +80,13 @@ private data class FrameOption(val id: String, val label: String, val color: Col
 
 private data class StickerOption(val id: String, val emoji: String)
 
-private data class BackgroundOption(val id: String, val label: String, val colors: List<Color>)
+private data class BackgroundOption(
+    val id: String,
+    val label: String,
+    val colors: List<Color>
+)
 
 private val avatars = listOf(
-    //defaults
     AvatarOption("cat", "🐱"),
     AvatarOption("fox", "🦊"),
     AvatarOption("ghost", "👻"),
@@ -113,16 +125,52 @@ private val backgrounds = listOf(
     )
 )
 
-private fun shopEffectBackground(effects: Set<ProfileEffect>): BackgroundOption? = when {
+private fun profilePrefsName(userId: Long?): String =
+    "$PROFILE_PREFS_PREFIX${userId ?: "preview"}"
+
+private fun savedProfileOption(
+    preferences: SharedPreferences,
+    key: String,
+    validIds: Set<String>,
+    defaultId: String
+): String =
+    preferences.getString(key, defaultId)
+        ?.takeIf(validIds::contains)
+        ?: defaultId
+
+private fun shopEffectBackground(
+    effects: Set<ProfileEffect>
+): BackgroundOption? = when {
     ProfileEffect.FIRE in effects -> BackgroundOption(
-        "fire", "Fire", listOf(Color(0xFF7F1D1D), Color(0xFFFF6B00), Color(0xFFFFD166))
+        "fire",
+        "Fire",
+        listOf(
+            Color(0xFF7F1D1D),
+            Color(0xFFFF6B00),
+            Color(0xFFFFD166)
+        )
     )
+
     ProfileEffect.SAKURA in effects -> BackgroundOption(
-        "sakura", "Sakura", listOf(Color(0xFF831843), Color(0xFFF9A8D4), Color(0xFFFCE7F3))
+        "sakura",
+        "Sakura",
+        listOf(
+            Color(0xFF831843),
+            Color(0xFFF9A8D4),
+            Color(0xFFFCE7F3)
+        )
     )
+
     ProfileEffect.OCEAN in effects -> BackgroundOption(
-        "ocean", "Ocean", listOf(Color(0xFF082F49), Color(0xFF0369A1), Color(0xFF67E8F9))
+        "ocean",
+        "Ocean",
+        listOf(
+            Color(0xFF082F49),
+            Color(0xFF0369A1),
+            Color(0xFF67E8F9)
+        )
     )
+
     else -> null
 }
 
@@ -130,38 +178,123 @@ private fun shopEffectBackground(effects: Set<ProfileEffect>): BackgroundOption?
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
-    repository: MusicRepository, 
+    repository: MusicRepository,
     userId: Long? = null,
     purchasedEffects: Set<ProfileEffect> = emptySet(),
     onSignOut: () -> Unit = {}
 ) {
-    var username by rememberSaveable { mutableStateOf(PLAYER_NAME) }
-    var selectedAvatarId by rememberSaveable { mutableStateOf("cat") }
-    var selectedFrameId by rememberSaveable { mutableStateOf("gold") }
-    var selectedStickerId by rememberSaveable { mutableStateOf("sparkles") }
-    var selectedBackgroundId by rememberSaveable { mutableStateOf("night") }
-    var songTitle by rememberSaveable { mutableStateOf("") }
-    var songArtist by rememberSaveable { mutableStateOf("") }
+    val context = LocalContext.current
+
+    val profilePrefs = remember(context, userId) {
+        context.getSharedPreferences(
+            profilePrefsName(userId),
+            Context.MODE_PRIVATE
+        )
+    }
+
+    var username by rememberSaveable(userId) {
+        mutableStateOf(
+            profilePrefs
+                .getString(PREF_PROFILE_USERNAME, PLAYER_NAME)
+                ?.take(20)
+                ?: PLAYER_NAME
+        )
+    }
+
+    var selectedAvatarId by rememberSaveable(userId) {
+        mutableStateOf(
+            savedProfileOption(
+                profilePrefs,
+                PREF_PROFILE_AVATAR_ID,
+                avatars.map { it.id }.toSet(),
+                "cat"
+            )
+        )
+    }
+
+    var selectedFrameId by rememberSaveable(userId) {
+        mutableStateOf(
+            savedProfileOption(
+                profilePrefs,
+                PREF_PROFILE_FRAME_ID,
+                frames.map { it.id }.toSet(),
+                "gold"
+            )
+        )
+    }
+
+    var selectedStickerId by rememberSaveable(userId) {
+        mutableStateOf(
+            savedProfileOption(
+                profilePrefs,
+                PREF_PROFILE_STICKER_ID,
+                stickers.map { it.id }.toSet(),
+                "sparkles"
+            )
+        )
+    }
+
+    var selectedBackgroundId by rememberSaveable(userId) {
+        mutableStateOf(
+            savedProfileOption(
+                profilePrefs,
+                PREF_PROFILE_BACKGROUND_ID,
+                backgrounds.map { it.id }.toSet(),
+                "night"
+            )
+        )
+    }
+
+    var saveStatus by rememberSaveable(userId) {
+        mutableStateOf<String?>(null)
+    }
+
+    var songTitle by rememberSaveable {
+        mutableStateOf("")
+    }
+
+    var songArtist by rememberSaveable {
+        mutableStateOf("")
+    }
+
     var songList by remember {
         mutableStateOf<List<SongListEntry>>(emptyList())
     }
+
     var malWatchlist by remember {
         mutableStateOf<List<MalWatchlistEntry>>(emptyList())
     }
-    var isMalWatchlistExpanded by rememberSaveable { mutableStateOf(false) }
+
+    var isMalWatchlistExpanded by rememberSaveable {
+        mutableStateOf(false)
+    }
 
     val avatar = avatars.first { it.id == selectedAvatarId }
+
     val frame = if (ProfileEffect.GOLD in purchasedEffects) {
         frames.first { it.id == "gold" }
     } else {
         frames.first { it.id == selectedFrameId }
     }
-    val sticker = stickers.first { it.id == selectedStickerId }
-    val background = shopEffectBackground(purchasedEffects)
-        ?: backgrounds.first { it.id == selectedBackgroundId }
 
-    val snackbarHostState = remember { SnackbarHostState() }
+    val sticker = stickers.first {
+        it.id == selectedStickerId
+    }
+
+    val background = shopEffectBackground(purchasedEffects)
+        ?: backgrounds.first {
+            it.id == selectedBackgroundId
+        }
+
+    val snackbarHostState = remember {
+        SnackbarHostState()
+    }
+
     val scope = rememberCoroutineScope()
+
+    fun markProfileChanged() {
+        saveStatus = null
+    }
 
     LaunchedEffect(userId) {
         if (userId != null) {
@@ -173,98 +306,412 @@ fun ProfileScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Customize Profile", color = Color.White) },
+                title = {
+                    Text(
+                        "Customize Profile",
+                        color = Color.White
+                    )
+                },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color.Transparent,
                     titleContentColor = Color.White
                 ),
                 actions = {
-                    TextButton(onClick = onSignOut) {
-                        Text("Sign Out", color = Color(0xFFFCA5A5))
+                    TextButton(
+                        onClick = onSignOut
+                    ) {
+                        Text(
+                            "Sign Out",
+                            color = Color(0xFFFCA5A5)
+                        )
                     }
                 }
             )
         },
         containerColor = Color.Transparent,
-        snackbarHost = { SnackbarHost(snackbarHostState) }
+        snackbarHost = {
+            SnackbarHost(snackbarHostState)
+        }
     ) { paddingValues ->
+
         ScreenBackground {
-            Column(
+
+            Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues)
-                    .padding(horizontal = 16.dp)
-                    .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                ProfilePreview(
-                    username = username.ifBlank { "Player" },
-                    avatar = avatar,
-                    frame = frame,
-                    sticker = sticker,
-                    background = background
-                )
 
-                if (purchasedEffects.isNotEmpty()) {
-                    Text(
-                        text = "Shop effects: ${purchasedEffects.joinToString { it.label }}",
-                        color = Color(0xFFFDE68A),
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                }
-
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = Color(0xFF111827).copy(alpha = 0.9f)
-                    )
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 16.dp)
+                        .padding(bottom = 80.dp)
+                        .verticalScroll(rememberScrollState()),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    Column(modifier = Modifier.fillMaxWidth()) {
-                        TextButton(
-                            onClick = { isMalWatchlistExpanded = !isMalWatchlistExpanded },
+
+                    ProfilePreview(
+                        username = username.ifBlank { "Player" },
+                        avatar = avatar,
+                        frame = frame,
+                        sticker = sticker,
+                        background = background
+                    )
+
+                    if (purchasedEffects.isNotEmpty()) {
+                        Text(
+                            text = "Shop effects: ${
+                                purchasedEffects.joinToString {
+                                    it.label
+                                }
+                            }",
+                            color = Color(0xFFFDE68A),
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = Color(0xFF111827)
+                                .copy(alpha = 0.9f)
+                        )
+                    ) {
+                        Column(
                             modifier = Modifier.fillMaxWidth()
                         ) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
+
+                            TextButton(
+                                onClick = {
+                                    isMalWatchlistExpanded =
+                                        !isMalWatchlistExpanded
+                                },
+                                modifier = Modifier.fillMaxWidth()
                             ) {
-                                Text(
-                                    text = "MAL Watchlist (${malWatchlist.size})",
-                                    color = Color.White,
-                                    fontWeight = FontWeight.Bold
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement =
+                                        Arrangement.SpaceBetween,
+                                    verticalAlignment =
+                                        Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = "MAL Watchlist (${malWatchlist.size})",
+                                        color = Color.White,
+                                        fontWeight = FontWeight.Bold
+                                    )
+
+                                    Text(
+                                        text = if (
+                                            isMalWatchlistExpanded
+                                        ) {
+                                            "▲"
+                                        } else {
+                                            "▼"
+                                        },
+                                        color = Color(0xFF7DD3FC)
+                                    )
+                                }
+                            }
+
+                            if (isMalWatchlistExpanded) {
+                                HorizontalDivider(
+                                    color = Color(0xFF334155)
                                 )
-                                Text(
-                                    text = if (isMalWatchlistExpanded) "▲" else "▼",
-                                    color = Color(0xFF7DD3FC)
-                                )
+
+                                if (malWatchlist.isEmpty()) {
+                                    Text(
+                                        text = "No MAL watchlist loaded. " +
+                                                "Link MAL and sign in to sync it.",
+                                        color = Color(0xFFCBD5E1),
+                                        modifier = Modifier.padding(16.dp)
+                                    )
+                                } else {
+                                    Column(
+                                        modifier = Modifier.padding(16.dp),
+                                        verticalArrangement =
+                                            Arrangement.spacedBy(8.dp)
+                                    ) {
+                                        malWatchlist.forEach { show ->
+                                            Column {
+                                                Text(
+                                                    show.title,
+                                                    color = Color.White,
+                                                    fontWeight =
+                                                        FontWeight.Bold
+                                                )
+
+                                                Text(
+                                                    text = listOfNotNull(
+                                                        show.status?.replace(
+                                                            '_',
+                                                            ' '
+                                                        ),
+                                                        show.score?.let {
+                                                            "Score: $it"
+                                                        }
+                                                    ).joinToString(" • ")
+                                                        .ifBlank {
+                                                            "No status or score"
+                                                        },
+                                                    color =
+                                                        Color(0xFFCBD5E1)
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
+                    }
 
-                        if (isMalWatchlistExpanded) {
-                            HorizontalDivider(color = Color(0xFF334155))
-                            if (malWatchlist.isEmpty()) {
+                    OutlinedTextField(
+                        value = username,
+                        onValueChange = {
+                            username = it.take(20)
+                            markProfileChanged()
+                        },
+                        label = {
+                            Text("Player name")
+                        },
+                        singleLine = true,
+                        shape = RoundedCornerShape(16.dp),
+                        colors = TextFieldDefaults.colors(
+                            focusedTextColor = Color.White,
+                            unfocusedTextColor = Color.White,
+                            focusedContainerColor = Color.Transparent,
+                            unfocusedContainerColor = Color.Transparent,
+                            focusedIndicatorColor =
+                                Color(0xFF7DD3FC),
+                            unfocusedIndicatorColor =
+                                Color(0xFF475569),
+                            focusedLabelColor =
+                                Color(0xFF7DD3FC),
+                            unfocusedLabelColor =
+                                Color(0xFFCBD5E1)
+                        ),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    CustomizationRow(
+                        title = "Avatar",
+                        options = avatars,
+                        selectedId = selectedAvatarId,
+                        label = { it.emoji },
+                        onSelected = {
+                            selectedAvatarId = it
+                            markProfileChanged()
+                        }
+                    )
+
+                    CustomizationRow(
+                        title = "Frame",
+                        options = frames,
+                        selectedId = selectedFrameId,
+                        label = { it.label },
+                        onSelected = {
+                            selectedFrameId = it
+                            markProfileChanged()
+                        }
+                    )
+
+                    CustomizationRow(
+                        title = "Sticker",
+                        options = stickers,
+                        selectedId = selectedStickerId,
+                        label = {
+                            if (it.emoji.isBlank()) {
+                                "None"
+                            } else {
+                                it.emoji
+                            }
+                        },
+                        onSelected = {
+                            selectedStickerId = it
+                            markProfileChanged()
+                        }
+                    )
+
+                    CustomizationRow(
+                        title = "Background",
+                        options = backgrounds,
+                        selectedId = selectedBackgroundId,
+                        label = { it.label },
+                        onSelected = {
+                            selectedBackgroundId = it
+                            markProfileChanged()
+                        }
+                    )
+
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = Color(0xFF111827)
+                                .copy(alpha = 0.9f)
+                        )
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(16.dp),
+                            verticalArrangement =
+                                Arrangement.spacedBy(12.dp)
+                        ) {
+
+                            Text(
+                                text = "My Song List",
+                                style =
+                                    MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White
+                            )
+
+                            OutlinedTextField(
+                                value = songTitle,
+                                onValueChange = {
+                                    songTitle = it
+                                },
+                                label = {
+                                    Text("Song title")
+                                },
+                                singleLine = true,
+                                shape = RoundedCornerShape(16.dp),
+                                colors = TextFieldDefaults.colors(
+                                    focusedTextColor = Color.White,
+                                    unfocusedTextColor = Color.White,
+                                    focusedContainerColor =
+                                        Color.Transparent,
+                                    unfocusedContainerColor =
+                                        Color.Transparent,
+                                    focusedIndicatorColor =
+                                        Color(0xFF7DD3FC),
+                                    unfocusedIndicatorColor =
+                                        Color(0xFF475569),
+                                    focusedLabelColor =
+                                        Color(0xFF7DD3FC),
+                                    unfocusedLabelColor =
+                                        Color(0xFFCBD5E1)
+                                ),
+                                modifier = Modifier.fillMaxWidth()
+                            )
+
+                            OutlinedTextField(
+                                value = songArtist,
+                                onValueChange = {
+                                    songArtist = it
+                                },
+                                label = {
+                                    Text("Artist")
+                                },
+                                singleLine = true,
+                                shape = RoundedCornerShape(16.dp),
+                                colors = TextFieldDefaults.colors(
+                                    focusedTextColor = Color.White,
+                                    unfocusedTextColor = Color.White,
+                                    focusedContainerColor =
+                                        Color.Transparent,
+                                    unfocusedContainerColor =
+                                        Color.Transparent,
+                                    focusedIndicatorColor =
+                                        Color(0xFF7DD3FC),
+                                    unfocusedIndicatorColor =
+                                        Color(0xFF475569),
+                                    focusedLabelColor =
+                                        Color(0xFF7DD3FC),
+                                    unfocusedLabelColor =
+                                        Color(0xFFCBD5E1)
+                                ),
+                                modifier = Modifier.fillMaxWidth()
+                            )
+
+                            Button(
+                                onClick = {
+                                    if (
+                                        userId != null &&
+                                        songTitle.isNotBlank() &&
+                                        songArtist.isNotBlank()
+                                    ) {
+                                        scope.launch {
+                                            repository.addSongToUserList(
+                                                userId = userId,
+                                                songId =
+                                                    "manual_${System.currentTimeMillis()}",
+                                                title = songTitle.trim(),
+                                                artist = songArtist.trim()
+                                            )
+
+                                            songList =
+                                                repository.getUserSongList(
+                                                    userId
+                                                )
+
+                                            songTitle = ""
+                                            songArtist = ""
+
+                                            snackbarHostState
+                                                .showSnackbar(
+                                                    "Song saved to your list"
+                                                )
+                                        }
+                                    }
+                                },
+                                modifier = Modifier.fillMaxWidth(),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor =
+                                        Color(0xFF7C3AED)
+                                )
+                            ) {
+                                Text("Add to my song list")
+                            }
+
+                            if (songList.isEmpty()) {
                                 Text(
-                                    text = "No MAL watchlist loaded. Link MAL and sign in to sync it.",
-                                    color = Color(0xFFCBD5E1),
-                                    modifier = Modifier.padding(16.dp)
+                                    text = "No songs saved yet.",
+                                    color = Color(0xFFCBD5E1)
                                 )
                             } else {
-                                Column(
-                                    modifier = Modifier.padding(16.dp),
-                                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                                ) {
-                                    malWatchlist.forEach { show ->
-                                        Column {
-                                            Text(show.title, color = Color.White, fontWeight = FontWeight.Bold)
-                                            Text(
-                                                text = listOfNotNull(
-                                                    show.status?.replace('_', ' '),
-                                                    show.score?.let { "Score: $it" }
-                                                ).joinToString(" • ").ifBlank { "No status or score" },
-                                                color = Color(0xFFCBD5E1)
+                                songList.forEach { song ->
+                                    Card(
+                                        modifier =
+                                            Modifier.fillMaxWidth(),
+                                        colors =
+                                            CardDefaults.cardColors(
+                                                containerColor =
+                                                    Color(0xFF1E293B)
                                             )
+                                    ) {
+                                        Row(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(12.dp),
+                                            horizontalArrangement =
+                                                Arrangement.SpaceBetween,
+                                            verticalAlignment =
+                                                Alignment.CenterVertically
+                                        ) {
+                                            Column {
+                                                Text(
+                                                    song.title,
+                                                    fontWeight =
+                                                        FontWeight.Bold,
+                                                    color = Color.White
+                                                )
+
+                                                Text(
+                                                    song.artist,
+                                                    color =
+                                                        Color(0xFFCBD5E1)
+                                                )
+                                            }
+
+                                            if (song.isFavorite) {
+                                                Text(
+                                                    "★",
+                                                    color =
+                                                        Color(0xFFFBBF24)
+                                                )
+                                            }
                                         }
                                     }
                                 }
@@ -273,196 +720,75 @@ fun ProfileScreen(
                     }
                 }
 
-                OutlinedTextField(
-                    value = username,
-                    onValueChange = { username = it.take(20) },
-                    label = { Text("Player name") },
-                    singleLine = true,
-                    shape = RoundedCornerShape(16.dp),
-                    colors = TextFieldDefaults.colors(
-                        focusedTextColor = Color.White,
-                        unfocusedTextColor = Color.White,
-                        focusedContainerColor = Color.Transparent,
-                        unfocusedContainerColor = Color.Transparent,
-                        focusedIndicatorColor = Color(0xFF7DD3FC),
-                        unfocusedIndicatorColor = Color(0xFF475569),
-                        focusedLabelColor = Color(0xFF7DD3FC),
-                        unfocusedLabelColor = Color(0xFFCBD5E1)
-                    ),
-                    modifier = Modifier.fillMaxWidth()
-                )
+                Button(
+                    onClick = {
+                        val savedUsername = username
+                            .trim()
+                            .ifBlank { PLAYER_NAME }
+                            .take(20)
 
-                CustomizationRow(
-                    title = "Avatar",
-                    options = avatars,
-                    selectedId = selectedAvatarId,
-                    label = { it.emoji },
-                    onSelected = { selectedAvatarId = it }
-                )
+                        username = savedUsername
 
-                CustomizationRow(
-                    title = "Frame",
-                    options = frames,
-                    selectedId = selectedFrameId,
-                    label = { it.label },
-                    onSelected = { selectedFrameId = it }
-                )
+                        profilePrefs.edit {
+                            putString(
+                                PREF_PROFILE_USERNAME,
+                                savedUsername
+                            )
 
-                CustomizationRow(
-                    title = "Sticker",
-                    options = stickers,
-                    selectedId = selectedStickerId,
-                    label = { if (it.emoji.isBlank()) "None" else it.emoji },
-                    onSelected = { selectedStickerId = it }
-                )
+                            putString(
+                                PREF_PROFILE_AVATAR_ID,
+                                selectedAvatarId
+                            )
 
-                CustomizationRow(
-                    title = "Background",
-                    options = backgrounds,
-                    selectedId = selectedBackgroundId,
-                    label = { it.label },
-                    onSelected = { selectedBackgroundId = it }
-                )
+                            putString(
+                                PREF_PROFILE_FRAME_ID,
+                                selectedFrameId
+                            )
 
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFF111827).copy(alpha = 0.9f))
-                ) {
-                    Column(
-                        modifier = Modifier.padding(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        Text(
-                            text = "My Song List",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White
-                        )
+                            putString(
+                                PREF_PROFILE_STICKER_ID,
+                                selectedStickerId
+                            )
 
-                        OutlinedTextField(
-                            value = songTitle,
-                            onValueChange = { songTitle = it },
-                            label = { Text("Song title") },
-                            singleLine = true,
-                            shape = RoundedCornerShape(16.dp),
-                            colors = TextFieldDefaults.colors(
-                                focusedTextColor = Color.White,
-                                unfocusedTextColor = Color.White,
-                                focusedContainerColor = Color.Transparent,
-                                unfocusedContainerColor = Color.Transparent,
-                                focusedIndicatorColor = Color(0xFF7DD3FC),
-                                unfocusedIndicatorColor = Color(0xFF475569),
-                                focusedLabelColor = Color(0xFF7DD3FC),
-                                unfocusedLabelColor = Color(0xFFCBD5E1)
-                            ),
-                            modifier = Modifier.fillMaxWidth()
-                        )
-
-                        OutlinedTextField(
-                            value = songArtist,
-                            onValueChange = { songArtist = it },
-                            label = { Text("Artist") },
-                            singleLine = true,
-                            shape = RoundedCornerShape(16.dp),
-                            colors = TextFieldDefaults.colors(
-                                focusedTextColor = Color.White,
-                                unfocusedTextColor = Color.White,
-                                focusedContainerColor = Color.Transparent,
-                                unfocusedContainerColor = Color.Transparent,
-                                focusedIndicatorColor = Color(0xFF7DD3FC),
-                                unfocusedIndicatorColor = Color(0xFF475569),
-                                focusedLabelColor = Color(0xFF7DD3FC),
-                                unfocusedLabelColor = Color(0xFFCBD5E1)
-                            ),
-                            modifier = Modifier.fillMaxWidth()
-                        )
-
-                    Button(
-                        onClick = {
-                            if (userId != null && songTitle.isNotBlank() &&
-                                songArtist.isNotBlank()
-                            ) {
-                                scope.launch {
-                                    repository.addSongToUserList(
-                                        userId = userId,
-                                        songId = "manual_${System.currentTimeMillis()}",
-                                        title = songTitle.trim(),
-                                        artist = songArtist.trim()
-                                    )
-                                    songList = repository.getUserSongList(userId)
-                                    songTitle = ""
-                                    songArtist = ""
-                                    snackbarHostState.showSnackbar("Song saved to your list")
-                                }
-                            }
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF7C3AED))
-                    ) {
-                        Text("Add to my song list")
-                    }
-
-                    if (songList.isEmpty()) {
-                        Text(
-                            text = "No songs saved yet.",
-                            color = Color(0xFFCBD5E1)
-                        )
-                    } else {
-                        songList.forEach { song ->
-                            Card(
-                                modifier = Modifier.fillMaxWidth(),
-                                colors = CardDefaults.cardColors(containerColor = Color(0xFF1E293B))
-                            ) {
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(12.dp),
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Column {
-                                        Text(
-                                            song.title,
-                                            fontWeight = FontWeight.Bold,
-                                            color = Color.White
-                                        )
-                                        Text(song.artist, color = Color(0xFFCBD5E1))
-                                    }
-                                    if (song.isFavorite) {
-                                        Text("★", color = Color(0xFFFBBF24))
-                                    }
-                                }
-                            }
+                            putString(
+                                PREF_PROFILE_BACKGROUND_ID,
+                                selectedBackgroundId
+                            )
                         }
-                    }
+
+                        saveStatus = "Profile saved"
+
+                        scope.launch {
+                            snackbarHostState.showSnackbar(
+                                "Profile saved"
+                            )
+                        }
+                    },
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .fillMaxWidth()
+                        .padding(
+                            horizontal = 16.dp,
+                            vertical = 8.dp
+                        )
+                        .height(52.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF7C3AED)
+                    )
+                ) {
+                    Text(
+                        saveStatus ?: "Save profile",
+                        style =
+                            MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
                 }
             }
         }
-
-            Button(
-                onClick = {
-                    scope.launch {
-                        snackbarHostState.showSnackbar("Profile saved!")
-                    }
-                },
-                shape = RoundedCornerShape(16.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF7C3AED)),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(52.dp)
-                    .padding(bottom = 8.dp)
-            ) {
-                Text(
-                    "Save profile",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White
-                )
-            }
-        }
-        }
     }
+}
 
 @Preview(showBackground = true)
 @Composable
@@ -470,7 +796,11 @@ fun ProfileScreenPreview() {
     val context = LocalContext.current
     val database = AppDatabase.getInstance(context)
     val repository = MusicRepository(database)
-    ProfileScreen(repository = repository, userId = 1L)
+
+    ProfileScreen(
+        repository = repository,
+        userId = 1L
+    )
 }
 
 @Composable
@@ -489,14 +819,20 @@ private fun ProfilePreview(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Brush.linearGradient(background.colors)),
+                .background(
+                    Brush.linearGradient(background.colors)
+                ),
             contentAlignment = Alignment.Center
         ) {
             Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalAlignment =
+                    Alignment.CenterHorizontally,
+                verticalArrangement =
+                    Arrangement.spacedBy(8.dp)
             ) {
-                Box(contentAlignment = Alignment.TopEnd) {
+                Box(
+                    contentAlignment = Alignment.TopEnd
+                ) {
                     Text(
                         text = avatar.emoji,
                         fontSize = 54.sp,
@@ -504,9 +840,16 @@ private fun ProfilePreview(
                         modifier = Modifier
                             .size(100.dp)
                             .clip(CircleShape)
-                            .background(Color.White.copy(alpha = 0.9f))
+                            .background(
+                                Color.White.copy(alpha = 0.9f)
+                            )
                             .border(
-                                width = if (frame.id == "none") 0.dp else 6.dp,
+                                width =
+                                    if (frame.id == "none") {
+                                        0.dp
+                                    } else {
+                                        6.dp
+                                    },
                                 color = frame.color,
                                 shape = CircleShape
                             )
@@ -523,7 +866,8 @@ private fun ProfilePreview(
 
                 Text(
                     text = username,
-                    style = MaterialTheme.typography.titleLarge,
+                    style =
+                        MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
                     color = Color.White
                 )
@@ -540,7 +884,7 @@ private fun <T> CustomizationRow(
     label: (T) -> String,
     onSelected: (String) -> Unit
 ) where T : Any {
-    // Each option type currently has an `id`; this extracts it safely.
+
     fun idOf(option: T): String = when (option) {
         is AvatarOption -> option.id
         is FrameOption -> option.id
@@ -549,7 +893,9 @@ private fun <T> CustomizationRow(
         else -> error("Unsupported customization option")
     }
 
-    Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(6.dp)
+    ) {
         Text(
             text = title,
             style = MaterialTheme.typography.titleMedium,
@@ -558,28 +904,50 @@ private fun <T> CustomizationRow(
         )
 
         LazyRow(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            contentPadding = PaddingValues(end = 8.dp)
+            horizontalArrangement =
+                Arrangement.spacedBy(8.dp),
+            contentPadding =
+                PaddingValues(end = 8.dp)
         ) {
             items(options) { option ->
+
                 val optionId = idOf(option)
 
                 FilterChip(
                     selected = selectedId == optionId,
-                    onClick = { onSelected(optionId) },
-                    label = { Text(label(option), color = if (selectedId == optionId) Color(0xFF111827) else Color.White) },
-                    colors = FilterChipDefaults.filterChipColors(
-                        containerColor = Color.Transparent,
-                        labelColor = Color.White,
-                        selectedContainerColor = Color(0xFF7DD3FC),
-                        selectedLabelColor = Color(0xFF111827)
-                    ),
-                    border = FilterChipDefaults.filterChipBorder(
-                        borderColor = Color(0xFF7DD3FC),
-                        selectedBorderColor = Color(0xFF7DD3FC),
-                        enabled = true,
-                        selected = selectedId == optionId
-                    )
+                    onClick = {
+                        onSelected(optionId)
+                    },
+                    label = {
+                        Text(
+                            label(option),
+                            color =
+                                if (selectedId == optionId) {
+                                    Color(0xFF111827)
+                                } else {
+                                    Color.White
+                                }
+                        )
+                    },
+                    colors =
+                        FilterChipDefaults.filterChipColors(
+                            containerColor = Color.Transparent,
+                            labelColor = Color.White,
+                            selectedContainerColor =
+                                Color(0xFF7DD3FC),
+                            selectedLabelColor =
+                                Color(0xFF111827)
+                        ),
+                    border =
+                        FilterChipDefaults.filterChipBorder(
+                            borderColor =
+                                Color(0xFF7DD3FC),
+                            selectedBorderColor =
+                                Color(0xFF7DD3FC),
+                            enabled = true,
+                            selected =
+                                selectedId == optionId
+                        )
                 )
             }
         }
