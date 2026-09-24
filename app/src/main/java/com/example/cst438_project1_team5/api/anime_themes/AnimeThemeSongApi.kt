@@ -18,20 +18,20 @@ interface AnimeThemeSongApi {
     ): retrofit2.Response<AnimeThemeSongResponse>
 
     /** Basic video lookup retained for the existing video/audio API caller. */
-    @GET("video")
+    @GET("video/")
     suspend fun getVideo(
         @Query("include") include: String = "audio",
         @Query("filter[uncen]") uncen: Boolean = false
     ): retrofit2.Response<AnimeVideosResponse>
 
-    @GET("resource")
+    @GET("resource/")
     suspend fun getAnimeResourceByMalId(
         @Query("filter[external_id]") malId: Int,
         @Query("filter[site]") site: String = "myanimelist",
         @Query("include") include: String = "anime"
     ): ResourceResponse
 
-    @GET("video")
+    @GET("video/")
     suspend fun getRandomVideo(
         @Query("sort") sort: String = "random",
         @Query("include") include: String = "audio,animethemeentries.animetheme.anime",
@@ -49,7 +49,7 @@ interface AnimeThemeSongApi {
     ): retrofit2.Response<AnimeSearchResponse>
 
 
-    @GET("video")
+    @GET("video/")
     suspend fun getVideosByAnimeId(
         @Query("filter[animethemeentries][animetheme][anime][id]") animeId: Int,
         @Query("filter[animethemeentries][nsfw]") excludeNsfw: Boolean = false,
