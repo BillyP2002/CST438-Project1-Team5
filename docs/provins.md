@@ -13,4 +13,4 @@ Refamiliarizing myself with how Android Studio works, I'm starting to understand
 
 ## What I carry into Project 02
 1. I will make it a habit for myself to work on the project in specified time frames. - I will know it worked if I'm working on the project more consistently and making more contributions (i.e. pull requests)
-2. I will try to rely on AI less for coding - I will know it worked if I am able to do a good majority of the work without the help of GPT
+2. I will try to rely on AI less for coding - I will know it worked if I am able to do a good majority of the work without the help of GPT.
