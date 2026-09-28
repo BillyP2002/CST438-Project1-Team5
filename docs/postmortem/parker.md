@@ -3,26 +3,46 @@
 ## My work
 - Merged PRs:
 [#79 – Improve README setup instructions](https://github.com/BillyP2002/CST438-Project1-Team5/pull/79)
+
 [#74 – Connected elements of the app](https://github.com/BillyP2002/CST438-Project1-Team5/pull/74)
+
 [#73 – Game UI Fixes](https://github.com/BillyP2002/CST438-Project1-Team5/pull/73)
+
 [#70 – Api Data Integration into Db](https://github.com/BillyP2002/CST438-Project1-Team5/pull/70)
+
 [#69 – Quality of life changes for game](https://github.com/BillyP2002/CST438-Project1-Team5/pull/69)
+
 [#67 – Game Finished & Audio Implemented](https://github.com/BillyP2002/CST438-Project1-Team5/pull/67)
+
 [#65 – Fix for CI emulator test](https://github.com/BillyP2002/CST438-Project1-Team5/pull/65)
+
 [#49 – Anime API connection](https://github.com/BillyP2002/CST438-Project1-Team5/pull/49)
+
 [#40 – CI/CD checks](https://github.com/BillyP2002/CST438-Project1-Team5/pull/40)
+
 [#29 – Connected AnimeThemeSong API](https://github.com/BillyP2002/CST438-Project1-Team5/pull/29)
+
 [#22 – Updated gitignore](https://github.com/BillyP2002/CST438-Project1-Team5/pull/22)
+
 [#17 – Issue 13 implementation](https://github.com/BillyP2002/CST438-Project1-Team5/pull/17)
+
 - My issues:
 [#68 – Create Game](https://github.com/BillyP2002/CST438-Project1-Team5/issues/68)
+
 [#35 – Add Readme](https://github.com/BillyP2002/CST438-Project1-Team5/issues/35)
+
 [#33 – Integrate CI Plugins](https://github.com/BillyP2002/CST438-Project1-Team5/issues/33)
+
 [#24 – Toolbar](https://github.com/BillyP2002/CST438-Project1-Team5/issues/24)
+
 [#21 – Update Shop UI to work with mobile](https://github.com/BillyP2002/CST438-Project1-Team5/issues/21)
+
 [#15 – Create a home screen](https://github.com/BillyP2002/CST438-Project1-Team5/issues/15)
+
 [#14 – Profile Page and Customization](https://github.com/BillyP2002/CST438-Project1-Team5/issues/14)
+
 [#13 – Reward Currency and Prize Shop](https://github.com/BillyP2002/CST438-Project1-Team5/issues/13)
+
 - What I built: 
     - Shop and Anime Coin System
     
