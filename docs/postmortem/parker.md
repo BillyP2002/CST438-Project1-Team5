@@ -2,6 +2,7 @@
 
 ## My work
 - Merged PRs:
+
 [#79 – Improve README setup instructions](https://github.com/BillyP2002/CST438-Project1-Team5/pull/79)
 
 [#74 – Connected elements of the app](https://github.com/BillyP2002/CST438-Project1-Team5/pull/74)
@@ -27,6 +28,7 @@
 [#17 – Issue 13 implementation](https://github.com/BillyP2002/CST438-Project1-Team5/pull/17)
 
 - My issues:
+
 [#68 – Create Game](https://github.com/BillyP2002/CST438-Project1-Team5/issues/68)
 
 [#35 – Add Readme](https://github.com/BillyP2002/CST438-Project1-Team5/issues/35)
